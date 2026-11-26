@@ -45,7 +45,7 @@ const organizationLd = {
       "@id": `${site.url}/#organization`,
       name: site.name,
       url: site.url,
-      logo: `${site.url}/brand/clippable-app-icon.png`,
+      logo: `${site.url}/brand/clippable-app-icon-512.png`,
       ...(site.sameAs.length ? { sameAs: site.sameAs } : {}),
     },
     {

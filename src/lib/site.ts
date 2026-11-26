@@ -4,14 +4,15 @@
  */
 export const site = {
   name: "Clippable",
-  // TODO(brief): replace with the approved one-line positioning statement.
-  tagline: "Website in progress",
-  description: "Clippable — official website. Full site launching soon.",
+  tagline: "Clips from every stream, the second they happen",
+  description:
+    "Clippable is an automated clipping tool that turns livestreams into ready-to-post clips for TikTok, YouTube Shorts, Instagram Reels and X, in real time.",
   url: (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, ""),
+  email: "business@clippable.net",
   locale: "en_US",
   // Only index when explicitly enabled on the production deployment.
   indexable: process.env.SITE_INDEXABLE === "true",
-  // TODO(brief): official profiles for Organization.sameAs (LinkedIn, X, YouTube, ...).
+  // TODO(client): official profiles for Organization.sameAs (Instagram, X, TikTok, YouTube).
   sameAs: [] as string[],
   themeColor: "#3574EF",
 } as const;

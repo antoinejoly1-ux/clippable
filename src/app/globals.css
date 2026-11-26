@@ -4,76 +4,86 @@
  * Clippable design tokens.
  * Source palette (docs/brand-palette.png):
  *   Royal #204FCE · Blue #3574EF · Sky #6DAFF8 · White #FFFFFF · Midnight #01082B · Ink #1A191E
- * Brand gradients sampled from the app icon and banner.
+ * Electric #0061FF is the deep stop of the official logo gradient.
+ *
+ * The site is light-only by design (client direction, Nov 2026).
  *
  * Contrast notes (WCAG 2.2 AA):
- *   white on Royal 6.84:1 ✓ body text   — use Royal for primary buttons with white labels
- *   white on Blue  4.29:1 ✓ large/bold only (≥24px or ≥18.66px bold); fails small body text
- *   Sky on Midnight 8.53:1 ✓            — accent text on dark
- *   Blue on Midnight 4.57:1 ✓           — links on dark
- *   Midnight on Sky 8.53:1 ✓            — dark-mode buttons (sky bg, midnight label)
+ *   white on Royal    6.84:1  body text OK. Primary buttons.
+ *   white on Blue     4.29:1  large/bold text only.
+ *   Royal on white    6.84:1  links, gradient text end.
+ *   Blue on white     4.29:1  large/bold text only.
+ *   Muted #5B5F6E on white 6.4:1, on #F4F6FB 5.9:1
  */
 
 @theme {
-  /* Primitive palette */
   --color-royal: #204fce;
   --color-blue: #3574ef;
   --color-sky: #6daff8;
+  --color-electric: #0061ff;
   --color-midnight: #01082b;
   --color-ink: #1a191e;
   --color-white: #ffffff;
+  --color-success: #12a150;
+  --color-live: #e5484d;
+  --color-live-ink: #b3261e;
 
-  /* Fonts (Geist placeholder until the brand typeface is confirmed) */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
-  /* Motion */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --animate-marquee: marquee var(--marquee-duration, 60s) linear infinite;
+  --animate-marquee-reverse: marquee var(--marquee-duration, 60s) linear infinite reverse;
+  --animate-live: live 1.6s ease-in-out infinite;
+
+  @keyframes marquee {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+  @keyframes card-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 12px, 0) scale(0.96);
+    }
+  }
+  @keyframes wave {
+    from {
+      transform: scaleY(0.35);
+    }
+    to {
+      transform: scaleY(1);
+    }
+  }
+  @keyframes live {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.35;
+    }
+  }
 }
 
-/* Semantic tokens: components use these, never raw primitives. */
 :root {
-  --bg: var(--color-white);
-  --bg-subtle: #f4f7fe;
+  --bg: #ffffff;
+  --bg-subtle: #f4f6fb;
   --fg: var(--color-ink);
-  --fg-muted: #55545c;
-  --border: #e3e8f4;
+  --fg-muted: #5b5f6e;
+  --border: #e4e8f2;
   --accent: var(--color-royal);
   --accent-fg: var(--color-white);
   --link: var(--color-royal);
   --focus: var(--color-blue);
-  --gradient-brand: linear-gradient(135deg, #57b2fd 0%, #3574ef 45%, #024fd5 100%);
-  --gradient-hero: linear-gradient(120deg, #75d0fc 0%, #3574ef 40%, #0039ec 100%);
+  --gradient-brand: linear-gradient(180deg, #61b8fc 0%, #0061ff 100%);
+  --gradient-text: linear-gradient(100deg, #3574ef 0%, #204fce 100%);
   color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: var(--color-midnight);
-    --bg-subtle: #0a1440;
-    --fg: #f3f6ff;
-    --fg-muted: #a9b3d1;
-    --border: #1c2758;
-    --accent: var(--color-sky);
-    --accent-fg: var(--color-midnight);
-    --link: var(--color-sky);
-    --focus: var(--color-sky);
-    color-scheme: dark;
-  }
-}
-
-:root[data-theme="dark"] {
-  --bg: var(--color-midnight);
-  --bg-subtle: #0a1440;
-  --fg: #f3f6ff;
-  --fg-muted: #a9b3d1;
-  --border: #1c2758;
-  --accent: var(--color-sky);
-  --accent-fg: var(--color-midnight);
-  --link: var(--color-sky);
-  --focus: var(--color-sky);
-  color-scheme: dark;
 }
 
 @theme inline {
@@ -96,16 +106,54 @@
     background: var(--bg);
     color: var(--fg);
     font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
   }
   :focus-visible {
     outline: 2px solid var(--focus);
     outline-offset: 3px;
-    border-radius: 4px;
+    border-radius: 6px;
   }
   ::selection {
     background: var(--color-sky);
     color: var(--color-midnight);
   }
+}
+
+@utility text-gradient {
+  background-image: var(--gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Posted chip: the paper plane flies off when a tile flips to "posted". */
+.post-chip .plane {
+  transition:
+    transform 700ms var(--ease-out-expo),
+    opacity 500ms ease;
+}
+.post-chip[data-posted="true"] .plane {
+  transform: translate(22px, -22px) scale(0.6);
+  opacity: 0;
+}
+.post-chip .check {
+  transform: scale(0.4);
+  opacity: 0;
+  transition:
+    transform 450ms var(--ease-spring) 150ms,
+    opacity 200ms ease 150ms;
+}
+.post-chip[data-posted="true"] .check {
+  transform: scale(1);
+  opacity: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
