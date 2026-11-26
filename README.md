@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Clippable: website
 
-## Getting Started
+Marketing site for Clippable. Next.js 16 · React 19 · TypeScript · Tailwind CSS v4.
 
-First, run the development server:
+## Quick start
 
 ```bash
+cp .env.example .env.local
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command                       | What it does                                             |
+| ----------------------------- | -------------------------------------------------------- |
+| `npm run dev`                 | Dev server                                               |
+| `npm run build` / `npm start` | Production build and serve                               |
+| `npm run check`               | Typecheck, lint and Prettier check (run before every PR) |
+| `npm run format`              | Format everything                                        |
 
-## Learn More
+## Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/app/            routes, layout, metadata routes (robots, sitemap, manifest, icons)
+src/components/     UI components (logo, JSON-LD)
+src/lib/site.ts     site-wide facts: name, URL, description, socials
+public/brand/       logo assets
+docs/               brand guide, Kylon persona and standards
+inspiration/        references for the design phase
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Built in from day one
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Security:** CSP, HSTS, nosniff, frame-deny, Referrer-Policy, Permissions-Policy and COOP in `next.config.ts`. CI runs `npm audit`, uses SHA-pinned actions and Dependabot.
+- **SEO/AEO:** metadata, canonical, Open Graph, `robots.txt`, `sitemap.xml`, Organization and WebSite JSON-LD, `llms.txt`.
+  Indexing is **off** unless `SITE_INDEXABLE=true`, so previews never get indexed.
+- **Accessibility:** skip link, visible focus, reduced-motion support, AA-checked colour pairs.
 
-## Deploy on Vercel
+## Deploy
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Vercel recommended. Set `NEXT_PUBLIC_SITE_URL` and, on production only, `SITE_INDEXABLE=true`.
