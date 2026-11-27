@@ -64,6 +64,7 @@ The site moved away from the dark Live Board to a **light, editorial scroll stor
 - Statement: **"Clipped without lifting a finger."**
 
 ## Update: Nov 27, 2026 (round 4)
+
 - Hero: **"Make clips ▶ instantly."** A 4:3 player is set inline in the headline (ctrl.xyz-style load sequence).
 - Scroll: the player takes the full screen, is cut in half top to bottom and into four across (2 × 4; 4 × 2 on phones), and each piece becomes a vertical clip.
 - White throughout. No dark veil and no statement overlay.

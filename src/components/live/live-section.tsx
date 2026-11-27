@@ -10,9 +10,9 @@ export function LiveSection() {
       <div className="mx-auto max-w-4xl px-5 text-center sm:px-10">
         <h2
           id="live-title"
-          className="mx-auto max-w-[16ch] text-[clamp(2.25rem,5vw,4.5rem)] leading-[0.98] font-medium tracking-[-0.045em] text-balance text-fg"
+          className="mx-auto text-[clamp(2.25rem,5vw,4.5rem)] leading-[0.98] font-medium tracking-[-0.045em] text-balance text-fg"
         >
-          Automatically clipped <span className="text-fg-muted">from livestreams.</span>
+          Build your workflow. <span className="text-fg-muted">Build repeatable workflows.</span>
         </h2>
       </div>
       <div className="mt-12 sm:mt-16">

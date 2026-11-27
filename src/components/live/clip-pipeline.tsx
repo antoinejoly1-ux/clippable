@@ -5,9 +5,16 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { LazyVideo } from "@/components/lazy-video";
 import { PlatformIcon, platforms } from "@/components/platform-icons";
 
-const TOTAL = 32;
-const CLIP_MS = 170; // one new clip every 170ms: production speed
+const COLS = 8;
+const ROWS = 4;
+const TOTAL = COLS * ROWS;
+const CLIP_MS = 190; // pace of each row, left to right
+const ROW_DELAY_MS = 1000; // every row runs at once, each starting 1s after the one above
 const HOLD_MS = 2600;
+const CYCLE_MS = (ROWS - 1) * ROW_DELAY_MS + (COLS - 1) * CLIP_MS + HOLD_MS;
+
+const isFilled = (k: number, t: number) =>
+  t >= Math.floor(k / COLS) * ROW_DELAY_MS + (k % COLS) * CLIP_MS;
 
 const captions = [
   ["WAIT", "FOR", "IT"],
@@ -25,7 +32,7 @@ export function ClipPipeline() {
   const canvasRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [paths, setPaths] = useState<string[]>([]);
-  const [made, setMade] = useState(6);
+  const [elapsed, setElapsed] = useState(0);
   const [line, setLine] = useState(0);
   const [word, setWord] = useState(0);
 
@@ -69,29 +76,21 @@ export function ClipPipeline() {
     return () => ro.disconnect();
   }, [measure]);
 
-  /* Production: clips fill the grid quickly, hold, then the batch starts over. */
+  /* Production: all four rows fill together, each starting a second after the last. */
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      const t = window.setTimeout(() => setMade(TOTAL), 0);
+      const t = window.setTimeout(() => setElapsed(CYCLE_MS), 0);
       return () => window.clearTimeout(t);
     }
-    let timer: number | undefined;
+    let clock: number | undefined;
     let wordTimer: number | undefined;
-    let count = 6;
+    let start = 0;
     const tick = () => {
-      if (count >= TOTAL) {
-        timer = window.setTimeout(() => {
-          count = 0;
-          setMade(0);
-          timer = window.setTimeout(tick, 500);
-        }, HOLD_MS);
-        return;
-      }
-      count += 1;
-      setMade(count);
-      timer = window.setTimeout(tick, CLIP_MS);
+      const t = performance.now() - start;
+      if (t >= CYCLE_MS) start = performance.now();
+      setElapsed(t >= CYCLE_MS ? 0 : t);
     };
     // Caption preview: the highlight steps word by word, then the next caption.
     let w = 0;
@@ -107,10 +106,11 @@ export function ClipPipeline() {
     };
     const io = new IntersectionObserver(
       ([e]) => {
-        window.clearTimeout(timer);
+        window.clearInterval(clock);
         window.clearInterval(wordTimer);
         if (e.isIntersecting) {
-          timer = window.setTimeout(tick, 600);
+          start = performance.now();
+          clock = window.setInterval(tick, 60);
           wordTimer = window.setInterval(stepWord, 420);
         }
       },
@@ -119,10 +119,13 @@ export function ClipPipeline() {
     io.observe(canvas);
     return () => {
       io.disconnect();
-      window.clearTimeout(timer);
+      window.clearInterval(clock);
       window.clearInterval(wordTimer);
     };
   }, []);
+
+  let made = 0;
+  for (let k = 0; k < TOTAL; k++) if (isFilled(k, elapsed)) made += 1;
 
   return (
     <div className="mx-auto max-w-[1360px] px-3 sm:px-6">
@@ -191,47 +194,29 @@ export function ClipPipeline() {
             </div>
           </Node>
 
-          {/* 2 · Brand template */}
-          <Node label="Brand template" meta="9:16" className="w-[200px] lg:mt-14">
+          {/* 2 · Brand template: just the caption style, nothing else */}
+          <Node label="Brand template" meta="Captions" className="w-[240px] lg:mt-14">
             <div
               ref={(el) => {
                 nodeRefs.current[1] = el;
               }}
-              className="overflow-hidden rounded-[10px] border border-border bg-bg shadow-[0_18px_40px_-24px_rgb(1_8_43/0.5)]"
+              className="rounded-[10px] border border-border bg-bg px-5 py-6 shadow-[0_18px_40px_-24px_rgb(1_8_43/0.5)]"
             >
-              <div className="relative aspect-[9/16] bg-midnight">
-                <Image
-                  src="/media/pipeline/template-frame.webp"
-                  alt=""
-                  fill
-                  sizes="200px"
-                  className="object-cover"
-                />
-                <div className="absolute inset-x-3 top-[62%] flex flex-wrap justify-center gap-x-1 gap-y-0.5 text-center text-[14px] leading-[1.1] font-extrabold tracking-[-0.01em] text-white [text-shadow:0_2px_0_rgb(1_8_43/0.6)]">
-                  {captions[line].map((w, i) => (
-                    <span
-                      key={`${line}-${i}`}
-                      className={`rounded-[3px] px-1 transition-colors duration-150 ${i === word ? "bg-electric" : ""}`}
-                    >
-                      {w}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <dl className="grid grid-cols-2 gap-x-3 gap-y-2 p-3 text-[11px]">
-                <dt className="text-fg-muted">Font</dt>
-                <dd className="text-right font-medium text-fg">Geist Bold</dd>
-                <dt className="text-fg-muted">Colors</dt>
-                <dd className="flex justify-end gap-1">
-                  <span className="size-3.5 rounded-[3px] bg-white ring-1 ring-border" />
-                  <span className="size-3.5 rounded-[3px] bg-electric" />
-                  <span className="size-3.5 rounded-[3px] bg-midnight" />
-                </dd>
-                <dt className="text-fg-muted">Captions</dt>
-                <dd className="text-right font-medium text-fg">Lower third</dd>
-                <dt className="text-fg-muted">Length</dt>
-                <dd className="text-right font-medium text-fg">15–45s</dd>
-              </dl>
+              <p
+                aria-hidden="true"
+                className="flex min-h-[4.5rem] flex-wrap content-center justify-center gap-x-1 gap-y-1 text-center text-[1.35rem] leading-tight font-extrabold tracking-[-0.02em] text-fg"
+              >
+                {captions[line].map((w, i) => (
+                  <span
+                    key={`${line}-${i}`}
+                    className={`rounded-[4px] px-1.5 transition-colors duration-150 ${
+                      i === word ? "bg-electric text-white" : ""
+                    }`}
+                  >
+                    {w}
+                  </span>
+                ))}
+              </p>
             </div>
           </Node>
 
@@ -252,11 +237,8 @@ export function ClipPipeline() {
                 aria-label={`${made} of ${TOTAL} clips made`}
               >
                 {Array.from({ length: TOTAL }, (_, k) => (
-                  <li
-                    key={k}
-                    className="relative aspect-[9/16] overflow-hidden rounded-[4px] bg-bg-subtle"
-                  >
-                    {k < made && (
+                  <li key={k} className="relative aspect-[9/16] overflow-hidden rounded-[4px]">
+                    {isFilled(k, elapsed) && (
                       <div className="absolute inset-0 animate-[clip-pop_360ms_var(--ease-out-expo)_both]">
                         <Image
                           src={`/media/pipeline/clip-${k + 1}.webp`}
