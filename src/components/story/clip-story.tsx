@@ -3,25 +3,26 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { CtaButton } from "@/components/cta-button";
-import { PlatformIcon, platforms } from "@/components/platform-icons";
-import { formatViews, storyClips } from "@/lib/story";
+import { storyClips } from "@/lib/story";
 
 /*
  * Scroll timeline, as a fraction of the section's scroll distance.
- * Rhythm: stream fills the screen → cut into clips → centered statement → clips rise and post → centered counter.
- * Everything moves vertically; the original stream stays behind, darkened.
+ * The stream fills the screen → it is cut into vertical strips → the strips open into
+ * clips that are already sinking into the dark → one statement → the grid moves down
+ * and each clip ticks off as posted. Everything moves vertically.
  */
 const T = {
-  copyOut: [0, 0.07],
-  expand: [0.01, 0.13],
-  cut: [0.15, 0.23],
-  morph: [0.21, 0.37],
-  clipsIn: [0.33, 0.43],
-  textB: [0.44, 0.48, 0.55, 0.58],
-  pan: [0.57, 0.86],
-  textC: [0.86, 0.9],
-  count: [0.87, 0.97],
+  copyOut: [0, 0.08],
+  expand: [0.01, 0.16],
+  cut: [0.18, 0.28],
+  morph: [0.25, 0.44],
+  clipsIn: [0.38, 0.5],
+  text: [0.5, 0.56, 0.66, 0.71],
+  pan: [0.7, 0.98],
 } as const;
+
+const VEIL_BASE = 0.38; // how dark the clips are as soon as they exist
+const VEIL_TEXT = 0.7; // how dark everything gets behind the statement
 
 type Range = readonly [number, number];
 const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -39,7 +40,6 @@ const roundedRect = (x: number, y: number, w: number, h: number, r: number) => {
 };
 
 const N = storyClips.length;
-const TOTAL_VIEWS = storyClips.reduce((sum, c) => sum + c.views, 0);
 
 export function ClipStory() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -48,15 +48,13 @@ export function ClipStory() {
   const cueRef = useRef<HTMLDivElement>(null);
   const mediaRef = useRef<HTMLDivElement>(null);
   const heroVideoRef = useRef<HTMLVideoElement>(null);
-  const scrimRef = useRef<HTMLDivElement>(null);
+  const veilRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<SVGSVGElement>(null);
   const overlayPathRef = useRef<SVGPathElement>(null);
-  const textRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const counterRef = useRef<HTMLSpanElement>(null);
+  const textRef = useRef<HTMLHeadingElement>(null);
   const tileRefs = useRef<(HTMLDivElement | null)[]>([]);
   const tileVideoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const checkRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const viewRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -81,8 +79,6 @@ export function ClipStory() {
     let tilesLoaded = false;
     let tilesPlaying = false;
     let heroPlaying = false;
-    const lastLabels: string[] = [];
-    let lastCount = "";
 
     const playSafe = (v: HTMLVideoElement) => {
       const res = v.play();
@@ -154,7 +150,7 @@ export function ClipStory() {
       const gridW = cols * cw + (cols - 1) * G;
       const gridH = rows * ch + (rows - 1) * G;
       const left = (W - gridW) / 2;
-      // The grid is taller than the screen, so it rises as you scroll: never sideways.
+      // The grid is taller than the screen, so it moves up as you scroll down. Never sideways.
       const travel = Math.max(0, gridH - (H - topPad - botPad));
       const pan = easeInOut(seg(p, T.pan));
       const baseTop = travel > 0 ? topPad : (H - gridH) / 2 + (topPad - botPad) / 2;
@@ -182,48 +178,28 @@ export function ClipStory() {
         tile.style.opacity = String(o);
         tile.style.visibility = o > 0 ? "visible" : "hidden";
 
-        /* ── 3 · Each clip posts itself: Apple Pay-style ring and tick ──── */
-        const startAt = (row / rows) * 0.7 + (col / cols) * 0.16;
-        const done = pan > startAt + 0.02 || p >= T.pan[1];
+        /* ── 3 · As the grid moves, each clip ticks off: Apple Pay-style ── */
+        const startAt = (row / rows) * 0.62 + (col / cols) * 0.16;
+        const done = pan > startAt + 0.04 || p >= T.pan[1];
         const check = checkRefs.current[i];
-        if (check) {
-          if (check.dataset.done !== String(done)) check.dataset.done = String(done);
-          const settle = p >= T.pan[1] ? 1 : easeInOut(seg(pan, [startAt + 0.1, startAt + 0.18]));
-          const size = mobile ? 56 : 64;
-          const tx = lerp(0, cw / 2 - size * 0.32 - 14, settle);
-          const ty = lerp(0, -(ch / 2 - size * 0.32 - 14), settle);
-          check.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${lerp(1, 0.5, settle)})`;
-        }
-        const grow = p >= T.pan[1] ? 1 : easeOut(seg(pan, [startAt + 0.04, startAt + 0.3]));
-        const label = done ? `${formatViews(storyClips[i].views * grow)} views` : "Posting…";
-        const viewEl = viewRefs.current[i];
-        if (viewEl && lastLabels[i] !== label) {
-          viewEl.textContent = label;
-          lastLabels[i] = label;
-        }
+        if (check && check.dataset.done !== String(done)) check.dataset.done = String(done);
       }
-      // Outside the clips, the original stream stays visible, darkened.
+      // Outside the clips, the original stream stays visible under a dark veil.
       overlayPath.setAttribute("d", c > 0 ? `M0 0H${W}V${H}H0Z${d}` : "");
-      overlayPath.setAttribute("fill-opacity", String(0.74 * c));
+      overlayPath.setAttribute("fill-opacity", String(0.78 * c));
 
-      /* Statements sit on a darker veil over everything */
-      const dim = Math.max(win(p, T.textB), seg(p, T.textC));
-      if (scrimRef.current) scrimRef.current.style.opacity = String(dim * 0.64);
+      // The clips never appear at full brightness: the veil builds with the cut,
+      // deepens behind the statement, and eases back a little while the grid moves.
+      const t = win(p, T.text);
+      const base = VEIL_BASE * easeInOut(seg(p, [T.cut[0], T.morph[1]]));
+      if (veilRef.current) veilRef.current.style.opacity = String(lerp(base, VEIL_TEXT, t));
 
-      /* ── Centered text ───────────────────────────────────────────────── */
-      const b = win(p, T.textB);
-      const cc = seg(p, T.textC);
-      [b, cc].forEach((v, idx) => {
-        const el = textRefs.current[idx];
-        if (!el) return;
-        el.style.opacity = String(v);
-        el.style.transform = `translate3d(0, ${(1 - v) * 28}px, 0) scale(${lerp(0.98, 1, v)})`;
-        el.style.visibility = v > 0 ? "visible" : "hidden";
-      });
-      const counted = formatViews(TOTAL_VIEWS * easeOut(seg(p, T.count)));
-      if (counterRef.current && counted !== lastCount) {
-        counterRef.current.textContent = counted;
-        lastCount = counted;
+      /* ── The statement ───────────────────────────────────────────────── */
+      const text = textRef.current;
+      if (text) {
+        text.style.opacity = String(t);
+        text.style.transform = `translate3d(0, ${(1 - t) * 24}px, 0) scale(${lerp(0.97, 1, t)})`;
+        text.style.visibility = t > 0 ? "visible" : "hidden";
       }
 
       if (!reduced) {
@@ -301,9 +277,9 @@ export function ClipStory() {
       <section
         ref={sectionRef}
         aria-labelledby="hero-title"
-        className="relative h-[660svh] motion-reduce:h-svh"
+        className="relative h-[560svh] motion-reduce:h-svh"
       >
-        <span id="how" aria-hidden="true" className="absolute top-[110svh]" />
+        <span id="how" aria-hidden="true" className="absolute top-[100svh]" />
         <div ref={stageRef} className="sticky top-0 h-svh overflow-hidden bg-bg">
           {/* Hero copy */}
           <div
@@ -340,34 +316,33 @@ export function ClipStory() {
             <span className="eyebrow">Scroll to see it work</span>
           </div>
 
-          {/* Media: the hero stream, which expands, is cut, and becomes the reel */}
+          {/* Media: the hero stream, which expands, is cut, and becomes the clips */}
           <div
             ref={mediaRef}
             className="absolute top-[60svh] right-0 bottom-0 left-0 z-20 overflow-hidden bg-midnight md:top-0 md:left-1/2"
           >
-            <div className="absolute inset-0">
-              <Image
-                src="/media/hero-poster.webp"
-                alt=""
-                fill
-                priority
-                fetchPriority="high"
-                sizes="(min-width: 768px) 50vw, 100vw"
-                className="object-cover object-[64%_50%] md:object-center"
-              />
-              <video
-                ref={heroVideoRef}
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                aria-hidden="true"
-                className="absolute inset-0 size-full object-cover object-[64%_50%] opacity-0 transition-opacity duration-700 data-[ready=true]:opacity-100 md:object-center"
-              >
-                <source src="/media/hero.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"' />
-                <source src="/media/hero.h264.mp4" type="video/mp4" />
-              </video>
-            </div>
+            <Image
+              src="/media/hero-poster.webp"
+              alt=""
+              fill
+              priority
+              fetchPriority="high"
+              sizes="(min-width: 768px) 50vw, 100vw"
+              className="object-cover object-[64%_50%] md:object-center"
+            />
+            <video
+              ref={heroVideoRef}
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-hidden="true"
+              className="absolute inset-0 size-full object-cover object-[64%_50%] opacity-0 transition-opacity duration-700 data-[ready=true]:opacity-100 md:object-center"
+            >
+              <source src="/media/hero.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"' />
+              <source src="/media/hero.h264.mp4" type="video/mp4" />
+            </video>
+
             {/* The cuts: a dark veil everywhere except the clip windows */}
             <svg
               ref={overlayRef}
@@ -409,7 +384,6 @@ export function ClipStory() {
                   />
                   <source src={`/media/clips/clip-${clip.id}.h264.mp4`} type="video/mp4" />
                 </video>
-                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgb(1_8_43/0.7),transparent_35%)]" />
 
                 {/* Apple Pay-style completion */}
                 <div
@@ -417,7 +391,7 @@ export function ClipStory() {
                     checkRefs.current[i] = el;
                   }}
                   data-done="false"
-                  className="pay-check absolute top-1/2 left-1/2 -mt-7 -ml-7 size-14 md:-mt-8 md:-ml-8 md:size-16"
+                  className="pay-check absolute top-1/2 left-1/2 z-10 -mt-7 -ml-7 size-14 md:-mt-8 md:-ml-8 md:size-16"
                 >
                   <svg viewBox="0 0 64 64" className="size-full overflow-visible">
                     <circle className="halo" cx="32" cy="32" r="30" />
@@ -426,65 +400,24 @@ export function ClipStory() {
                     <path className="tick" d="M20 33.5 28 41.5 45 24" pathLength={1} />
                   </svg>
                 </div>
-
-                <div className="absolute inset-x-3 bottom-3 flex items-center justify-between gap-2 text-white">
-                  <span className="flex items-center gap-1.5 text-xs font-medium">
-                    <PlatformIcon platform={clip.platform} className="size-3.5" />
-                    <span className="hidden sm:inline">{platforms[clip.platform].title}</span>
-                  </span>
-                  <span
-                    ref={(el) => {
-                      viewRefs.current[i] = el;
-                    }}
-                    className="font-mono text-[11px] tabular-nums"
-                  >
-                    Posting…
-                  </span>
-                </div>
               </div>
             ))}
 
             <div
-              ref={scrimRef}
+              ref={veilRef}
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 bg-midnight opacity-0"
             />
           </div>
 
-          {/* Centered statements */}
+          {/* The statement */}
           <div className="pointer-events-none absolute inset-0 z-30 grid place-items-center px-6 text-center">
-            <div
-              ref={(el) => {
-                textRefs.current[0] = el;
-              }}
-              className="invisible col-start-1 row-start-1 text-white opacity-0"
+            <h2
+              ref={textRef}
+              className="invisible max-w-[13ch] text-[clamp(2.75rem,7.6vw,7rem)] leading-[0.95] font-medium tracking-[-0.045em] text-balance text-white opacity-0"
             >
-              <p className="eyebrow text-sky">Clipped</p>
-              <h2 className="mx-auto mt-4 max-w-[13ch] text-[clamp(2.75rem,7.6vw,7rem)] leading-[0.95] font-medium tracking-[-0.045em] text-balance">
-                Clipped without lifting a finger.
-              </h2>
-              <p className="mx-auto mt-5 max-w-[36ch] text-lg text-pretty text-white/80">
-                The best moments are found, trimmed, captioned and scored. Vertical, ready for every
-                feed.
-              </p>
-            </div>
-            <div
-              ref={(el) => {
-                textRefs.current[1] = el;
-              }}
-              className="invisible col-start-1 row-start-1 text-white opacity-0"
-            >
-              <p className="eyebrow text-sky">Posted</p>
-              <p className="mt-3 text-[clamp(5rem,17vw,15rem)] leading-[0.85] font-medium tracking-[-0.06em] tabular-nums">
-                <span ref={counterRef}>0</span>
-              </p>
-              <h2 className="mx-auto mt-5 max-w-[22ch] text-[clamp(1.5rem,3vw,2.5rem)] leading-tight font-medium tracking-[-0.03em] text-balance">
-                views across eight clips. Posted everywhere.
-              </h2>
-              <p className="mt-3 font-mono text-[11px] tracking-[0.08em] text-white/60 uppercase">
-                Example figures
-              </p>
-            </div>
+              Clipped without lifting a finger.
+            </h2>
           </div>
         </div>
       </section>
@@ -494,25 +427,16 @@ export function ClipStory() {
   );
 }
 
-/** Reduced-motion version: the same beats, laid out as a normal section. */
+/** Reduced-motion version: the statement and the clips, laid out as a normal section. */
 function StaticStory() {
   return (
     <section
       aria-label="How Clippable works"
-      className="hidden px-5 py-20 motion-reduce:block sm:px-10"
+      className="hidden bg-midnight px-5 py-20 text-white motion-reduce:block sm:px-10"
     >
-      <ol className="mx-auto grid max-w-6xl gap-8 sm:grid-cols-2">
-        {[
-          ["Clipped", "Clipped without lifting a finger.", "Found, trimmed, captioned and scored."],
-          ["Posted", "Posted everywhere.", "Vertical clips, ready for every feed."],
-        ].map(([label, title, body]) => (
-          <li key={label}>
-            <p className="eyebrow text-royal">{label}</p>
-            <h2 className="mt-2 text-2xl font-medium tracking-tight">{title}</h2>
-            <p className="mt-1 text-fg-muted">{body}</p>
-          </li>
-        ))}
-      </ol>
+      <h2 className="mx-auto max-w-[14ch] text-center text-4xl font-medium tracking-[-0.04em] text-balance sm:text-6xl">
+        Clipped without lifting a finger.
+      </h2>
       <div className="mx-auto mt-12 grid max-w-6xl grid-cols-2 gap-3 sm:grid-cols-4">
         {storyClips.map((clip) => (
           <div
@@ -526,10 +450,6 @@ function StaticStory() {
               sizes="(min-width: 640px) 25vw, 50vw"
               className="object-cover"
             />
-            <div className="absolute inset-x-3 bottom-3 flex items-center justify-between text-white">
-              <PlatformIcon platform={clip.platform} className="size-3.5" />
-              <span className="font-mono text-xs">{formatViews(clip.views)} views</span>
-            </div>
           </div>
         ))}
       </div>

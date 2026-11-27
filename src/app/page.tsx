@@ -1,5 +1,6 @@
 import { FinalCta } from "@/components/final-cta";
 import { JsonLd } from "@/components/json-ld";
+import { LiveSection } from "@/components/live/live-section";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { ClipStory } from "@/components/story/clip-story";
@@ -25,6 +26,7 @@ export default function Home() {
         <span id="top" aria-hidden="true" />
         <ClipStory />
         <StreamerSection />
+        <LiveSection />
         <FinalCta />
       </main>
       <SiteFooter />

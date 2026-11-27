@@ -292,3 +292,21 @@
     opacity: 0;
   }
 }
+
+/* A clip in flight from a live stream to its slot (live-clipping section). */
+.live-flyer {
+  position: absolute;
+  z-index: 20;
+  border-radius: 6px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 18px 40px -16px rgb(1 8 43 / 0.55);
+  transform-origin: top left;
+  pointer-events: none;
+  will-change: transform;
+}
+@keyframes slot-check {
+  from {
+    transform: scale(0);
+  }
+}
