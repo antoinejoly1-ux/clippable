@@ -485,7 +485,10 @@ export function ClipStory() {
         <span id="how" aria-hidden="true" className="absolute top-[120svh]" />
         <div ref={stageRef} className="sticky top-0 h-svh overflow-hidden bg-bg">
           {/* A squeezed blue ellipse pressing down from the top; fades as the story starts. */}
-          <div ref={glowRef} aria-hidden="true" className="hero-sky absolute inset-0 z-0" />
+          <div ref={glowRef} aria-hidden="true" className="absolute inset-0 z-0 overflow-hidden">
+            <div className="hero-sky absolute inset-0" />
+            <div className="hero-grain absolute inset-0" />
+          </div>
           {/* Media layer: the player, the cuts and the clips */}
           <div className="absolute inset-0 z-20 overflow-hidden">
             <div

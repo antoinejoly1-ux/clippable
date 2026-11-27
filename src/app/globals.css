@@ -609,25 +609,59 @@
 }
 
 /*
- * Hero sky: a near-black core at the top edge bleeding into electric blue, then sky,
- * then white just above the headline. Indigo pools at the upper corners.
+ * Hero sky (after the client's references): a huge dark circle sits above the top edge.
+ * Its core is black, ringed by indigo, electric blue and sky, and its rim fades to white
+ * just above the headline. Indigo pools in the top corners. On load it "sets" into place:
+ * it descends and widens out of a blur, like an eclipse settling.
  */
 .hero-sky {
   background:
-    radial-gradient(60% 26% at 50% 0%, rgb(0 2 20 / 0.92) 0%, rgb(0 2 20 / 0) 100%),
-    radial-gradient(90% 34% at 0% 0%, rgb(46 26 190 / 0.55) 0%, rgb(46 26 190 / 0) 100%),
-    radial-gradient(90% 34% at 100% 0%, rgb(46 26 190 / 0.55) 0%, rgb(46 26 190 / 0) 100%),
-    linear-gradient(
-      to bottom,
-      #06104a 0%,
-      #1236c9 9%,
-      var(--color-electric) 17%,
-      #3d8bff 25%,
-      #8fc0ff 32%,
-      #d6e8ff 38%,
-      #f3f8ff 43%,
-      #ffffff 48%
+    radial-gradient(55% 40% at 0% 0%, rgb(58 28 196 / 0.55), rgb(58 28 196 / 0) 70%),
+    radial-gradient(55% 40% at 100% 0%, rgb(58 28 196 / 0.55), rgb(58 28 196 / 0) 70%),
+    radial-gradient(
+      110% 50% at 50% -10%,
+      #000000 0%,
+      #000000 36%,
+      #02031a 44%,
+      #0a0d5e 52%,
+      #1630c8 60%,
+      #0b5cff 67%,
+      #4a93ff 75%,
+      #a3ccff 83%,
+      #dcebff 90%,
+      #f6faff 96%,
+      #ffffff 100%
     );
+  transform-origin: 50% 0%;
+  animation: sky-set 1800ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes sky-set {
+  from {
+    opacity: 0;
+    transform: translateY(-22%) scale(1.18, 0.82);
+    filter: blur(28px) saturate(1.4);
+  }
+  55% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+/* Fine film grain over the sky, so the long blue ramps never band. */
+.hero-grain {
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mask-image: linear-gradient(to bottom, black 0%, black 30%, transparent 45%);
+  animation: rise-in 1800ms ease both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-sky {
+    animation: none;
+  }
 }
 
 /* Clipper / streamer switch thumb: a soft spring so it settles rather than snaps. */
