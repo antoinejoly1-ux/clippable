@@ -55,3 +55,10 @@ The site moved away from the dark Live Board to a **light, editorial scroll stor
 5. The clips dim and a giant **4.1M** view counter appears centered.
 6. Streamers: centered headline, one row of streamer icons, and a cursor that follows them one by one.
    Design rules are listed in `CLAUDE.md`.
+
+## Update: Nov 27, 2026 (round 3)
+
+- No "live stream" overlay: the stream goes full screen, then is cut straight into vertical strips.
+- The original stream stays behind the clips, under a **dark** veil. Statements are white.
+- **No horizontal movement:** the clips form a 4-wide (desktop) / 2-wide (mobile) grid that rises as you scroll.
+- Statement: **"Clipped without lifting a finger."**

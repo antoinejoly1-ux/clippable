@@ -8,17 +8,17 @@ import { formatViews, storyClips } from "@/lib/story";
 
 /*
  * Scroll timeline, as a fraction of the section's scroll distance.
- * Rhythm: motion → centered text → motion → centered text → motion → centered counter.
+ * Rhythm: stream fills the screen → cut into clips → centered statement → clips rise and post → centered counter.
+ * Everything moves vertically; the original stream stays behind, darkened.
  */
 const T = {
   copyOut: [0, 0.07],
-  expand: [0.01, 0.12],
-  textA: [0.11, 0.15, 0.19, 0.22],
-  cut: [0.22, 0.29],
-  morph: [0.27, 0.41],
-  clipsIn: [0.37, 0.46],
-  textB: [0.47, 0.51, 0.57, 0.6],
-  pan: [0.6, 0.86],
+  expand: [0.01, 0.13],
+  cut: [0.15, 0.23],
+  morph: [0.21, 0.37],
+  clipsIn: [0.33, 0.43],
+  textB: [0.44, 0.48, 0.55, 0.58],
+  pan: [0.57, 0.86],
   textC: [0.86, 0.9],
   count: [0.87, 0.97],
 } as const;
@@ -48,9 +48,7 @@ export function ClipStory() {
   const cueRef = useRef<HTMLDivElement>(null);
   const mediaRef = useRef<HTMLDivElement>(null);
   const heroVideoRef = useRef<HTMLVideoElement>(null);
-  const streamRef = useRef<HTMLDivElement>(null);
   const scrimRef = useRef<HTMLDivElement>(null);
-  const liveRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<SVGSVGElement>(null);
   const overlayPathRef = useRef<SVGPathElement>(null);
   const textRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -136,38 +134,40 @@ export function ClipStory() {
       const start = mobile ? { t: Math.min(copyBottom + 28, H - 220), l: 0 } : { t: 0, l: W * 0.5 };
       media.style.inset = `${lerp(start.t, 0, e)}px 0px 0px ${lerp(start.l, 0, e)}px`;
 
-      /* Text A, over the darkened live stream */
-      const a = win(p, T.textA);
-      if (scrimRef.current) scrimRef.current.style.opacity = String(a * 0.55);
-      if (liveRef.current) liveRef.current.style.opacity = String(1 - seg(p, T.cut));
-
-      /* ── 2 · Cut into vertical strips, which open into 9:16 clips ─────── */
+      /* ── 2 · Cut into vertical strips, which open into a grid of 9:16 clips ── */
       const c = easeInOut(seg(p, T.cut));
       const m = easeInOut(seg(p, T.morph));
-      const gStrip = lerp(0, mobile ? 4 : 8, c);
+      const gStrip = lerp(0, mobile ? 6 : 12, c);
       const sw = (W - gStrip * (N - 1)) / N;
 
-      const ch = Math.min(H * (mobile ? 0.64 : 0.7), (W - 48) * (16 / 9));
-      const cw = ch * (9 / 16);
-      const G = mobile ? 12 : 20;
-      const M = mobile ? 20 : Math.max(32, W * 0.04);
-      const rowW = N * cw + (N - 1) * G;
-      const panTravel = Math.max(0, rowW - (W - 2 * M));
+      const cols = mobile ? 2 : 4;
+      const rows = Math.ceil(N / cols);
+      const G = mobile ? 10 : 20;
+      const M = mobile ? 16 : Math.max(32, W * 0.05);
+      const topPad = mobile ? 84 : 104;
+      const botPad = mobile ? 24 : 40;
+      const cw = Math.min(
+        (H * (mobile ? 0.5 : 0.66) * 9) / 16,
+        (W - 2 * M - (cols - 1) * G) / cols,
+      );
+      const ch = (cw * 16) / 9;
+      const gridW = cols * cw + (cols - 1) * G;
+      const gridH = rows * ch + (rows - 1) * G;
+      const left = (W - gridW) / 2;
+      // The grid is taller than the screen, so it rises as you scroll: never sideways.
+      const travel = Math.max(0, gridH - (H - topPad - botPad));
       const pan = easeInOut(seg(p, T.pan));
-      const panX = -panTravel * pan;
-      const cardTop = (H - ch) / 2 + (mobile ? 16 : 24);
+      const baseTop = travel > 0 ? topPad : (H - gridH) / 2 + (topPad - botPad) / 2;
+      const top0 = baseTop - travel * pan;
       const radius = lerp(0, mobile ? 10 : 12, m);
-
       const fadeIn = seg(p, T.clipsIn);
-      const dim = Math.max(win(p, T.textB), seg(p, T.textC));
-      const tileOpacityBase = 1 - 0.84 * dim;
 
       let d = "";
       for (let i = 0; i < N; i++) {
-        const x0 = i * (sw + gStrip);
-        const x1 = M + i * (cw + G) + panX;
-        const x = lerp(x0, x1, m);
-        const y = lerp(0, cardTop, m);
+        const col = i % cols;
+        const row = Math.floor(i / cols);
+        const x = lerp(i * (sw + gStrip), left + col * (cw + G), m);
+        const y = lerp(0, top0 + row * (ch + G), m);
         const w = lerp(sw, cw, m);
         const h = lerp(H, ch, m);
         if (c > 0) d += roundedRect(x, y, w, h, radius);
@@ -179,11 +179,11 @@ export function ClipStory() {
         tile.style.width = `${w}px`;
         tile.style.height = `${h}px`;
         tile.style.borderRadius = `${radius}px`;
-        tile.style.opacity = String(o * tileOpacityBase);
+        tile.style.opacity = String(o);
         tile.style.visibility = o > 0 ? "visible" : "hidden";
 
         /* ── 3 · Each clip posts itself: Apple Pay-style ring and tick ──── */
-        const startAt = (i / N) * 0.82;
+        const startAt = (row / rows) * 0.7 + (col / cols) * 0.16;
         const done = pan > startAt + 0.02 || p >= T.pan[1];
         const check = checkRefs.current[i];
         if (check) {
@@ -202,17 +202,18 @@ export function ClipStory() {
           lastLabels[i] = label;
         }
       }
+      // Outside the clips, the original stream stays visible, darkened.
       overlayPath.setAttribute("d", c > 0 ? `M0 0H${W}V${H}H0Z${d}` : "");
+      overlayPath.setAttribute("fill-opacity", String(0.74 * c));
 
-      // Once the clips are in, the original stream is gone: what's behind them is the page.
-      const streamGone = fadeIn >= 1;
-      if (streamRef.current) streamRef.current.style.visibility = streamGone ? "hidden" : "visible";
-      media.style.backgroundColor = streamGone ? "var(--bg)" : "";
+      /* Statements sit on a darker veil over everything */
+      const dim = Math.max(win(p, T.textB), seg(p, T.textC));
+      if (scrimRef.current) scrimRef.current.style.opacity = String(dim * 0.64);
 
       /* ── Centered text ───────────────────────────────────────────────── */
       const b = win(p, T.textB);
       const cc = seg(p, T.textC);
-      [a, b, cc].forEach((v, idx) => {
+      [b, cc].forEach((v, idx) => {
         const el = textRefs.current[idx];
         if (!el) return;
         el.style.opacity = String(v);
@@ -226,7 +227,7 @@ export function ClipStory() {
       }
 
       if (!reduced) {
-        setHeroPlaying(inView && !streamGone);
+        setHeroPlaying(inView);
         setTilesPlaying(inView && p > T.cut[0] - 0.03);
       }
     };
@@ -300,9 +301,9 @@ export function ClipStory() {
       <section
         ref={sectionRef}
         aria-labelledby="hero-title"
-        className="relative h-[720svh] motion-reduce:h-svh"
+        className="relative h-[660svh] motion-reduce:h-svh"
       >
-        <span id="how" aria-hidden="true" className="absolute top-[205svh]" />
+        <span id="how" aria-hidden="true" className="absolute top-[110svh]" />
         <div ref={stageRef} className="sticky top-0 h-svh overflow-hidden bg-bg">
           {/* Hero copy */}
           <div
@@ -344,7 +345,7 @@ export function ClipStory() {
             ref={mediaRef}
             className="absolute top-[60svh] right-0 bottom-0 left-0 z-20 overflow-hidden bg-midnight md:top-0 md:left-1/2"
           >
-            <div ref={streamRef} className="absolute inset-0">
+            <div className="absolute inset-0">
               <Image
                 src="/media/hero-poster.webp"
                 alt=""
@@ -352,7 +353,7 @@ export function ClipStory() {
                 priority
                 fetchPriority="high"
                 sizes="(min-width: 768px) 50vw, 100vw"
-                className="object-cover"
+                className="object-cover object-[64%_50%] md:object-center"
               />
               <video
                 ref={heroVideoRef}
@@ -361,34 +362,25 @@ export function ClipStory() {
                 playsInline
                 preload="metadata"
                 aria-hidden="true"
-                className="absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-700 data-[ready=true]:opacity-100"
+                className="absolute inset-0 size-full object-cover object-[64%_50%] opacity-0 transition-opacity duration-700 data-[ready=true]:opacity-100 md:object-center"
               >
                 <source src="/media/hero.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"' />
                 <source src="/media/hero.h264.mp4" type="video/mp4" />
               </video>
             </div>
-            <div
-              ref={scrimRef}
-              aria-hidden="true"
-              className="absolute inset-0 bg-midnight opacity-0"
-            />
-            <div
-              ref={liveRef}
-              aria-hidden="true"
-              className="absolute bottom-5 left-5 flex items-center gap-2 font-mono text-[11px] tracking-[0.08em] text-white uppercase [text-shadow:0_1px_8px_rgb(0_0_0/0.5)]"
-            >
-              <span className="size-1.5 animate-live rounded-full bg-live" />
-              Live · watching
-            </div>
-
-            {/* The cuts: page-coloured everywhere except the clip windows */}
+            {/* The cuts: a dark veil everywhere except the clip windows */}
             <svg
               ref={overlayRef}
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 size-full"
               preserveAspectRatio="none"
             >
-              <path ref={overlayPathRef} fill="var(--bg)" fillRule="evenodd" />
+              <path
+                ref={overlayPathRef}
+                fill="var(--color-midnight)"
+                fillOpacity="0"
+                fillRule="evenodd"
+              />
             </svg>
 
             {storyClips.map((clip, i) => (
@@ -451,6 +443,12 @@ export function ClipStory() {
                 </div>
               </div>
             ))}
+
+            <div
+              ref={scrimRef}
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 bg-midnight opacity-0"
+            />
           </div>
 
           {/* Centered statements */}
@@ -461,43 +459,29 @@ export function ClipStory() {
               }}
               className="invisible col-start-1 row-start-1 text-white opacity-0"
             >
-              <p className="eyebrow text-white/75">01 — Live</p>
-              <h2 className="mt-4 text-[clamp(2.75rem,8vw,7.5rem)] leading-[0.95] font-medium tracking-[-0.045em] text-balance">
-                One live stream.
-              </h2>
-              <p className="mx-auto mt-5 max-w-[34ch] text-lg text-pretty text-white/85">
-                Clippable watches it in real time, every second, so you don&apos;t have to.
-              </p>
-            </div>
-            <div
-              ref={(el) => {
-                textRefs.current[1] = el;
-              }}
-              className="invisible col-start-1 row-start-1 text-fg opacity-0"
-            >
-              <p className="eyebrow text-royal">02 — Clipped</p>
+              <p className="eyebrow text-sky">Clipped</p>
               <h2 className="mx-auto mt-4 max-w-[13ch] text-[clamp(2.75rem,7.6vw,7rem)] leading-[0.95] font-medium tracking-[-0.045em] text-balance">
                 Clipped without lifting a finger.
               </h2>
-              <p className="mx-auto mt-5 max-w-[36ch] text-lg text-pretty text-fg-muted">
+              <p className="mx-auto mt-5 max-w-[36ch] text-lg text-pretty text-white/80">
                 The best moments are found, trimmed, captioned and scored. Vertical, ready for every
                 feed.
               </p>
             </div>
             <div
               ref={(el) => {
-                textRefs.current[2] = el;
+                textRefs.current[1] = el;
               }}
-              className="invisible col-start-1 row-start-1 text-fg opacity-0"
+              className="invisible col-start-1 row-start-1 text-white opacity-0"
             >
-              <p className="eyebrow text-royal">03 — Posted</p>
+              <p className="eyebrow text-sky">Posted</p>
               <p className="mt-3 text-[clamp(5rem,17vw,15rem)] leading-[0.85] font-medium tracking-[-0.06em] tabular-nums">
                 <span ref={counterRef}>0</span>
               </p>
               <h2 className="mx-auto mt-5 max-w-[22ch] text-[clamp(1.5rem,3vw,2.5rem)] leading-tight font-medium tracking-[-0.03em] text-balance">
                 views across eight clips. Posted everywhere.
               </h2>
-              <p className="mt-3 font-mono text-[11px] tracking-[0.08em] text-fg-muted uppercase">
+              <p className="mt-3 font-mono text-[11px] tracking-[0.08em] text-white/60 uppercase">
                 Example figures
               </p>
             </div>
@@ -510,22 +494,17 @@ export function ClipStory() {
   );
 }
 
-/** Reduced-motion version: the same three beats, laid out as a normal section. */
+/** Reduced-motion version: the same beats, laid out as a normal section. */
 function StaticStory() {
   return (
     <section
       aria-label="How Clippable works"
       className="hidden px-5 py-20 motion-reduce:block sm:px-10"
     >
-      <ol className="mx-auto grid max-w-6xl gap-8 sm:grid-cols-3">
+      <ol className="mx-auto grid max-w-6xl gap-8 sm:grid-cols-2">
         {[
-          ["01 — Live", "One live stream.", "Clippable watches it in real time."],
-          [
-            "02 — Clipped",
-            "Clipped without lifting a finger.",
-            "Found, trimmed, captioned and scored.",
-          ],
-          ["03 — Posted", "Posted everywhere.", "Vertical clips, ready for every feed."],
+          ["Clipped", "Clipped without lifting a finger.", "Found, trimmed, captioned and scored."],
+          ["Posted", "Posted everywhere.", "Vertical clips, ready for every feed."],
         ].map(([label, title, body]) => (
           <li key={label}>
             <p className="eyebrow text-royal">{label}</p>
