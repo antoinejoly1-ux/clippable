@@ -3,67 +3,62 @@
 import { useEffect } from "react";
 
 /**
- * Elastic end of page. Pull past the bottom (wheel or touch) and the page lifts a little with
- * rising resistance, showing a touch more of the footer sky. Let go and it springs back. Writes --pull (px) on <html>; CSS does the rest.
+ * Elastic end of page, iOS-style. Pulling past the bottom (wheel, trackpad or touch) lifts
+ * the page with rubber-band resistance, and a spring is always pulling it back: no waiting
+ * for the gesture to end, so trackpad momentum can't hold it up. It snaps home in ~0.4s with
+ * a small, lively overshoot. Writes --pull (px) on <html>; CSS lifts the page by it.
  */
 export function BottomSpring() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const root = document.documentElement;
-    const MAX = 90;
+    const MAX = 110;
+    const K = 420; // stiffness: how hard it pulls home
+    const C = 2 * 0.72 * Math.sqrt(K); // damping ratio 0.72: one quick, small overshoot
     let pull = 0;
     let vel = 0;
     let raf = 0;
-    let release = 0;
-    let touchY: number | null = null;
+    let last = 0;
+    let holding = false; // a finger is down and dragging
 
     const atBottom = () => window.innerHeight + window.scrollY >= root.scrollHeight - 2;
     const write = () => {
       root.style.setProperty("--pull", pull.toFixed(2));
-      root.dataset.pulling = pull > 0.5 ? "true" : "false";
+      const on = Math.abs(pull) > 0.3 ? "true" : "false";
+      if (root.dataset.pulling !== on) root.dataset.pulling = on;
     };
-    // Rubber band: each extra pixel moves the page less the further it's already pulled.
-    const stretch = (delta: number) => {
-      pull = Math.min(MAX, Math.max(0, pull + delta * 0.45 * (1 - pull / MAX)));
+    const step = (now: number) => {
+      const dt = Math.min(0.032, (now - last) / 1000);
+      last = now;
+      if (!holding) {
+        vel += (-K * pull - C * vel) * dt;
+        pull += vel * dt;
+      }
       write();
-    };
-    // Critically damped spring back to 0.
-    const settle = () => {
-      cancelAnimationFrame(raf);
-      let last = performance.now();
-      const step = (now: number) => {
-        const dt = Math.min(0.032, (now - last) / 1000);
-        last = now;
-        const k = 210;
-        const c = 2 * Math.sqrt(k);
-        vel += (-k * pull - c * vel) * dt;
-        pull = Math.max(0, pull + vel * dt);
+      if (holding || Math.abs(pull) > 0.2 || Math.abs(vel) > 2) raf = requestAnimationFrame(step);
+      else {
+        pull = vel = 0;
+        raf = 0;
         write();
-        if (pull > 0.2 || Math.abs(vel) > 1) raf = requestAnimationFrame(step);
-        else {
-          pull = 0;
-          vel = 0;
-          write();
-        }
-      };
-      raf = requestAnimationFrame(step);
+      }
     };
-    const scheduleRelease = () => {
-      window.clearTimeout(release);
-      release = window.setTimeout(settle, 140);
+    const run = () => {
+      if (!raf) {
+        last = performance.now();
+        raf = requestAnimationFrame(step);
+      }
+    };
+    // Rubber band: the further it's pulled, the less each input moves it.
+    const push = (delta: number) => {
+      const r = 1 - Math.min(1, Math.max(0, pull) / MAX);
+      pull = Math.min(MAX, pull + delta * 0.9 * r * r);
+      run();
     };
 
     const onWheel = (e: WheelEvent) => {
-      if (e.deltaY > 0 && atBottom()) {
-        cancelAnimationFrame(raf);
-        vel = 0;
-        stretch(e.deltaY);
-        scheduleRelease();
-      } else if (pull > 0 && e.deltaY < 0) {
-        stretch(e.deltaY * 1.6);
-        scheduleRelease();
-      }
+      if (e.deltaY > 0 && atBottom()) push(e.deltaY);
     };
+    let touchY: number | null = null;
     const onTouchStart = (e: TouchEvent) => {
       touchY = e.touches[0].clientY;
     };
@@ -72,15 +67,19 @@ export function BottomSpring() {
       const y = e.touches[0].clientY;
       const dy = touchY - y;
       touchY = y;
-      if ((dy > 0 && atBottom()) || pull > 0) {
-        cancelAnimationFrame(raf);
+      if (dy > 0 && atBottom()) {
+        holding = true;
         vel = 0;
-        stretch(dy);
+        push(dy * 1.4);
+      } else if (holding) {
+        pull = Math.max(0, pull + dy);
+        if (pull === 0) holding = false;
       }
     };
     const onTouchEnd = () => {
       touchY = null;
-      if (pull > 0) settle();
+      holding = false;
+      run();
     };
 
     window.addEventListener("wheel", onWheel, { passive: true });
@@ -92,7 +91,6 @@ export function BottomSpring() {
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("touchend", onTouchEnd);
-      window.clearTimeout(release);
       cancelAnimationFrame(raf);
       root.style.removeProperty("--pull");
     };

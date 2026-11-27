@@ -3,38 +3,29 @@ import { Button } from "@/components/button";
 import { site } from "@/lib/site";
 
 /*
- * Clipping campaigns: one premium blue card. Left, the pitch and a live count; right, a
- * fanned stack of campaign cards that spreads out on hover, hinting at what's inside.
- * TODO(client): real campaign names, counts and rates from the platform.
+ * Clipping campaigns: one premium blue banner. Left, the pitch and a live count; right, a
+ * fan of campaign posters hanging off the banner's edge, spreading on hover.
+ * TODO(client): real campaign names, counts and rates; licensed GTA VI key art.
  */
 const AVAILABLE = 12;
 
 const campaigns = [
   {
-    id: "gta",
-    title: "GTA VI reactions",
-    brand: "Gaming campaign",
-    rate: "$0.60 / 1K views",
-    image: "/media/pipeline/clip-14.webp",
-    avatar: null,
+    id: "n3on",
+    title: "N3on",
+    tag: "Streamer",
+    rate: "$0.40",
+    image: "/media/streamers/n3on-photo.webp",
   },
   {
     id: "kaicenat",
     title: "Kai Cenat",
-    brand: "Streamer campaign",
-    rate: "$0.50 / 1K views",
+    tag: "Streamer",
+    rate: "$0.50",
     image: "/media/streamers/kaicenat-photo.webp",
-    avatar: "/media/streamers/kaicenat.webp",
   },
-  {
-    id: "n3on",
-    title: "N3on",
-    brand: "Streamer campaign",
-    rate: "up to $0.40 / 1K views",
-    image: "/media/streamers/n3on-photo.webp",
-    avatar: "/media/streamers/n3on.webp",
-  },
-];
+  { id: "gta", title: "GTA VI", tag: "Game launch", rate: "$0.60", image: null },
+] as const;
 
 export function AudienceSection() {
   return (
@@ -52,70 +43,65 @@ export function AudienceSection() {
           Join clipping campaigns.
         </h2>
 
-        <div className="campaign-card relative isolate mt-12 grid overflow-hidden rounded-[20px] text-white sm:mt-16 sm:rounded-[28px] lg:grid-cols-[1fr_1.1fr]">
+        <div className="campaign-card relative isolate mt-12 overflow-hidden rounded-[20px] text-white sm:mt-16 sm:rounded-[28px]">
           <div aria-hidden="true" className="grain pointer-events-none absolute inset-0 -z-10" />
 
           {/* Pitch */}
-          <div className="flex flex-col justify-center p-8 sm:p-12 lg:p-16">
-            <p className="inline-flex w-fit items-center gap-2 rounded-full bg-white/12 px-3 py-1.5 text-sm font-medium ring-1 ring-white/20 backdrop-blur-md">
+          <div className="relative z-10 flex flex-col p-8 sm:p-12 lg:max-w-[54%] lg:py-14 lg:pl-16">
+            <p className="inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-sm font-medium ring-1 ring-white/20 backdrop-blur-md">
               <span className="relative flex size-2">
                 <span className="absolute inset-0 animate-ping rounded-full bg-success opacity-70" />
                 <span className="relative size-2 rounded-full bg-success" />
               </span>
-              {AVAILABLE} campaigns available
+              {AVAILABLE} campaigns open now
             </p>
-            <h3 className="mt-6 max-w-[16ch] text-[clamp(2rem,3.6vw,3.25rem)] leading-[1.02] font-medium tracking-[-0.04em]">
+            <h3 className="mt-6 max-w-[15ch] text-[clamp(2rem,3.4vw,3.1rem)] leading-[1.02] font-medium tracking-[-0.04em]">
               Get paid for every 1,000 views.
             </h3>
-            <p className="mt-4 max-w-[42ch] text-lg text-pretty text-white/75">
-              Pick a campaign, post the clips Clippable makes for you, and earn on every view. New
-              campaigns open every week.
+            <p className="mt-4 max-w-[40ch] text-lg text-pretty text-white/70">
+              Pick a campaign, post the clips Clippable makes for you, earn on every view.
             </p>
-            <div className="mt-9">
+            <div className="mt-8">
               <Button href={site.signupUrl} variant="inverse" size="lg">
                 Browse campaigns
               </Button>
             </div>
           </div>
 
-          {/* Fanned campaign cards */}
+          {/* Fan of posters, hanging off the right edge */}
           <div
             aria-hidden="true"
-            className="campaign-stack relative h-[24rem] sm:h-[28rem] lg:h-auto lg:min-h-[34rem]"
+            className="campaign-fan relative h-[19rem] sm:h-[22rem] lg:absolute lg:inset-y-0 lg:right-0 lg:h-auto lg:w-[52%]"
           >
             {campaigns.map((c, i) => (
               <div
                 key={c.id}
-                className="campaign-tile absolute top-1/2 left-1/2 w-[13.5rem] overflow-hidden rounded-[16px] bg-white text-fg shadow-[0_30px_60px_-24px_rgb(0_0_0/0.6)] sm:w-[15rem]"
-                style={{ "--i": i - 1 } as React.CSSProperties}
+                className="campaign-tile absolute aspect-[3/4] w-[11rem] overflow-hidden rounded-[18px] bg-midnight shadow-[0_40px_80px_-30px_rgb(0_0_0/0.7)] ring-1 ring-white/15 sm:w-[13rem] lg:w-[15.5rem]"
+                style={{ "--i": i } as React.CSSProperties}
               >
-                <div className="relative aspect-[4/5] bg-midnight">
-                  <Image src={c.image} alt="" fill sizes="240px" className="object-cover" />
-                  <span className="absolute top-3 left-3 rounded-[6px] bg-black/55 px-2 py-1 text-[11px] font-medium text-white backdrop-blur-md">
-                    {c.brand}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2.5 p-3.5">
-                  {c.avatar ? (
-                    <Image
-                      src={c.avatar}
-                      alt=""
-                      width={32}
-                      height={32}
-                      className="size-8 rounded-full object-cover"
-                    />
-                  ) : (
-                    <span className="flex size-8 items-center justify-center rounded-full bg-midnight text-[11px] font-bold text-white">
+                {c.image ? (
+                  <Image src={c.image} alt="" fill sizes="250px" className="object-cover" />
+                ) : (
+                  <div className="gta-poster absolute inset-0">
+                    <span className="absolute inset-x-0 top-[34%] text-center text-[4.5rem] leading-none font-black tracking-[-0.06em] text-white/95 italic">
                       VI
                     </span>
-                  )}
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold">{c.title}</span>
-                    <span className="block text-xs text-fg-muted">{c.rate}</span>
-                  </span>
-                  <span className="rounded-[6px] bg-electric px-2 py-1 text-[11px] font-semibold text-white">
-                    Join
-                  </span>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgb(0_0_0/0.75),transparent_50%)]" />
+                <div className="absolute inset-x-4 bottom-4 flex items-end justify-between">
+                  <div>
+                    <p className="text-[11px] font-medium tracking-[0.06em] text-white/70 uppercase">
+                      {c.tag}
+                    </p>
+                    <p className="mt-0.5 text-lg leading-tight font-semibold tracking-[-0.02em]">
+                      {c.title}
+                    </p>
+                  </div>
+                  <p className="rounded-[8px] bg-white px-2 py-1 text-xs font-semibold text-midnight">
+                    {c.rate}
+                    <span className="font-medium text-fg-muted">/1K</span>
+                  </p>
                 </div>
               </div>
             ))}

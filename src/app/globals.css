@@ -766,21 +766,31 @@ html[data-pulling="true"] .page-lift {
     radial-gradient(50% 60% at 0% 0%, rgb(109 175 248 / 0.45), transparent 70%),
     linear-gradient(135deg, #3d8bff 0%, var(--color-electric) 35%, #1630c8 65%, #0a0d5e 100%);
 }
-/* The stack fans out a little on hover. --i is -1, 0, 1. */
+/* A fan of posters pivoting from below, the front one hanging off the banner's right edge.
+   --i is 0, 1, 2 (back to front). Hover spreads the fan. */
 .campaign-tile {
-  translate: calc(-50% + var(--i) * 34%) calc(-50% + (1 - var(--i) * var(--i)) * -4%);
-  rotate: calc(var(--i) * 8deg);
-  z-index: calc(2 - var(--i) * var(--i));
+  left: calc(14% + var(--i) * 25%);
+  top: 50%;
+  z-index: var(--i);
+  transform-origin: 50% 140%;
+  translate: 0 calc(-50% + (var(--i) - 1) * (var(--i) - 1) * 6%);
+  rotate: calc((var(--i) - 1) * 9deg);
   transition:
-    translate 600ms var(--ease-out-expo),
-    rotate 600ms var(--ease-out-expo);
+    translate 700ms var(--ease-out-expo),
+    rotate 700ms var(--ease-out-expo),
+    left 700ms var(--ease-out-expo);
 }
 .campaign-card:hover .campaign-tile {
-  translate: calc(-50% + var(--i) * 56%) calc(-50% + (1 - var(--i) * var(--i)) * -8%);
-  rotate: calc(var(--i) * 11deg);
+  left: calc(10% + var(--i) * 30%);
+  rotate: calc((var(--i) - 1) * 13deg);
 }
-@media (max-width: 639px) {
+.gta-poster {
+  background:
+    radial-gradient(70% 40% at 50% 62%, #ffcf6b 0%, rgb(255 120 90 / 0.85) 35%, transparent 70%),
+    linear-gradient(180deg, #2a0f5c 0%, #8a1f8f 38%, #ff5f7e 62%, #ff9a5a 78%, #1a0a2e 100%);
+}
+@media (max-width: 1023px) {
   .campaign-tile {
-    translate: calc(-50% + var(--i) * 26%) -50%;
+    left: calc(8% + var(--i) * 30%);
   }
 }
