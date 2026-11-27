@@ -1,45 +1,52 @@
-import { LogoMark } from "@/components/logo";
+import { Logo } from "@/components/logo";
+import { site } from "@/lib/site";
 
+const links = [
+  { label: "How it works", href: "#steps" },
+  { label: "Workflow", href: "#live" },
+  { label: "Streamers", href: "#streamers" },
+  { label: "Contact", href: `mailto:${site.email}` },
+];
+
+/** Logo left, segmented nav centred, account actions right (after ctrl.xyz). */
 export function SiteHeader() {
   return (
-    <header className="pointer-events-none fixed inset-x-0 top-3 z-50 flex justify-center px-3">
-      <nav
-        aria-label="Main"
-        className="hero-rise pointer-events-auto flex h-12 items-center gap-1 rounded-[10px] bg-midnight/95 p-1.5 pl-3.5 text-white shadow-[0_12px_32px_-12px_rgb(1_8_43/0.55)] ring-1 ring-white/10 backdrop-blur-xl [animation-delay:900ms]"
-      >
+    <header className="hero-rise fixed inset-x-0 top-0 z-50 bg-bg/80 backdrop-blur-md [animation-delay:900ms]">
+      <div className="mx-auto grid h-16 max-w-[1360px] grid-cols-[1fr_auto] items-center gap-4 px-4 sm:h-20 sm:px-6 md:grid-cols-[1fr_auto_1fr]">
         <a
           href="#top"
-          className="mr-2 flex items-center gap-2 rounded-[6px] font-medium tracking-[-0.01em]"
+          className="justify-self-start text-xl sm:text-2xl"
           aria-label="Clippable, back to top"
         >
-          <LogoMark className="h-3.5 w-auto text-sky" />
-          <span>Clippable</span>
+          <Logo />
         </a>
-        <ul className="hidden items-center font-mono text-[11px] tracking-[0.08em] text-white/65 uppercase sm:flex">
-          <li>
-            <a
-              href="#steps"
-              className="rounded-[6px] px-3 py-2 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              How it works
-            </a>
-          </li>
-          <li>
-            <a
-              href="#streamers"
-              className="rounded-[6px] px-3 py-2 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              Streamers
-            </a>
-          </li>
-        </ul>
-        <a
-          href="#early-access"
-          className="ml-1 inline-flex h-9 items-center rounded-[6px] bg-white px-3.5 font-mono text-[11px] font-medium tracking-[0.08em] text-midnight uppercase transition-colors hover:bg-sky"
-        >
-          Get access
-        </a>
-      </nav>
+        <nav aria-label="Main" className="hidden md:block">
+          <ul className="flex h-11 items-center rounded-[10px] bg-bg-subtle px-1.5 text-[15px] font-medium text-fg">
+            {links.map((l, i) => (
+              <li key={l.label} className="flex items-center">
+                {i > 0 && <span aria-hidden="true" className="h-3.5 w-px bg-border" />}
+                <a href={l.href} className="rounded-[7px] px-4 py-2 transition-colors hover:bg-bg">
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <div className="flex items-center gap-1.5 justify-self-end sm:gap-2">
+          <a
+            href={site.loginUrl}
+            className="hidden h-11 items-center rounded-full px-4 text-[15px] font-medium text-fg transition-colors hover:bg-bg-subtle sm:inline-flex"
+          >
+            Log in
+          </a>
+          <a
+            href={site.signupUrl}
+            className="inline-flex h-10 items-center rounded-full bg-midnight px-5 text-[15px] font-medium text-white transition-transform duration-300 ease-out-expo hover:-translate-y-px sm:h-11"
+          >
+            Create account
+          </a>
+        </div>
+      </div>
     </header>
   );
 }

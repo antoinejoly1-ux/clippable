@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { storyClips } from "@/lib/story";
+import { streamers } from "@/lib/streamers";
 
 /*
  * Hero + scroll story.
@@ -14,15 +15,17 @@ import { storyClips } from "@/lib/story";
  *         White throughout; everything moves vertically.
  */
 const T = {
-  copyOut: [0, 0.12],
-  grow: [0, 0.3],
-  cut: [0.33, 0.45],
-  morph: [0.44, 0.72],
-  clipsIn: [0.52, 0.74],
-  checks: [0.74, 0.96],
+  copyOut: [0, 0.1],
+  grow: [0, 0.24],
+  cut: [0.26, 0.35],
+  morph: [0.34, 0.52],
+  clipsIn: [0.4, 0.54],
+  send: [0.54, 0.74],
+  split: [0.76, 0.88],
+  text: [0.82, 0.92],
 } as const;
 
-const INTRO_MS = 2700; // how long the load animation keeps the player glued to its slot
+const INTRO_MS = 3200; // how long the load animation keeps the player glued to its slot
 
 type Range = readonly [number, number];
 const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -68,6 +71,7 @@ export function ClipStory() {
   const overlayPathRef = useRef<SVGPathElement>(null);
   const tileRefs = useRef<(HTMLDivElement | null)[]>([]);
   const tileVideoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const textRef = useRef<HTMLParagraphElement>(null);
   const checkRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
@@ -156,7 +160,7 @@ export function ClipStory() {
 
       const g = easeInOut(seg(p, T.grow));
       const pad = mobile ? 12 : 24;
-      const top = mobile ? 76 : 88;
+      const top = mobile ? 76 : 96;
       // "Full screen": the whole viewport below the nav, minus a small margin.
       const full = { x: pad, y: top, w: W - 2 * pad, h: H - top - pad };
       const bx = lerp(slotRect.x, full.x, g);
@@ -183,25 +187,33 @@ export function ClipStory() {
 
       /* ── 3 · Each piece becomes a vertical 9:16 clip ─────────────────── */
       const G = mobile ? 10 : 18;
-      const clipH = Math.min(
+      const clipH0 = Math.min(
         (full.h - G * (rows - 1)) / rows,
         (((full.w - G * (cols - 1)) / cols) * 16) / 9,
       );
+      /* ── 5 · Then the clips shrink a little and the rows part around a statement ── */
+      const sp = easeInOut(seg(p, T.split));
+      const TG = mobile ? 96 : 150; // the gap that opens between the middle rows
+      const clipH1 = Math.min(clipH0 * 0.84, (full.h - G * (rows - 1) - TG) / rows);
+      const clipH = lerp(clipH0, clipH1, sp);
+      const extra = TG * sp;
       const clipW = (clipH * 9) / 16;
       const gridW = cols * clipW + (cols - 1) * G;
-      const gridH = rows * clipH + (rows - 1) * G;
+      const gridH = rows * clipH + (rows - 1) * G + extra;
       const gx = (W - gridW) / 2;
       const gy = full.y + (full.h - gridH) / 2;
+      const half = rows / 2;
       const radius = lerp(mobile ? 8 : 12, mobile ? 10 : 12, m);
       const fadeIn = seg(p, T.clipsIn);
-      const k = seg(p, T.checks);
+      const k = seg(p, T.send);
 
       let d = "";
       for (let i = 0; i < N; i++) {
         const col = i % cols;
         const row = Math.floor(i / cols);
+        const rowY = gy + row * (clipH + G) + (row >= half ? extra : 0);
         const x = lerp(full.x + col * (pw + cutGap), gx + col * (clipW + G), m);
-        const y = lerp(full.y + row * (ph + cutGap), gy + row * (clipH + G), m);
+        const y = lerp(full.y + row * (ph + cutGap), rowY, m);
         const w = lerp(pw, clipW, m);
         const h = lerp(ph, clipH, m);
         if (c > 0) d += roundedRect(x, y, w, h, radius);
@@ -219,11 +231,22 @@ export function ClipStory() {
         const tv = tileVideoRefs.current[i];
         if (tv) tv.style.opacity = String(o);
 
-        // Apple Pay-style tick as each finished clip lands.
-        const done = k > (i / N) * 0.8 + 0.05;
+        /* ── 4 · Posting: a paper plane flies off, then a green check ──── */
+        const startAt = (i / N) * 0.7;
+        const state = k > startAt + 0.14 ? "done" : k > startAt ? "sending" : "idle";
         const check = checkRefs.current[i];
-        if (check && check.dataset.done !== String(done)) check.dataset.done = String(done);
+        if (check && check.dataset.state !== state) check.dataset.state = state;
       }
+
+      const text = textRef.current;
+      if (text) {
+        const t = seg(p, T.text);
+        const midY = gy + half * clipH + (half - 1) * G + (G + extra) / 2;
+        text.style.opacity = String(t);
+        text.style.transform = `translate3d(0, ${midY}px, 0) translateY(-50%) scale(${lerp(0.96, 1, t)})`;
+        text.style.visibility = t > 0 ? "visible" : "hidden";
+      }
+
       // White cuts: the page shows through everywhere except the pieces.
       overlayPath.setAttribute("d", c > 0 ? `M0 0H${W}V${H}H0Z${d}` : "");
 
@@ -319,7 +342,7 @@ export function ClipStory() {
       <section
         ref={sectionRef}
         aria-labelledby="hero-title"
-        className="relative h-[380svh] motion-reduce:h-svh"
+        className="relative h-[520svh] motion-reduce:h-svh"
       >
         <span id="how" aria-hidden="true" className="absolute top-[120svh]" />
         <div ref={stageRef} className="sticky top-0 h-svh overflow-hidden bg-bg">
@@ -391,14 +414,15 @@ export function ClipStory() {
                   ref={(el) => {
                     checkRefs.current[i] = el;
                   }}
-                  data-done="false"
-                  className="pay-check absolute top-1/2 left-1/2 z-10 -mt-7 -ml-7 size-14 md:-mt-8 md:-ml-8 md:size-16"
+                  data-state="idle"
+                  className="send-check absolute top-1/2 left-1/2 z-10 -mt-6 -ml-6 size-12 md:-mt-7 md:-ml-7 md:size-14"
                 >
-                  <svg viewBox="0 0 64 64" className="size-full overflow-visible">
-                    <circle className="halo" cx="32" cy="32" r="30" />
-                    <circle className="fill" cx="32" cy="32" r="30" />
-                    <circle className="ring" cx="32" cy="32" r="30" pathLength={1} />
-                    <path className="tick" d="M20 33.5 28 41.5 45 24" pathLength={1} />
+                  <span className="send-disc" />
+                  <svg viewBox="0 0 24 24" className="send-plane" fill="currentColor">
+                    <path d="M21.7 2.3 2.9 9.6c-.8.3-.8 1.4 0 1.7l6.6 2.3 2.3 6.6c.3.8 1.4.8 1.7 0L21.7 2.3Zm-10.4 11L19 5.6l-6.3 8.9-1.4-1.2Z" />
+                  </svg>
+                  <svg viewBox="0 0 24 24" className="send-tick" fill="none">
+                    <path d="m6 12.5 4 4 8-9" pathLength={1} />
                   </svg>
                 </div>
               </div>
@@ -408,7 +432,7 @@ export function ClipStory() {
           {/* Hero copy, centred. The player sits in the headline's slot. */}
           <div
             ref={copyRef}
-            className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center px-4 pt-14 text-center"
+            className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center px-4 pt-20 text-center"
           >
             <p className="hero-rise text-[clamp(1.05rem,1.6vw,1.5rem)] leading-tight font-medium tracking-[-0.02em] text-fg [animation-delay:120ms]">
               Watch less.
@@ -418,41 +442,64 @@ export function ClipStory() {
             <h1
               id="hero-title"
               aria-label="Make clips instantly."
-              className="mt-6 flex flex-wrap items-center justify-center text-[clamp(3.25rem,8.4vw,9.5rem)] leading-[0.9] font-semibold tracking-[-0.055em] text-fg"
+              className="mt-6 text-[clamp(3.25rem,8.4vw,9.5rem)] leading-[0.9] font-semibold tracking-[-0.055em] text-fg"
             >
-              <Letters text="Make clips" delay={260} />
-              <span
-                ref={slotRef}
-                aria-hidden="true"
-                className="hero-slot inline-block h-[0.8em] overflow-hidden rounded-[0.12em] bg-midnight"
-              />
-              <span className="inline-flex items-baseline">
-                <Letters text="instantly" delay={700} />
-                <span aria-hidden="true" className="hero-dot inline-block">
-                  .
+              {/* A dot leads the reveal left to right, then becomes the full stop (desktop). */}
+              <span className="hero-reveal relative inline-flex flex-wrap items-center justify-center">
+                <Letters text="Make clips" delay={260} />
+                <span
+                  ref={slotRef}
+                  aria-hidden="true"
+                  className="hero-slot inline-block h-[0.8em] overflow-hidden rounded-[0.12em] bg-midnight"
+                />
+                <span className="inline-flex items-baseline">
+                  <Letters text="instantly" delay={700} />
+                  <span aria-hidden="true" className="hero-dot inline-block">
+                    .
+                  </span>
+                </span>
+                <span aria-hidden="true" className="hero-cover">
+                  <span className="hero-cover-dot" />
                 </span>
               </span>
             </h1>
+
             <a
               href="#early-access"
-              className="hero-rise pointer-events-auto mt-10 inline-flex h-14 items-center gap-3 rounded-[10px] bg-electric px-7 text-lg font-medium text-white shadow-[0_16px_40px_-16px_rgb(0_97_255/0.7)] ring-1 ring-ink/15 transition-transform duration-300 ease-out-expo [animation-delay:1100ms] hover:-translate-y-0.5"
+              className="hero-rise pointer-events-auto mt-10 inline-flex h-14 items-center rounded-full bg-electric px-9 text-lg font-semibold text-white shadow-[0_18px_40px_-18px_rgb(0_97_255/0.75)] transition-[transform,background-color] duration-300 ease-out-expo [animation-delay:1500ms] hover:-translate-y-0.5 hover:bg-royal sm:h-16 sm:px-10 sm:text-xl"
             >
               Get early access
-              <svg
-                viewBox="0 0 20 20"
-                className="size-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                aria-hidden="true"
-              >
-                <path
-                  d="M4 10h11M11 5.5 15.5 10 11 14.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
             </a>
+
+            <div className="hero-rise mt-7 flex items-center gap-3 [animation-delay:1750ms]">
+              <span aria-hidden="true" className="flex -space-x-2">
+                {streamers.slice(0, 5).map((st) => (
+                  <Image
+                    key={st.id}
+                    src={st.avatar}
+                    alt=""
+                    width={32}
+                    height={32}
+                    className="size-8 rounded-full object-cover ring-2 ring-bg"
+                  />
+                ))}
+              </span>
+              <p className="text-left text-sm leading-snug text-fg-muted">
+                <span className="font-medium text-fg">100+ streamer campaigns</span>
+                <br />
+                on Kick and Twitch
+              </p>
+            </div>
+          </div>
+
+          {/* The statement that appears as the rows part */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-30 px-6 text-center">
+            <p
+              ref={textRef}
+              className="invisible text-[clamp(1.6rem,4vw,3.5rem)] leading-tight font-medium tracking-[-0.04em] text-balance text-fg opacity-0"
+            >
+              Made without lifting a finger.
+            </p>
           </div>
 
           <div

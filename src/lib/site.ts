@@ -12,6 +12,9 @@ export const site = {
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000")
   ).replace(/\/$/, ""),
   email: "business@clippable.net",
+  // TODO(client): point these at the app once accounts exist.
+  signupUrl: "#early-access",
+  loginUrl: "#early-access",
   locale: "en_US",
   // Only index when explicitly enabled on the production deployment.
   indexable: process.env.SITE_INDEXABLE === "true",

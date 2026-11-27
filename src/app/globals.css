@@ -180,82 +180,57 @@
 }
 
 /*
- * Apple Pay-style completion: the ring draws itself, the disc fills,
- * the tick strokes in, then a soft pulse. Driven by [data-done].
+ * Posting a clip: a white disc with a paper plane pops in, the plane flies off up and
+ * to the right, and the disc turns green as a tick strokes in. Driven by [data-state].
  */
-.pay-check {
+.send-check {
   opacity: 0;
-  transition: opacity 200ms ease;
+  transform: scale(0.6);
+  transition:
+    opacity 200ms ease,
+    transform 420ms var(--ease-spring);
 }
-.pay-check[data-done="true"] {
+.send-check:not([data-state="idle"]) {
   opacity: 1;
+  transform: scale(1);
 }
-.pay-check svg * {
-  transform-box: fill-box;
-  transform-origin: center;
+.send-check .send-disc {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: var(--color-white);
+  box-shadow: 0 10px 24px -10px rgb(1 8 43 / 0.55);
+  transition: background-color 260ms ease 120ms;
 }
-.pay-check .halo {
-  fill: rgb(1 8 43 / 0.28);
+.send-check[data-state="done"] .send-disc {
+  background: var(--color-success);
 }
-.pay-check .ring {
-  fill: none;
+.send-check .send-plane {
+  position: absolute;
+  inset: 26%;
+  color: var(--color-electric);
+  transition:
+    transform 560ms cubic-bezier(0.55, 0, 0.75, 0),
+    opacity 380ms ease 160ms;
+}
+.send-check[data-state="done"] .send-plane {
+  transform: translate(140%, -180%) rotate(-12deg) scale(0.8);
+  opacity: 0;
+}
+.send-check .send-tick {
+  position: absolute;
+  inset: 22%;
   stroke: var(--color-white);
   stroke-width: 3;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  transform: rotate(-90deg);
-  transition: stroke-dashoffset 200ms ease;
-}
-.pay-check .fill {
-  fill: var(--color-electric);
-  transform: scale(0);
-  transition: transform 200ms ease;
-}
-.pay-check .tick {
-  fill: none;
-  stroke: var(--color-white);
-  stroke-width: 4.5;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  transition: stroke-dashoffset 150ms ease;
+  transition: stroke-dashoffset 120ms ease;
 }
-.pay-check[data-done="true"] .ring {
+.send-check[data-state="done"] .send-tick {
   stroke-dashoffset: 0;
-  transition: stroke-dashoffset 560ms cubic-bezier(0.65, 0, 0.35, 1);
-}
-.pay-check[data-done="true"] .fill {
-  transform: scale(1);
-  transition: transform 420ms var(--ease-spring) 470ms;
-}
-.pay-check[data-done="true"] .tick {
-  stroke-dashoffset: 0;
-  transition: stroke-dashoffset 340ms cubic-bezier(0.65, 0, 0.35, 1) 720ms;
-}
-.pay-check[data-done="true"] .halo {
-  animation: pay-pulse 900ms var(--ease-out-expo) 820ms both;
-}
-/* On light backgrounds the ring draws in brand blue. */
-.pay-check.on-light .halo {
-  fill: color-mix(in oklab, var(--color-electric) 22%, transparent);
-}
-.pay-check.on-light .ring {
-  stroke: var(--color-electric);
-  stroke-width: 4;
-}
-.pay-check.on-light .tick {
-  stroke-width: 5.5;
-}
-@keyframes pay-pulse {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1.7);
-    opacity: 0;
-  }
+  transition: stroke-dashoffset 360ms cubic-bezier(0.65, 0, 0.35, 1) 260ms;
 }
 @keyframes scroll-cue {
   0% {
@@ -433,7 +408,11 @@
   }
 }
 .hero-rise {
-  animation: rise-in 900ms var(--ease-out-expo) both;
+  /* Longhands, so an animation-delay utility on the element still applies. */
+  animation-name: rise-in;
+  animation-duration: 900ms;
+  animation-timing-function: var(--ease-out-expo);
+  animation-fill-mode: both;
 }
 @keyframes rise-in {
   from {
@@ -444,10 +423,76 @@
 .hero-slot {
   width: calc(0.8em * 4 / 3);
   margin-inline: 0.13em; /* stays as the word space while the slot is closed */
-  animation: slot-open 1000ms cubic-bezier(0.34, 1.4, 0.64, 1) 1350ms both;
+  animation: slot-open 1000ms cubic-bezier(0.34, 1.4, 0.64, 1) 1900ms both;
 }
 @keyframes slot-open {
   from {
     width: 0;
   }
+}
+
+/*
+ * Desktop reveal (as on ctrl.xyz): a dot appears at the left, then travels right on the
+ * leading edge of a page-coloured cover, uncovering the headline, and lands as the full
+ * stop. Phones keep the letter-by-letter reveal, since the headline wraps there.
+ */
+.hero-cover,
+.hero-cover-dot {
+  display: none;
+}
+@media (min-width: 768px) {
+  .hero-reveal .hero-letter {
+    animation: none;
+  }
+  .hero-reveal .hero-dot {
+    animation: period-in 1ms linear 1760ms both;
+  }
+  .hero-cover {
+    display: block;
+    position: absolute;
+    top: -0.12em;
+    bottom: -0.18em;
+    left: -0.06em;
+    right: -0.02em;
+    background: var(--bg);
+    pointer-events: none;
+    animation: cover-run 1200ms cubic-bezier(0.7, 0, 0.25, 1) 560ms both;
+  }
+  .hero-cover-dot {
+    display: block;
+    position: absolute;
+    left: 0;
+    bottom: 0.36em;
+    width: 0.16em;
+    height: 0.16em;
+    border-radius: 50%;
+    background: var(--fg);
+    transform: translateX(-50%);
+    animation: dot-in 420ms var(--ease-spring) 180ms both;
+  }
+}
+@keyframes cover-run {
+  0% {
+    transform: translateX(0);
+  }
+  99% {
+    transform: translateX(100%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+@keyframes period-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Clips floating at the hero's sides. */
+.hero-float {
+  animation:
+    rise-in 900ms var(--ease-out-expo) both,
+    float-y 6s ease-in-out 900ms infinite;
 }
