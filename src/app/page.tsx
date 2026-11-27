@@ -1,3 +1,4 @@
+import { AgentsSection } from "@/components/agents/agents-section";
 import { FinalCta } from "@/components/final-cta";
 import { JsonLd } from "@/components/json-ld";
 import { LiveSection } from "@/components/live/live-section";
@@ -29,6 +30,7 @@ export default function Home() {
         <StreamerSection />
         <LiveSection />
         <StepsSection />
+        <AgentsSection />
         <FinalCta />
       </main>
       <SiteFooter />

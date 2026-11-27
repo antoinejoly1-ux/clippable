@@ -92,6 +92,8 @@ export function ClipStory() {
     let W = 0;
     let H = 0;
     let mobile = false;
+    let short = false;
+    let disposed = false;
     let slotRect = { x: 0, y: 0, w: 0, h: 0, r: 0 };
     let lastP = -1;
     let raf = 0;
@@ -131,8 +133,13 @@ export function ClipStory() {
     };
 
     const measureSlot = () => {
+      // Measure with the copy's scroll transform removed, so the slot is always found
+      // where it sits at rest, even if the page loads part-way down.
+      const prev = copy.style.transform;
+      copy.style.transform = "none";
       const s = stage.getBoundingClientRect();
       const r = slot.getBoundingClientRect();
+      copy.style.transform = prev;
       slotRect = {
         x: r.left - s.left,
         y: r.top - s.top,
@@ -144,7 +151,9 @@ export function ClipStory() {
     const measure = () => {
       W = stage.clientWidth;
       H = stage.clientHeight;
-      mobile = W < 768;
+      // Grid shape follows the screen's shape, so landscape phones get the wide layout.
+      mobile = W < 768 && H >= W;
+      short = H < 520;
       overlay.setAttribute("viewBox", `0 0 ${W} ${H}`);
       measureSlot();
       lastP = -1;
@@ -160,7 +169,7 @@ export function ClipStory() {
 
       const g = easeInOut(seg(p, T.grow));
       const pad = mobile ? 12 : 24;
-      const top = mobile ? 76 : 96;
+      const top = short ? 60 : mobile ? 76 : 96;
       // "Full screen": the whole viewport below the nav, minus a small margin.
       const full = { x: pad, y: top, w: W - 2 * pad, h: H - top - pad };
       const bx = lerp(slotRect.x, full.x, g);
@@ -174,7 +183,10 @@ export function ClipStory() {
       box.style.borderRadius = `${br}px`;
       box.style.opacity = slotRect.w > 1 ? "1" : "0";
       // The slot's dark fill is only a stand-in until the player is drawn over it.
-      slot.style.backgroundColor = "transparent";
+      if (slotRect.w > 1) {
+        slot.style.backgroundColor = "transparent";
+        slot.style.backgroundImage = "none";
+      }
 
       /* ── 2 · Cut into a grid (2 rows × 4 across; 4 × 2 on phones) ─────── */
       const cols = mobile ? 2 : 4;
@@ -193,7 +205,7 @@ export function ClipStory() {
       );
       /* ── 5 · Then the clips shrink a little and the rows part around a statement ── */
       const sp = easeInOut(seg(p, T.split));
-      const TG = mobile ? 96 : 150; // the gap that opens between the middle rows
+      const TG = short ? 56 : mobile ? 96 : 150; // the gap that opens between the middle rows
       const clipH1 = Math.min(clipH0 * 0.84, (full.h - G * (rows - 1) - TG) / rows);
       const clipH = lerp(clipH0, clipH1, sp);
       const extra = TG * sp;
@@ -235,7 +247,13 @@ export function ClipStory() {
         const startAt = (i / N) * 0.7;
         const state = k > startAt + 0.14 ? "done" : k > startAt ? "sending" : "idle";
         const check = checkRefs.current[i];
-        if (check && check.dataset.state !== state) check.dataset.state = state;
+        if (check) {
+          if (check.dataset.state !== state) check.dataset.state = state;
+          // Never wider than ~half the tile, so it fits on small or short screens.
+          const size = Math.min(mobile ? 48 : 56, w * 0.5);
+          check.style.width = check.style.height = `${size}px`;
+          check.style.margin = `${-size / 2}px 0 0 ${-size / 2}px`;
+        }
       }
 
       const text = textRef.current;
@@ -322,11 +340,13 @@ export function ClipStory() {
     introRaf = requestAnimationFrame(intro);
     window.addEventListener("scroll", schedule, { passive: true });
     document.fonts?.ready.then(() => {
+      if (disposed) return;
       measure();
       schedule();
     });
 
     return () => {
+      disposed = true;
       window.removeEventListener("scroll", schedule);
       reducedQuery.removeEventListener("change", onReducedChange);
       heroVideo.removeEventListener("playing", showVideo);
@@ -356,7 +376,7 @@ export function ClipStory() {
                 src="/media/hero-poster.webp"
                 alt=""
                 fill
-                priority
+                preload
                 fetchPriority="high"
                 sizes="(min-width: 768px) 70vw, 100vw"
                 className="object-cover object-[64%_50%] md:object-center"
@@ -415,7 +435,7 @@ export function ClipStory() {
                     checkRefs.current[i] = el;
                   }}
                   data-state="idle"
-                  className="send-check absolute top-1/2 left-1/2 z-10 -mt-6 -ml-6 size-12 md:-mt-7 md:-ml-7 md:size-14"
+                  className="send-check absolute top-1/2 left-1/2 z-10 size-12"
                 >
                   <span className="send-disc" />
                   <svg viewBox="0 0 24 24" className="send-plane" fill="currentColor">
@@ -432,7 +452,7 @@ export function ClipStory() {
           {/* Hero copy, centred. The player sits in the headline's slot. */}
           <div
             ref={copyRef}
-            className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center px-4 pt-20 text-center"
+            className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center px-4 pt-20 text-center [@media(max-height:520px)]:pt-14"
           >
             <p className="hero-rise text-[clamp(1.05rem,1.6vw,1.5rem)] leading-tight font-medium tracking-[-0.02em] text-fg [animation-delay:120ms]">
               Watch less.
@@ -442,7 +462,7 @@ export function ClipStory() {
             <h1
               id="hero-title"
               aria-label="Make clips instantly."
-              className="mt-6 text-[clamp(3.25rem,8.4vw,9.5rem)] leading-[0.9] font-semibold tracking-[-0.055em] text-fg"
+              className="mt-6 text-[clamp(2.5rem,min(8.4vw,15svh),9.5rem)] leading-[0.9] font-semibold tracking-[-0.055em] text-fg [@media(max-height:520px)]:mt-3"
             >
               {/* A dot leads the reveal left to right, then becomes the full stop (desktop). */}
               <span className="hero-reveal relative inline-flex flex-wrap items-center justify-center">
@@ -450,7 +470,7 @@ export function ClipStory() {
                 <span
                   ref={slotRef}
                   aria-hidden="true"
-                  className="hero-slot inline-block h-[0.8em] overflow-hidden rounded-[0.12em] bg-midnight"
+                  className="hero-slot inline-block h-[0.8em] overflow-hidden rounded-[0.12em] bg-midnight bg-[url(/media/hero-poster.webp)] bg-cover bg-center"
                 />
                 <span className="inline-flex items-baseline">
                   <Letters text="instantly" delay={700} />
@@ -466,12 +486,12 @@ export function ClipStory() {
 
             <a
               href="#early-access"
-              className="hero-rise pointer-events-auto mt-10 inline-flex h-14 items-center rounded-full bg-electric px-9 text-lg font-semibold text-white shadow-[0_18px_40px_-18px_rgb(0_97_255/0.75)] transition-[transform,background-color] duration-300 ease-out-expo [animation-delay:1500ms] hover:-translate-y-0.5 hover:bg-royal sm:h-16 sm:px-10 sm:text-xl"
+              className="hero-rise pointer-events-auto mt-10 inline-flex h-14 items-center rounded-full bg-electric px-9 text-lg font-semibold text-white shadow-[0_18px_40px_-18px_rgb(0_97_255/0.75)] transition-[transform,background-color] duration-300 ease-out-expo [animation-delay:1500ms] hover:-translate-y-0.5 hover:bg-royal sm:h-16 sm:px-10 sm:text-xl [@media(max-height:520px)]:mt-5"
             >
               Get early access
             </a>
 
-            <div className="hero-rise mt-7 flex items-center gap-3 [animation-delay:1750ms]">
+            <div className="hero-rise mt-7 flex items-center gap-3 [animation-delay:1750ms] [@media(max-height:520px)]:hidden">
               <span aria-hidden="true" className="flex -space-x-2">
                 {streamers.slice(0, 5).map((st) => (
                   <Image
@@ -526,6 +546,9 @@ function StaticStory() {
       aria-label="Clips made instantly"
       className="hidden px-5 py-16 motion-reduce:block sm:px-10"
     >
+      <p className="mx-auto mb-10 max-w-[18ch] text-center text-3xl font-medium tracking-[-0.04em] text-balance sm:text-5xl">
+        Made without lifting a finger.
+      </p>
       <div className="mx-auto grid max-w-5xl grid-cols-2 gap-3 sm:grid-cols-4">
         {storyClips.map((clip) => (
           <div

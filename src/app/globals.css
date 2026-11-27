@@ -82,6 +82,7 @@
   --fg: var(--color-ink);
   --fg-muted: #5b5f6e;
   --fg-faint: #d6d9e1;
+  --fg-subtle: #8b91a0;
   --border: #e4e8f2;
   --accent: var(--color-royal);
   --accent-fg: var(--color-white);
@@ -98,6 +99,7 @@
   --color-fg: var(--fg);
   --color-fg-muted: var(--fg-muted);
   --color-fg-faint: var(--fg-faint);
+  --color-fg-subtle: var(--fg-subtle);
   --color-border: var(--border);
   --color-accent: var(--accent);
   --color-accent-fg: var(--accent-fg);
@@ -246,6 +248,7 @@
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
@@ -270,7 +273,7 @@
 
 @keyframes clip-pop {
   from {
-    transform: scale(0.6);
+    scale: 0.6;
     opacity: 0;
   }
 }
@@ -330,11 +333,19 @@
     flex-direction: row;
   }
   .xcard {
-    flex: 0 0 calc((100% - 2 * var(--gap)) / 3);
+    flex: 0 1 calc((100% - 2 * var(--gap)) / 3);
     min-width: 0;
     transition: flex-basis 720ms var(--spring);
   }
-  .xcards:has(.xcard:is(:hover, :focus-within)) .xcard {
+  /* Hover, or keyboard focus, opens a card. A mouse click no longer pins one open. */
+  .xcards:has(.xcard:is(:hover, :focus-visible)) .xcard {
+    flex-basis: calc((100% - 2 * var(--gap)) * 0.25);
+  }
+  .xcards:has(.xcard:is(:hover, :focus-visible)) .xcard:is(:hover, :focus-visible) {
+    flex-basis: calc((100% - 2 * var(--gap)) * 0.5);
+  }
+  /* When the pointer is on another card, it wins over leftover keyboard focus. */
+  .xcards:has(.xcard:hover) .xcard:focus-visible:not(:hover) {
     flex-basis: calc((100% - 2 * var(--gap)) * 0.25);
   }
   /* Titles: the open card's title grows, the others shrink (Flora's 02 / 03 do this). */
@@ -342,15 +353,14 @@
     transform-origin: 0 0;
     transition: transform 720ms var(--spring);
   }
-  .xcards:has(.xcard:is(:hover, :focus-within)) .xcard .xcard-title {
+  .xcards:has(.xcard:is(:hover, :focus-visible)) .xcard .xcard-title {
     transform: scale(0.74);
   }
-  .xcards:has(.xcard:is(:hover, :focus-within)) .xcard:is(:hover, :focus-within) .xcard-title {
+  .xcards:has(.xcard:is(:hover, :focus-visible)) .xcard:is(:hover, :focus-visible) .xcard-title {
     transform: scale(1.12);
   }
-  /* Same :has() prefix so it outranks the rule above. */
-  .xcards:has(.xcard:is(:hover, :focus-within)) .xcard:is(:hover, :focus-within) {
-    flex-basis: calc((100% - 2 * var(--gap)) * 0.5);
+  .xcards:has(.xcard:hover) .xcard:focus-visible:not(:hover) .xcard-title {
+    transform: scale(0.74);
   }
 }
 
@@ -495,4 +505,95 @@
   animation:
     rise-in 900ms var(--ease-out-expo) both,
     float-y 6s ease-in-out 900ms infinite;
+}
+
+/* Demo cursor in the step cards: eased glide, faint motion blur while travelling. */
+.demo-cursor {
+  transition:
+    transform 720ms cubic-bezier(0.45, 0, 0.15, 1),
+    opacity 300ms ease,
+    filter 200ms ease;
+}
+.demo-cursor[data-moving="true"] {
+  filter: blur(0.7px);
+}
+
+/*
+ * Apple Pay-style confirmation, in green: the ring draws itself, the disc fills,
+ * the tick strokes in, then a soft pulse.
+ */
+.ok-check svg * {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.ok-check .halo {
+  fill: color-mix(in oklab, var(--color-success) 30%, transparent);
+  animation: ok-pulse 900ms var(--ease-out-expo) 700ms both;
+}
+.ok-check .ring {
+  fill: none;
+  stroke: var(--color-success);
+  stroke-width: 4;
+  stroke-dasharray: 1;
+  transform: rotate(-90deg);
+  animation: ok-ring 520ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+.ok-check .fill {
+  fill: var(--color-success);
+  animation: ok-fill 420ms var(--ease-spring) 420ms both;
+}
+.ok-check .tick {
+  fill: none;
+  stroke: var(--color-white);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  animation: ok-ring 340ms cubic-bezier(0.65, 0, 0.35, 1) 640ms both;
+}
+@keyframes ok-ring {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes ok-fill {
+  from {
+    transform: scale(0);
+  }
+}
+@keyframes ok-pulse {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* Agent logos: pop in one by one when the section appears, then float. */
+.agent-tile > .agent-float {
+  opacity: 0;
+  scale: 0.4;
+  translate: 0 18px;
+  rotate: 0deg;
+}
+[data-shown="true"] .agent-tile > .agent-float {
+  opacity: 1;
+  scale: var(--s, 1);
+  translate: 0 0;
+  rotate: var(--r, 0deg);
+  transition:
+    opacity 400ms ease var(--d),
+    scale 700ms var(--ease-spring) var(--d),
+    translate 700ms var(--ease-spring) var(--d),
+    rotate 900ms var(--ease-spring) var(--d);
+  animation: float-y 6s ease-in-out calc(var(--d) + 900ms + var(--f)) infinite;
+}
+.agent-tile:hover > .agent-float {
+  scale: calc(var(--s, 1) * 1.1);
 }

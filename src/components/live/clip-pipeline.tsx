@@ -87,10 +87,24 @@ export function ClipPipeline() {
     let clock: number | undefined;
     let wordTimer: number | undefined;
     let start = 0;
+    const filledAt = (t: number) => {
+      let n = 0;
+      for (let k = 0; k < TOTAL; k++) if (isFilled(k, t)) n += 1;
+      return n;
+    };
+    let shown = -1;
     const tick = () => {
-      const t = performance.now() - start;
-      if (t >= CYCLE_MS) start = performance.now();
-      setElapsed(t >= CYCLE_MS ? 0 : t);
+      let t = performance.now() - start;
+      if (t >= CYCLE_MS) {
+        start = performance.now();
+        t = 0;
+      }
+      // Only re-render when a slot actually fills (or the batch resets).
+      const n = filledAt(t);
+      if (n !== shown) {
+        shown = n;
+        setElapsed(t);
+      }
     };
     // Caption preview: the highlight steps word by word, then the next caption.
     let w = 0;

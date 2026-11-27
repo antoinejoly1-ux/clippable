@@ -3,23 +3,11 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { PlatformIcon, platforms } from "@/components/platform-icons";
-import { streamers } from "@/lib/streamers";
+import { streamers, type Streamer } from "@/lib/streamers";
 
 const CYCLE_MS = 2400;
-const CLIPS = 8;
-
-/*
- * Four floating clips: two left, two right. Each streamer gets its own set.
- * Footage is placeholder stock until real clips per streamer are supplied,
- * so it is never paired with a streamer's name or face.
- */
-const slots = [
-  "left-[6%] top-[4%] w-[66%] z-0",
-  "right-[2%] bottom-[2%] w-[48%] z-10 shadow-[0_24px_48px_-24px_rgb(1_8_43/0.45)]",
-  "right-[6%] top-[12%] w-[62%] z-0",
-  "left-[0%] bottom-[0%] w-[46%] z-10 shadow-[0_24px_48px_-24px_rgb(1_8_43/0.45)]",
-] as const;
-const clipFor = (streamer: number, slot: number) => ((streamer * 3 + slot * 2) % CLIPS) + 1;
+const channelUrl = (s: Streamer) =>
+  s.platform === "kick" ? `kick.com/${s.handle}` : `twitch.tv/${s.handle}`;
 
 export function StreamerShowcase() {
   const [active, setActive] = useState(0);
@@ -43,30 +31,107 @@ export function StreamerShowcase() {
     };
   }, [hovering]);
 
-  const side = (from: number) => (
+  /* Each side swaps with a blur as the active streamer changes. */
+  const swap = (on: boolean) =>
+    `transition-[opacity,filter,transform] duration-700 ease-out-expo ${
+      on ? "blur-none scale-100 opacity-100" : "scale-[1.04] opacity-0 blur-xl"
+    }`;
+
+  // Left: the streamer's real photo, as a live card.
+  const photoSide = (
     <div aria-hidden="true" className="relative hidden h-[40rem] lg:block">
-      {[from, from + 1].map((slot) => (
-        <div
-          key={slot}
-          className={`absolute aspect-[3/4] overflow-hidden rounded-[10px] ${slots[slot]}`}
-        >
-          {streamers.map((_, s) => {
-            const on = s === active;
-            return (
+      <div className="absolute top-[4%] right-[4%] aspect-[3/4] w-[82%] overflow-hidden rounded-[14px] bg-midnight shadow-[0_30px_60px_-30px_rgb(1_8_43/0.55)]">
+        {streamers.map((st, s) => (
+          <div key={st.id} className={`absolute inset-0 ${swap(s === active)}`}>
+            <Image
+              src={st.photo}
+              alt=""
+              fill
+              sizes="(min-width: 1024px) 22vw, 1px"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(to_top,rgb(1_8_43/0.78),transparent_45%)]" />
+            <div className="absolute inset-x-4 bottom-4 flex items-end justify-between text-white">
+              <div>
+                <p className="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.08em] uppercase">
+                  <span className="size-1.5 animate-live rounded-full bg-live" />
+                  Live now
+                </p>
+                <p className="mt-1 text-lg font-semibold tracking-[-0.02em]">{st.name}</p>
+              </div>
+              <span
+                className="flex size-6 items-center justify-center rounded-[5px]"
+                style={{ backgroundColor: platforms[st.platform].color }}
+              >
+                <PlatformIcon
+                  platform={st.platform}
+                  className={`size-3.5 ${st.platform === "kick" ? "text-black" : "text-white"}`}
+                />
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  // Right: the streamer's channel — their real banner, or a card built from their avatar.
+  const channelSide = (
+    <div aria-hidden="true" className="relative hidden h-[40rem] lg:block">
+      <div className="absolute bottom-[4%] left-[4%] aspect-[4/5] w-[78%] overflow-hidden rounded-[14px] border border-border bg-bg shadow-[0_30px_60px_-30px_rgb(1_8_43/0.45)]">
+        {streamers.map((st, s) => (
+          <div key={st.id} className={`absolute inset-0 flex flex-col ${swap(s === active)}`}>
+            <div className="relative min-h-0 flex-1 overflow-hidden bg-midnight">
+              {st.banner ? (
+                <Image
+                  src={st.banner}
+                  alt=""
+                  fill
+                  sizes="(min-width: 1024px) 20vw, 1px"
+                  className="object-cover"
+                />
+              ) : (
+                <>
+                  <Image
+                    src={st.avatar}
+                    alt=""
+                    fill
+                    sizes="120px"
+                    className="scale-125 object-cover opacity-60 blur-2xl"
+                  />
+                  <span className="absolute inset-0 grid place-items-center">
+                    <Image
+                      src={st.avatar}
+                      alt=""
+                      width={112}
+                      height={112}
+                      className="size-28 rounded-[22px] object-cover shadow-[0_18px_40px_-16px_rgb(0_0_0/0.6)] ring-2 ring-white/80"
+                    />
+                  </span>
+                </>
+              )}
+            </div>
+            <div className="flex items-center gap-2.5 px-3.5 py-3">
               <Image
-                key={s}
-                src={`/media/clips/clip-${clipFor(s, slot)}.webp`}
+                src={st.avatar}
                 alt=""
-                fill
-                sizes="(min-width: 1024px) 18vw, 1px"
-                className={`object-cover transition-[opacity,filter,transform] duration-700 ease-out-expo ${
-                  on ? "blur-0 scale-100 opacity-100" : "scale-[1.04] opacity-0 blur-xl"
-                }`}
+                width={32}
+                height={32}
+                className="size-8 rounded-full object-cover"
               />
-            );
-          })}
-        </div>
-      ))}
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-[13px] font-semibold text-fg">{st.name}</span>
+                <span className="block truncate font-mono text-[10px] text-fg-muted">
+                  {channelUrl(st)}
+                </span>
+              </span>
+              <span className="rounded-full bg-midnight px-2.5 py-1 text-[11px] font-medium text-white">
+                Following
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 
@@ -75,22 +140,23 @@ export function StreamerShowcase() {
       ref={rootRef}
       className="mx-auto grid max-w-[1680px] items-center gap-8 px-5 sm:px-8 lg:grid-cols-[1fr_minmax(0,38rem)_1fr]"
     >
-      {side(0)}
+      {photoSide}
       <ul
         className="flex flex-col items-center py-4 text-center"
-        onMouseLeave={() => setHovering(false)}
+        onPointerLeave={() => setHovering(false)}
       >
         {streamers.map((s, i) => {
           const on = i === active;
           return (
             <li
               key={s.id}
-              onMouseEnter={() => {
+              onPointerEnter={(e) => {
+                if (e.pointerType !== "mouse") return;
                 setHovering(true);
                 setActive(i);
               }}
               className={`flex cursor-default items-center text-[clamp(2.4rem,5.4vw,4.75rem)] leading-[1.06] font-semibold tracking-[-0.045em] transition-colors duration-500 ${
-                on ? "text-fg" : "text-fg-faint"
+                on ? "text-fg" : "text-fg-subtle"
               }`}
             >
               <span
@@ -119,7 +185,7 @@ export function StreamerShowcase() {
           );
         })}
       </ul>
-      {side(2)}
+      {channelSide}
     </div>
   );
 }
