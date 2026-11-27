@@ -155,7 +155,7 @@ export function StreamerShowcase() {
             </li>
           );
         })}
-        <li className="mt-1 text-[clamp(1.5rem,3vw,2.5rem)] leading-[1.2] font-medium tracking-[-0.035em] text-fg-subtle">
+        <li className="mt-6 text-[clamp(1.5rem,3vw,2.5rem)] leading-[1.2] font-medium tracking-[-0.035em] text-fg-subtle">
           and much more.
         </li>
       </ul>

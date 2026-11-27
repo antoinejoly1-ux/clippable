@@ -38,7 +38,7 @@ export function MobileMenu({
     <details ref={ref} className="group relative lg:hidden">
       <summary
         aria-label="Menu"
-        className="flex size-10 cursor-pointer list-none items-center justify-center rounded-[10px] text-fg transition-[background-color,color,scale] duration-200 select-none hover:bg-bg-subtle active:scale-[0.94] in-data-[scrolled=false]:text-white in-data-[scrolled=false]:hover:bg-white/10 [&::-webkit-details-marker]:hidden"
+        className="hdr-ink flex size-10 cursor-pointer list-none items-center justify-center rounded-[10px] transition-[background-color,scale] duration-300 select-none hover:bg-[rgb(128_140_170/0.16)] active:scale-[0.94] [&::-webkit-details-marker]:hidden"
       >
         <svg viewBox="0 0 20 20" className="size-5" fill="none" aria-hidden="true">
           <path d="M3 7h14M3 13h14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />

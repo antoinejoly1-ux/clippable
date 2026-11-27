@@ -197,25 +197,55 @@
 
 /* Dot-grid canvas, like a node editor. */
 /*
- * Step card surface: the hero sky turned into a lit core. Black sits behind the demo in
- * the middle of the card, ringed by indigo, electric blue and sky, and fades to the page
- * tint at the top (the title) and bottom (the copy) so the text stays readable.
+ * Step card skies: the hero's black → indigo → electric → sky → pale ramp, grown from one
+ * corner per card (bottom-left, top-left, bottom-right) so the three read as one abstract
+ * sweep. Text sitting on the dark part is set in white.
  */
-.surface-deep {
+.sky-bl {
   background:
-    radial-gradient(45% 30% at 0% 0%, rgb(58 28 196 / 0.1), transparent 70%),
-    radial-gradient(45% 30% at 100% 100%, rgb(58 28 196 / 0.1), transparent 70%),
     radial-gradient(
-      88% 40% at 50% 47%,
+      150% 85% at 0% 100%,
       #000000 0%,
-      #01020f 16%,
-      #070a4a 30%,
-      #1326b8 44%,
-      #0b5cff 54%,
-      #4a93ff 64%,
-      #a3ccff 76%,
-      #e3efff 89%,
-      var(--bg-subtle) 100%
+      #01020f 14%,
+      #070a4a 27%,
+      #1630c8 40%,
+      #0b5cff 50%,
+      #4a93ff 60%,
+      #a3ccff 72%,
+      #e3efff 84%,
+      var(--bg-subtle) 96%
+    ),
+    var(--bg-subtle);
+}
+.sky-tl {
+  background:
+    radial-gradient(
+      150% 80% at 0% 0%,
+      #000000 0%,
+      #01020f 14%,
+      #070a4a 27%,
+      #1630c8 40%,
+      #0b5cff 50%,
+      #4a93ff 60%,
+      #a3ccff 72%,
+      #e3efff 84%,
+      var(--bg-subtle) 96%
+    ),
+    var(--bg-subtle);
+}
+.sky-br {
+  background:
+    radial-gradient(
+      160% 85% at 100% 100%,
+      #000000 0%,
+      #01020f 14%,
+      #070a4a 27%,
+      #1630c8 40%,
+      #0b5cff 50%,
+      #4a93ff 60%,
+      #a3ccff 72%,
+      #e3efff 84%,
+      var(--bg-subtle) 96%
     ),
     var(--bg-subtle);
 }
@@ -665,80 +695,156 @@
 }
 
 /*
- * Workflow canvas: the hero's sky, alive. A dark field ringed with indigo, electric blue and
- * sky drifts like a slow swell; a second, blurred layer of iridescent light moves against it,
- * and grain sits on top. Transform-only animation, paused while off screen.
+ * Workflow canvas: waves in the hero's colours. One fixed left-to-right ramp (black, pale,
+ * blue, white) is shown through three wave-shaped masks of different heights and speeds.
+ * The masks scroll to the right, so the swell rolls left to right; on first view each
+ * wave rises from the bottom. Paused while the section is off screen.
  */
-.flow-sky-a {
-  background:
-    radial-gradient(55% 45% at 28% 26%, #000000 0%, #01020f 35%, rgb(1 2 15 / 0) 70%),
-    radial-gradient(
-      75% 60% at 72% 84%,
-      #9cc8ff 0%,
-      #0b5cff 26%,
-      #1326b8 48%,
-      rgb(19 38 184 / 0) 72%
-    ),
-    linear-gradient(160deg, #000000 0%, #050836 28%, #1326b8 56%, #0b5cff 76%, #8fc0ff 100%);
-  animation: sky-wave-a 16s ease-in-out infinite alternate;
+.wave {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    #000000 0%,
+    #050836 14%,
+    #1630c8 30%,
+    #0b5cff 44%,
+    #8fc0ff 58%,
+    #e6f0ff 68%,
+    #4a93ff 82%,
+    #f2f7ff 100%
+  );
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 100C100 20 200 20 300 100S500 180 600 100S800 20 900 100S1100 180 1200 100V400H0Z'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 100C100 20 200 20 300 100S500 180 600 100S800 20 900 100S1100 180 1200 100V400H0Z'/%3E%3C/svg%3E");
+  mask-repeat: repeat-x;
+  -webkit-mask-repeat: repeat-x;
+  transform-origin: 50% 100%;
 }
-@keyframes sky-wave-a {
-  0% {
-    transform: translate3d(-6%, -4%, 0) rotate(-4deg) scale(1);
-  }
-  50% {
-    transform: translate3d(5%, 3%, 0) rotate(3deg) scale(1.08);
-  }
-  100% {
-    transform: translate3d(-3%, 6%, 0) rotate(-2deg) scale(1.03);
+.wave-1 {
+  height: 72%;
+  opacity: 0.45;
+  background: linear-gradient(
+    90deg,
+    #070a4a 0%,
+    #1630c8 24%,
+    #4a93ff 48%,
+    #cfe3ff 68%,
+    #8fc0ff 84%,
+    #f2f7ff 100%
+  );
+  mask-size: 1400px 100%;
+  -webkit-mask-size: 1400px 100%;
+  animation:
+    wave-rise 1600ms cubic-bezier(0.22, 1, 0.36, 1) both,
+    wave-roll-1 18s linear infinite;
+}
+.wave-2 {
+  height: 58%;
+  opacity: 0.7;
+  background: linear-gradient(
+    90deg,
+    #02031a 0%,
+    #0a0d5e 18%,
+    #0b5cff 40%,
+    #a3ccff 60%,
+    #eaf2ff 70%,
+    #4a93ff 84%,
+    #f2f7ff 100%
+  );
+  mask-size: 1100px 100%;
+  -webkit-mask-size: 1100px 100%;
+  animation:
+    wave-rise 1600ms cubic-bezier(0.22, 1, 0.36, 1) 150ms both,
+    wave-roll-2 12s linear infinite;
+}
+.wave-3 {
+  height: 44%;
+  mask-size: 900px 100%;
+  -webkit-mask-size: 900px 100%;
+  animation:
+    wave-rise 1600ms cubic-bezier(0.22, 1, 0.36, 1) 300ms both,
+    wave-roll-3 8s linear infinite;
+}
+@keyframes wave-rise {
+  from {
+    transform: translateY(100%);
   }
 }
-.flow-sky-b {
-  background:
-    radial-gradient(38% 30% at 22% 72%, rgb(109 175 248 / 0.55), transparent 70%),
-    radial-gradient(34% 28% at 80% 24%, rgb(88 52 230 / 0.6), transparent 70%),
-    radial-gradient(30% 24% at 56% 50%, rgb(11 92 255 / 0.5), transparent 70%),
-    radial-gradient(26% 20% at 40% 30%, rgb(140 200 255 / 0.3), transparent 70%),
-    radial-gradient(24% 20% at 70% 62%, rgb(150 110 255 / 0.3), transparent 70%);
-  filter: blur(36px);
-  mix-blend-mode: screen;
-  animation: sky-wave-b 11s ease-in-out infinite alternate;
+@keyframes wave-roll-1 {
+  to {
+    mask-position: 1400px 0;
+    -webkit-mask-position: 1400px 0;
+  }
 }
-@keyframes sky-wave-b {
-  0% {
-    transform: translate3d(6%, 2%, 0) scale(1.05);
+@keyframes wave-roll-2 {
+  to {
+    mask-position: 1100px 0;
+    -webkit-mask-position: 1100px 0;
   }
-  50% {
-    transform: translate3d(-5%, -4%, 0) scale(0.96);
+}
+@keyframes wave-roll-3 {
+  to {
+    mask-position: 900px 0;
+    -webkit-mask-position: 900px 0;
   }
-  100% {
-    transform: translate3d(3%, -6%, 0) scale(1.1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .wave {
+    animation: none !important;
   }
 }
 
-/* Buttons: on hover a soft sheen glides across once; everything eases, nothing jumps. */
-.btn-sheen::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(
-    105deg,
-    transparent 30%,
-    rgb(255 255 255 / 0.28) 48%,
-    rgb(255 255 255 / 0.08) 56%,
-    transparent 70%
+/*
+ * Header over the hero: driven by --hdr (0 at the top, 1 after half a screen of scroll).
+ * Fill, blur, hairline and every colour blend continuously from "on the dark sky" (clear,
+ * white type) to "on the page" (frosted white, ink type).
+ */
+:root {
+  --hdr: 0;
+  --hdr-ink: 0;
+}
+.site-header {
+  background: rgb(255 255 255 / calc(var(--hdr) * 0.88));
+  backdrop-filter: blur(calc(var(--hdr) * 18px)) saturate(calc(1 + var(--hdr) * 0.6));
+  -webkit-backdrop-filter: blur(calc(var(--hdr) * 18px)) saturate(calc(1 + var(--hdr) * 0.6));
+  box-shadow: 0 1px 0 rgb(1 8 43 / calc(var(--hdr) * 0.06));
+}
+.hdr-ink,
+.hdr-logo {
+  color: color-mix(in oklab, var(--color-fg) calc(var(--hdr-ink) * 100%), white);
+}
+.hdr-logo {
+  --logo-mark: color-mix(in oklab, var(--color-electric) calc(var(--hdr) * 100%), var(--color-sky));
+}
+.hdr-pill {
+  color: color-mix(in oklab, var(--color-fg) calc(var(--hdr-ink) * 100%), white);
+  background: color-mix(
+    in oklab,
+    var(--bg-subtle) calc(var(--hdr-ink) * 100%),
+    rgb(255 255 255 / 0.1)
   );
-  translate: -120% 0;
-  transition: translate 0s;
-  pointer-events: none;
+  backdrop-filter: blur(12px);
 }
-.btn-sheen:hover::after {
-  translate: 120% 0;
-  transition: translate 900ms cubic-bezier(0.22, 1, 0.36, 1);
+.hdr-rule {
+  background: color-mix(
+    in oklab,
+    var(--border) calc(var(--hdr-ink) * 100%),
+    rgb(255 255 255 / 0.22)
+  );
 }
-@media (prefers-reduced-motion: reduce) {
-  .btn-sheen::after {
-    display: none;
-  }
+.hdr-cta {
+  background: color-mix(
+    in oklab,
+    var(--color-midnight) calc(var(--hdr-ink) * 100%),
+    white
+  ) !important;
+  color: color-mix(in oklab, white calc(var(--hdr-ink) * 100%), var(--color-midnight)) !important;
+}
+.hdr-cta:hover {
+  background: color-mix(
+    in oklab,
+    var(--color-royal) calc(var(--hdr-ink) * 100%),
+    var(--color-sky)
+  ) !important;
 }

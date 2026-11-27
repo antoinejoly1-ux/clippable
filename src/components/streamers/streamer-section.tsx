@@ -1,5 +1,3 @@
-import { Button } from "@/components/button";
-import { site } from "@/lib/site";
 import { StreamerShowcase } from "@/components/streamers/streamer-showcase";
 
 export function StreamerSection() {
@@ -19,9 +17,6 @@ export function StreamerSection() {
       </div>
       <div className="mt-8 sm:mt-10">
         <StreamerShowcase />
-      </div>
-      <div className="mx-auto mt-12 flex max-w-[42rem] flex-col items-center px-5 text-center">
-        <Button href={site.signupUrl}>Start clipping</Button>
       </div>
     </section>
   );

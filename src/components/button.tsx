@@ -39,7 +39,7 @@ export function Button({
   return (
     <a
       href={href}
-      className={`btn-sheen relative isolate inline-flex items-center justify-center overflow-hidden font-medium whitespace-nowrap transition-[scale,background-color,color,box-shadow,filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] select-none [-webkit-tap-highlight-color:transparent] active:scale-[0.97] active:duration-100 ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`inline-flex items-center justify-center font-medium whitespace-nowrap transition-[scale,background-color,color,box-shadow,filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] select-none [-webkit-tap-highlight-color:transparent] active:scale-[0.97] active:duration-100 ${variants[variant]} ${sizes[size]} ${className}`}
     >
       {children}
     </a>

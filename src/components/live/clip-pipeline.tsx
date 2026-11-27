@@ -104,12 +104,13 @@ export function ClipPipeline() {
     <div className="mx-auto max-w-[1360px] px-3 sm:px-6">
       <div
         ref={canvasRef}
-        className="relative isolate overflow-hidden rounded-[var(--radius-card)] border border-white/10 bg-black px-5 py-14 sm:px-10 lg:px-12 lg:pt-20 lg:pb-14"
+        className="relative isolate overflow-hidden rounded-[var(--radius-card)] border border-border bg-bg-subtle px-5 py-14 sm:px-10 lg:px-12 lg:pt-20 lg:pb-14"
       >
-        {/* A living sky behind the nodes: the hero's colours, drifting like a slow wave */}
+        {/* Waves of the hero's colours rise from the bottom and roll left to right */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="flow-sky-a absolute -inset-[30%]" />
-          <div className="flow-sky-b absolute -inset-[30%]" />
+          <div className="wave wave-1" />
+          <div className="wave wave-2" />
+          <div className="wave wave-3" />
           <div className="grain absolute inset-0" />
         </div>
 
@@ -256,10 +257,15 @@ function Node({
 }) {
   return (
     <figure className={`relative ${className ?? ""}`}>
-      <figcaption className="mb-2 flex items-baseline justify-between px-0.5 text-[12px]">
-        <span className="font-medium text-white">{label}</span>
+      <figcaption className="mb-2 flex items-center justify-between text-[12px]">
+        <span className="rounded-[6px] bg-white/85 px-2 py-0.5 font-medium text-fg backdrop-blur-sm">
+          {label}
+        </span>
         {/* Live counters would chatter in a screen reader; the label carries the meaning. */}
-        <span aria-hidden="true" className="font-mono text-white/60 tabular-nums">
+        <span
+          aria-hidden="true"
+          className="rounded-[6px] bg-white/85 px-2 py-0.5 font-mono text-fg-muted tabular-nums backdrop-blur-sm"
+        >
           {meta}
         </span>
       </figcaption>
