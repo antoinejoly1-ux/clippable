@@ -194,35 +194,27 @@
 }
 
 /* Light pulse travelling along a workflow connector. */
-/* A pulse that travels the whole flow line from start (left) to end (right), then repeats. */
-.flow-pulse {
-  stroke-dasharray: 0.22 1.3;
-  animation: flow 3.2s cubic-bezier(0.45, 0, 0.35, 1) infinite;
-}
-@keyframes flow {
-  from {
-    stroke-dashoffset: 0.22;
-  }
-  to {
-    stroke-dashoffset: -1.08;
-  }
-}
 
 /* Dot-grid canvas, like a node editor. */
 /*
- * Card surface: a light take on the hero sky. A soft blue dome at the top fading to the
- * page tint, with indigo just touching the top corners. Used by the step cards and the
- * workflow canvas.
+ * Step card surface: the hero sky turned into a lit core. Black sits behind the demo in
+ * the middle of the card, ringed by indigo, electric blue and sky, and fades to the page
+ * tint at the top (the title) and bottom (the copy) so the text stays readable.
  */
-.surface-sky {
+.surface-deep {
   background:
-    radial-gradient(45% 35% at 0% 0%, rgb(58 28 196 / 0.07), transparent 70%),
-    radial-gradient(45% 35% at 100% 0%, rgb(58 28 196 / 0.07), transparent 70%),
+    radial-gradient(45% 30% at 0% 0%, rgb(58 28 196 / 0.1), transparent 70%),
+    radial-gradient(45% 30% at 100% 100%, rgb(58 28 196 / 0.1), transparent 70%),
     radial-gradient(
-      110% 70% at 50% -20%,
-      color-mix(in oklab, var(--color-electric) 26%, white) 0%,
-      color-mix(in oklab, var(--color-sky) 34%, white) 38%,
-      color-mix(in oklab, var(--color-sky) 12%, white) 66%,
+      88% 40% at 50% 47%,
+      #000000 0%,
+      #01020f 16%,
+      #070a4a 30%,
+      #1326b8 44%,
+      #0b5cff 54%,
+      #4a93ff 64%,
+      #a3ccff 76%,
+      #e3efff 89%,
       var(--bg-subtle) 100%
     ),
     var(--bg-subtle);
@@ -248,7 +240,7 @@
   .xcard {
     flex: 0 1 calc((100% - 2 * var(--gap)) / 3);
     min-width: 0;
-    transition: flex-basis 800ms var(--spring);
+    transition: flex-basis 460ms var(--spring);
   }
   /* Hover, or keyboard focus, opens a card. A mouse click no longer pins one open. */
   .xcards:has(.xcard:is(:hover, :focus-visible)) .xcard {
@@ -265,8 +257,8 @@
   .xcard-title {
     transform-origin: 0 0;
     transition:
-      transform 800ms var(--spring),
-      opacity 800ms var(--spring);
+      transform 460ms var(--spring),
+      opacity 460ms var(--spring);
   }
   /* The cards on the side step back: their title and content fade a little. */
   .xcards:has(.xcard:is(:hover, :focus-visible))
@@ -285,26 +277,6 @@
   }
 }
 
-/* Slow drifting light over the dot grid: the "alive" background of each card. */
-.xcard-glow {
-  background: radial-gradient(
-    40% 50% at 50% 50%,
-    color-mix(in oklab, var(--color-sky) 38%, transparent),
-    transparent 70%
-  );
-  animation: glow-drift 14s ease-in-out infinite alternate;
-}
-@keyframes glow-drift {
-  0% {
-    transform: translate3d(-22%, -10%, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(18%, 8%, 0) scale(1.15);
-  }
-  100% {
-    transform: translate3d(-6%, 18%, 0) scale(0.95);
-  }
-}
 /*
  * Hero load sequence (after ctrl.xyz): the period lands, letters reveal, the copy and
  * CTA rise, then a gap opens in the headline and the 4:3 player springs in.
@@ -656,6 +628,11 @@
   }
 }
 /* Fine film grain over the sky, so the long blue ramps never band. */
+.grain {
+  opacity: 0.08;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
 .hero-grain {
   opacity: 0.07;
   mix-blend-mode: overlay;
@@ -684,5 +661,84 @@
     opacity: 0;
     translate: 0 0.4em;
     filter: blur(6px);
+  }
+}
+
+/*
+ * Workflow canvas: the hero's sky, alive. A dark field ringed with indigo, electric blue and
+ * sky drifts like a slow swell; a second, blurred layer of iridescent light moves against it,
+ * and grain sits on top. Transform-only animation, paused while off screen.
+ */
+.flow-sky-a {
+  background:
+    radial-gradient(55% 45% at 28% 26%, #000000 0%, #01020f 35%, rgb(1 2 15 / 0) 70%),
+    radial-gradient(
+      75% 60% at 72% 84%,
+      #9cc8ff 0%,
+      #0b5cff 26%,
+      #1326b8 48%,
+      rgb(19 38 184 / 0) 72%
+    ),
+    linear-gradient(160deg, #000000 0%, #050836 28%, #1326b8 56%, #0b5cff 76%, #8fc0ff 100%);
+  animation: sky-wave-a 16s ease-in-out infinite alternate;
+}
+@keyframes sky-wave-a {
+  0% {
+    transform: translate3d(-6%, -4%, 0) rotate(-4deg) scale(1);
+  }
+  50% {
+    transform: translate3d(5%, 3%, 0) rotate(3deg) scale(1.08);
+  }
+  100% {
+    transform: translate3d(-3%, 6%, 0) rotate(-2deg) scale(1.03);
+  }
+}
+.flow-sky-b {
+  background:
+    radial-gradient(38% 30% at 22% 72%, rgb(109 175 248 / 0.55), transparent 70%),
+    radial-gradient(34% 28% at 80% 24%, rgb(88 52 230 / 0.6), transparent 70%),
+    radial-gradient(30% 24% at 56% 50%, rgb(11 92 255 / 0.5), transparent 70%),
+    radial-gradient(26% 20% at 40% 30%, rgb(140 200 255 / 0.3), transparent 70%),
+    radial-gradient(24% 20% at 70% 62%, rgb(150 110 255 / 0.3), transparent 70%);
+  filter: blur(36px);
+  mix-blend-mode: screen;
+  animation: sky-wave-b 11s ease-in-out infinite alternate;
+}
+@keyframes sky-wave-b {
+  0% {
+    transform: translate3d(6%, 2%, 0) scale(1.05);
+  }
+  50% {
+    transform: translate3d(-5%, -4%, 0) scale(0.96);
+  }
+  100% {
+    transform: translate3d(3%, -6%, 0) scale(1.1);
+  }
+}
+
+/* Buttons: on hover a soft sheen glides across once; everything eases, nothing jumps. */
+.btn-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgb(255 255 255 / 0.28) 48%,
+    rgb(255 255 255 / 0.08) 56%,
+    transparent 70%
+  );
+  translate: -120% 0;
+  transition: translate 0s;
+  pointer-events: none;
+}
+.btn-sheen:hover::after {
+  translate: 120% 0;
+  transition: translate 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-sheen::after {
+    display: none;
   }
 }

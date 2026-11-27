@@ -55,7 +55,7 @@ const HERO: Record<
     title: "Make clips instantly.",
     lead: "Make clips",
     sub: "Clippable turns Kick and Twitch streams into vertical clips while they're live. Post them and earn on every 1,000 views.",
-    cta: "Start clipping",
+    cta: "Start clipping now",
     proof: ["100+ streamer campaigns", "on Kick and Twitch"],
   },
   streamer: {

@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
  * The site's one call-to-action button: a rounded rectangle (radius grows with size). Every CTA uses it so size, shape and type match.
  *  - primary: brand blue (default)    - inverse: white, for dark or video backgrounds
  *  - dark: midnight, for the header
- * Sizes: sm (header), md (48px) in-page, lg (56px) final CTA, xl (64px) hero.
+ * Sizes: sm (header), md (52px) in-page, lg (60px) final CTA, xl (64px) hero.
  */
 const variants = {
   /** Brand blue with depth: a top-lit gradient, an inner highlight and a soft blue glow. */
@@ -17,8 +17,8 @@ const variants = {
 const sizes = {
   /** Header: compact on phones so logo, CTA and menu fit at 320px. */
   sm: "h-10 rounded-[10px] px-4 text-sm min-[360px]:px-5 min-[360px]:text-[15px] sm:h-11",
-  md: "h-12 rounded-[12px] px-6 text-base",
-  lg: "h-14 rounded-[14px] px-8 text-lg",
+  md: "h-[3.25rem] rounded-[13px] px-7 text-[17px]",
+  lg: "h-[3.75rem] rounded-[15px] px-9 text-lg",
   /** The hero CTA. */
   xl: "h-14 rounded-[14px] px-10 text-lg sm:h-16 sm:rounded-[16px] sm:text-xl",
 } as const;
@@ -39,7 +39,7 @@ export function Button({
   return (
     <a
       href={href}
-      className={`inline-flex items-center justify-center font-medium whitespace-nowrap transition-[scale,background-color,color,box-shadow,filter] duration-300 ease-out-expo select-none [-webkit-tap-highlight-color:transparent] active:scale-[0.97] active:duration-100 ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`btn-sheen relative isolate inline-flex items-center justify-center overflow-hidden font-medium whitespace-nowrap transition-[scale,background-color,color,box-shadow,filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] select-none [-webkit-tap-highlight-color:transparent] active:scale-[0.97] active:duration-100 ${variants[variant]} ${sizes[size]} ${className}`}
     >
       {children}
     </a>

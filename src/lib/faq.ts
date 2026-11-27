@@ -26,6 +26,10 @@ export const faq: { q: string; a: string }[] = [
     a: PENDING,
   },
   {
+    q: "Can I clip more than one streamer?",
+    a: "Yes. Follow as many streamers as you like, and Clippable clips each of them whenever they go live.",
+  },
+  {
     q: "Which platforms can I post to?",
     a: "TikTok, YouTube Shorts, Instagram Reels and X. Clips are cut vertical (9:16) for all of them.",
   },

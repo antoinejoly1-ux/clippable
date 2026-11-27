@@ -160,10 +160,6 @@ export function StreamerShowcase() {
         </li>
       </ul>
       {secondSide}
-      <p aria-hidden="true" className="-mt-4 text-center text-sm text-fg-muted lg:col-start-2">
-        <span className="font-medium text-fg">{streamers[active].name}</span> ·{" "}
-        {streamers[active].rate}
-      </p>
     </div>
   );
 }

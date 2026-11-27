@@ -7,7 +7,7 @@ import { useId, useState } from "react";
  * and closes the others. Answers stay in the DOM, so crawlers and in-page search see them.
  */
 export function FaqList({ items }: { items: { q: string; a: string }[] }) {
-  const [open, setOpen] = useState<number | null>(0);
+  const [open, setOpen] = useState<number | null>(null);
   const id = useId();
 
   // Two columns on wide screens, each its own stack, so opening one never stretches its neighbour.

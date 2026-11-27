@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LazyVideo } from "@/components/lazy-video";
 import { PlatformIcon, platforms } from "@/components/platform-icons";
 
@@ -31,61 +31,9 @@ const captions = [
 export function ClipPipeline() {
   const canvasRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [paths, setPaths] = useState<string[]>([]);
   const [elapsed, setElapsed] = useState(0);
   const [line, setLine] = useState(0);
   const [word, setWord] = useState(0);
-
-  /*
-   * One flowing line, edge to edge: it enters the canvas, threads through each node's centre
-   * and leaves the other side. Points are smoothed with Catmull-Rom, so the line waves
-   * between the staggered nodes. Phones stack the nodes, so the line runs top to bottom.
-   */
-  const measure = useCallback(() => {
-    const canvas = canvasRef.current;
-    const nodes = nodeRefs.current;
-    if (!canvas || nodes.some((n) => !n)) return;
-    const c = canvas.getBoundingClientRect();
-    const r = nodes.map((n) => n!.getBoundingClientRect());
-    const horizontal = r[1].left > r[0].right;
-    const centres = r.map((b) => [b.left + b.width / 2 - c.left, b.top + b.height / 2 - c.top]);
-    const pts: number[][] = horizontal
-      ? [[0, centres[0][1] + 40], ...centres, [c.width, centres[2][1] - 40]]
-      : [[centres[0][0] - 30, 0], ...centres, [centres[2][0] + 30, c.height]];
-    // A gentle wave between each pair of points, alternating up and down.
-    const wavy: number[][] = [pts[0]];
-    for (let i = 1; i < pts.length; i++) {
-      const [ax, ay] = pts[i - 1];
-      const [bx, by] = pts[i];
-      const amp = (i % 2 ? 1 : -1) * 34;
-      wavy.push(
-        horizontal ? [(ax + bx) / 2, (ay + by) / 2 + amp] : [(ax + bx) / 2 + amp, (ay + by) / 2],
-        pts[i],
-      );
-    }
-    pts.splice(0, pts.length, ...wavy);
-    let d = `M${pts[0][0]} ${pts[0][1]}`;
-    for (let i = 0; i < pts.length - 1; i++) {
-      const p0 = pts[Math.max(0, i - 1)];
-      const p1 = pts[i];
-      const p2 = pts[i + 1];
-      const p3 = pts[Math.min(pts.length - 1, i + 2)];
-      const k = 1 / 5; // tension: lower is tighter
-      d += `C${p1[0] + (p2[0] - p0[0]) * k} ${p1[1] + (p2[1] - p0[1]) * k} ${
-        p2[0] - (p3[0] - p1[0]) * k
-      } ${p2[1] - (p3[1] - p1[1]) * k} ${p2[0]} ${p2[1]}`;
-    }
-    setPaths([d]);
-  }, []);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ro = new ResizeObserver(measure);
-    ro.observe(canvas);
-    nodeRefs.current.forEach((n) => n && ro.observe(n));
-    return () => ro.disconnect();
-  }, [measure]);
 
   /* Production: all four rows fill together, each starting a second after the last. */
   useEffect(() => {
@@ -156,47 +104,14 @@ export function ClipPipeline() {
     <div className="mx-auto max-w-[1360px] px-3 sm:px-6">
       <div
         ref={canvasRef}
-        className="surface-sky relative overflow-hidden rounded-[var(--radius-card)] border border-border px-5 py-14 sm:px-10 lg:px-12 lg:pt-20 lg:pb-14"
+        className="relative isolate overflow-hidden rounded-[var(--radius-card)] border border-white/10 bg-black px-5 py-14 sm:px-10 lg:px-12 lg:pt-20 lg:pb-14"
       >
-        {/* The flow line, behind the nodes: the hero's colours flowing left to right */}
-        <svg aria-hidden="true" className="pointer-events-none absolute inset-0 size-full">
-          <defs>
-            <linearGradient id="flow-grad" x1="0" y1="0" x2="1" y2="0" spreadMethod="reflect">
-              <stop offset="0" stopColor="#000000" />
-              <stop offset="0.25" stopColor="#1326b8" />
-              <stop offset="0.5" stopColor="#0b5cff" />
-              <stop offset="0.75" stopColor="#6dafff" />
-              <stop offset="1" stopColor="#1326b8" />
-              <animateTransform
-                attributeName="gradientTransform"
-                type="translate"
-                from="-1 0"
-                to="1 0"
-                dur="6s"
-                repeatCount="indefinite"
-              />
-            </linearGradient>
-          </defs>
-          {paths.map((d, i) => (
-            <g key={i} fill="none" strokeLinecap="round">
-              <path
-                d={d}
-                stroke="url(#flow-grad)"
-                strokeWidth="16"
-                className="opacity-25 blur-[8px]"
-              />
-              <path d={d} stroke="url(#flow-grad)" strokeWidth="5" />
-              {/* A bright pulse travelling the line */}
-              <path
-                d={d}
-                stroke="white"
-                strokeWidth="3"
-                pathLength={1}
-                className="flow-pulse opacity-80"
-              />
-            </g>
-          ))}
-        </svg>
+        {/* A living sky behind the nodes: the hero's colours, drifting like a slow wave */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="flow-sky-a absolute -inset-[30%]" />
+          <div className="flow-sky-b absolute -inset-[30%]" />
+          <div className="grain absolute inset-0" />
+        </div>
 
         <div className="relative flex flex-col items-center gap-20 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
           {/* 1 · Live stream */}
@@ -342,9 +257,9 @@ function Node({
   return (
     <figure className={`relative ${className ?? ""}`}>
       <figcaption className="mb-2 flex items-baseline justify-between px-0.5 text-[12px]">
-        <span className="font-medium text-fg">{label}</span>
+        <span className="font-medium text-white">{label}</span>
         {/* Live counters would chatter in a screen reader; the label carries the meaning. */}
-        <span aria-hidden="true" className="font-mono text-fg-muted tabular-nums">
+        <span aria-hidden="true" className="font-mono text-white/60 tabular-nums">
           {meta}
         </span>
       </figcaption>

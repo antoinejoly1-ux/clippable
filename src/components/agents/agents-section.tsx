@@ -171,7 +171,8 @@ export function AgentsSection() {
               id="agents-title"
               className="text-[clamp(2.25rem,5vw,4.5rem)] leading-[0.98] font-medium tracking-[-0.045em] text-balance text-fg"
             >
-              Connect your agents.
+              <span className="block text-fg-muted">Of course,</span>
+              connect your agents.
             </h2>
             <p className="mt-5 max-w-[34rem] text-lg text-pretty text-fg-muted">
               Let Claude, ChatGPT or Gemini find your best moments, review the clips and post them
