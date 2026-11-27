@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
  * The site's one call-to-action button. Every CTA uses it so size, shape and type match.
  *  - primary: brand blue (default)    - inverse: white, for dark or video backgrounds
  *  - dark: midnight, for the header
- * Sizes: sm (header), md (44px) for in-page and header CTAs, lg (48px) for the hero and the final CTA.
+ * Sizes: sm (header), md (48px) in-page, lg (56px) final CTA, xl (64px) hero.
  */
 const variants = {
   primary: "bg-royal text-white hover:bg-midnight",
@@ -15,8 +15,10 @@ const variants = {
 const sizes = {
   /** Header: compact on phones so logo, CTA and menu fit at 320px. */
   sm: "h-10 px-4 text-sm min-[360px]:px-5 min-[360px]:text-[15px] sm:h-11",
-  md: "h-11 px-5 text-[15px]",
-  lg: "h-12 px-7 text-base",
+  md: "h-12 px-6 text-base",
+  lg: "h-14 px-8 text-lg",
+  /** The hero CTA. */
+  xl: "h-14 px-10 text-lg sm:h-16 sm:text-xl",
 } as const;
 
 export function Button({

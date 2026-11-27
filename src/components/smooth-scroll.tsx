@@ -11,6 +11,15 @@ import { useEffect } from "react";
  */
 export function SmoothScroll() {
   useEffect(() => {
+    // The header is clear over the hero's sky and frosts once the page moves.
+    const root = document.documentElement;
+    const onScroll = () => {
+      const on = window.scrollY > 8 ? "true" : "false";
+      if (root.dataset.scrolled !== on) root.dataset.scrolled = on;
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+
     const io = new IntersectionObserver((entries) => {
       for (const e of entries) {
         (e.target as HTMLElement).dataset.running = e.isIntersecting ? "true" : "false";
@@ -18,7 +27,12 @@ export function SmoothScroll() {
     });
     document.querySelectorAll("[data-pause-offscreen]").forEach((el) => io.observe(el));
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return () => io.disconnect();
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return () => {
+        io.disconnect();
+        window.removeEventListener("scroll", onScroll);
+      };
+    }
 
     const lenis = new Lenis({ autoRaf: false, lerp: 0.09, anchors: true });
     let id = 0;
@@ -35,6 +49,7 @@ export function SmoothScroll() {
     kick();
     return () => {
       io.disconnect();
+      window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(id);
       for (const ev of events) window.removeEventListener(ev, kick);
       lenis.destroy();

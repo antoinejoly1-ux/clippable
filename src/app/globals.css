@@ -194,16 +194,17 @@
 }
 
 /* Light pulse travelling along a workflow connector. */
+/* A pulse that travels the whole flow line from start (left) to end (right), then repeats. */
 .flow-pulse {
-  stroke-dasharray: 0.08 0.92;
-  animation: flow 2.6s linear infinite;
+  stroke-dasharray: 0.22 1.3;
+  animation: flow 3.2s cubic-bezier(0.45, 0, 0.35, 1) infinite;
 }
 @keyframes flow {
   from {
-    stroke-dashoffset: 1;
+    stroke-dashoffset: 0.22;
   }
   to {
-    stroke-dashoffset: 0;
+    stroke-dashoffset: -1.08;
   }
 }
 
@@ -338,7 +339,7 @@
 .hero-slot {
   width: calc(0.8em * 4 / 3);
   margin-inline: 0.13em; /* stays as the word space while the slot is closed */
-  animation: slot-open 1000ms cubic-bezier(0.34, 1.4, 0.64, 1) 1900ms both;
+  animation: slot-open 800ms cubic-bezier(0.34, 1.4, 0.64, 1) 1300ms both;
 }
 @keyframes slot-open {
   from {
@@ -360,7 +361,21 @@
     animation: none;
   }
   .hero-reveal .hero-dot {
-    animation: period-in 1ms linear 1760ms both;
+    animation: period-in 1ms linear 1230ms both;
+  }
+  /* The headline is uncovered by a clip-path, so it works over the gradient (no cover fill). */
+  .hero-reveal {
+    animation: reveal-clip 850ms cubic-bezier(0.7, 0, 0.25, 1) 380ms both;
+  }
+  /* After the visitor flips the switch, words swap letter by letter instead. */
+  .hero-reveal.hero-swap {
+    animation: none;
+  }
+  .hero-reveal.hero-swap .hero-letter {
+    animation: letter-in 520ms var(--ease-out-expo) both;
+  }
+  .hero-reveal.hero-swap .hero-dot {
+    animation: none;
   }
   .hero-cover {
     display: block;
@@ -369,9 +384,8 @@
     bottom: -0.18em;
     left: -0.06em;
     right: -0.02em;
-    background: var(--bg);
     pointer-events: none;
-    animation: cover-run 1200ms cubic-bezier(0.7, 0, 0.25, 1) 560ms both;
+    animation: cover-run 850ms cubic-bezier(0.7, 0, 0.25, 1) 380ms both;
   }
   .hero-cover-dot {
     display: block;
@@ -383,7 +397,7 @@
     border-radius: 50%;
     background: var(--fg);
     transform: translateX(-50%);
-    animation: dot-in 420ms var(--ease-spring) 180ms both;
+    animation: dot-in 380ms var(--ease-spring) 100ms both;
   }
 }
 @keyframes cover-run {
@@ -475,9 +489,10 @@
 }
 
 /* Agents dock: icons magnify toward the pointer (JS sets --m), rise in on reveal, bounce on click. */
-/* Icon size lives on the dock so its frame height can follow it. Fluid on very narrow phones. */
+/* Icon size lives on the dock so its frame height can follow it. The dock spans about the
+   headline's width: the base tracks the headline size, capped by the screen on phones. */
 .dock {
-  --base: clamp(1.5rem, calc((100vw - 6.5rem) / 8), 2.125rem);
+  --base: min(calc(clamp(2.25rem, 5vw, 4.5rem) * 1.45), calc((100vw - 7rem) / 5.8));
 }
 .dock-item {
   width: calc(var(--base) * var(--m, 1));
@@ -485,16 +500,6 @@
   transition:
     width 180ms var(--ease-out-expo),
     height 180ms var(--ease-out-expo);
-}
-@media (min-width: 400px) {
-  .dock {
-    --base: 2.375rem;
-  }
-}
-@media (min-width: 640px) {
-  .dock {
-    --base: 3.75rem;
-  }
 }
 .dock-icon {
   opacity: 0;
@@ -588,5 +593,48 @@
     background-position:
       0 200%,
       0 0;
+  }
+}
+
+@keyframes reveal-clip {
+  0% {
+    clip-path: inset(-30% 100% -30% -10%);
+  }
+  99% {
+    clip-path: inset(-30% -10% -30% -10%);
+  }
+  100% {
+    clip-path: none;
+  }
+}
+
+/* Hero sky: a wide, squeezed ellipse of blue pressing down from the top edge, fading to white. */
+.hero-sky {
+  background:
+    radial-gradient(
+      130% 74% at 50% -8%,
+      color-mix(in oklab, var(--color-blue) 62%, var(--color-sky)) 0%,
+      color-mix(in oklab, var(--color-sky) 70%, white) 34%,
+      color-mix(in oklab, var(--color-sky) 22%, white) 62%,
+      rgb(255 255 255 / 0) 86%
+    ),
+    radial-gradient(60% 40% at 50% 0%, rgb(255 255 255 / 0.35), transparent 70%);
+}
+
+/* Clipper / streamer switch thumb: a soft spring so it settles rather than snaps. */
+.switch-thumb {
+  transition: transform 560ms cubic-bezier(0.32, 1.25, 0.5, 1);
+}
+
+/* Copy that changes with the switch rises in through a light blur. */
+.swap-in {
+  display: inline-block;
+  animation: swap-in 520ms var(--ease-out-expo) both;
+}
+@keyframes swap-in {
+  from {
+    opacity: 0;
+    translate: 0 0.4em;
+    filter: blur(6px);
   }
 }

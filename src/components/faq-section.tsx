@@ -1,3 +1,4 @@
+import { FaqList } from "@/components/faq-list";
 import { JsonLd } from "@/components/json-ld";
 import { faq } from "@/lib/faq";
 
@@ -11,29 +12,8 @@ export function FaqSection() {
         >
           Questions, answered.
         </h2>
-        <div className="mt-12 border-t border-border sm:mt-14">
-          {faq.map((item) => (
-            <details key={item.q} className="group border-b border-border">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-base font-medium text-fg [&::-webkit-details-marker]:hidden">
-                {item.q}
-                <svg
-                  viewBox="0 0 16 16"
-                  aria-hidden="true"
-                  className="size-4 shrink-0 text-fg-muted transition-transform duration-300 group-open:rotate-45"
-                >
-                  <path
-                    d="M8 3v10M3 8h10"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </summary>
-              <p className="max-w-[60ch] pb-6 text-[15px] leading-relaxed text-pretty text-fg-muted">
-                {item.a}
-              </p>
-            </details>
-          ))}
+        <div className="mt-12 sm:mt-14">
+          <FaqList items={faq} />
         </div>
       </div>
       <JsonLd

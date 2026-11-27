@@ -14,7 +14,7 @@ const links = [
 /** Logo left, segmented nav centred, account actions right (after ctrl.xyz). */
 export function SiteHeader() {
   return (
-    <header className="hero-rise fixed inset-x-0 top-0 z-50 bg-bg/80 backdrop-blur-md [animation-delay:900ms]">
+    <header className="hero-rise fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter] duration-300 [animation-delay:700ms] in-data-[scrolled=true]:bg-bg/80 in-data-[scrolled=true]:backdrop-blur-md">
       <div className="mx-auto grid h-16 max-w-[1360px] grid-cols-[1fr_auto] items-center gap-2 px-3 min-[360px]:gap-4 min-[360px]:px-4 sm:h-20 sm:px-6 lg:grid-cols-[1fr_auto_1fr]">
         <a
           href="#top"

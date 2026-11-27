@@ -9,19 +9,16 @@ import { site } from "@/lib/site";
  * and which providers it supports. Logos: LobeHub icons (MIT), used to name integrations.
  */
 const AGENTS = [
-  { id: "claude", name: "Claude" },
   { id: "openai", name: "ChatGPT" },
   { id: "gemini", name: "Gemini" },
+  { id: "claude", name: "Claude" }, // centre: the dock rests magnified on it
   { id: "grok", name: "Grok" },
-  { id: "perplexity", name: "Perplexity" },
-  { id: "copilot", name: "Copilot" },
-  { id: "mistral", name: "Mistral" },
   { id: "deepseek", name: "DeepSeek" },
 ] as const;
 
-/** Magnification: icons within RANGE px of the pointer grow, up to MAX× at the pointer. */
-const MAX = 1.6;
-const RANGE = 150;
+/** Magnification: icons near the pointer grow, up to MAX× at the pointer. */
+const MAX = 1.45;
+const RANGE_STEPS = 2.2; // falloff radius, in icon widths
 
 export function AgentsSection() {
   const ref = useRef<HTMLDivElement>(null);
@@ -51,29 +48,38 @@ export function AgentsSection() {
     const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
     const still = window.matchMedia("(prefers-reduced-motion: reduce)");
     const items = Array.from(dock.querySelectorAll<HTMLElement>(".dock-item"));
+    const probe = dock.querySelector<HTMLElement>("[data-probe]");
     let raf = 0;
     let x = 0;
     // The dock is centred, so its centre never moves as icons grow. Each icon's resting centre is
-    // that centre plus a fixed step, which avoids measuring elements mid-transition.
+    // that centre plus a fixed step (icon + gap), read from a hidden probe at the base size.
     let step = 0;
     const measureStep = () => {
-      if (items.length > 1) step = items[1].offsetLeft - items[0].offsetLeft;
+      const gap = parseFloat(getComputedStyle(dock).columnGap) || 0;
+      step = (probe?.offsetWidth ?? 0) + gap;
     };
     measureStep();
 
-    const apply = () => {
-      raf = 0;
+    const magnify = (px: number | null) => {
       const r = dock.getBoundingClientRect();
       const mid = r.left + r.width / 2;
+      const at = px ?? mid; // no pointer: rest magnified on the centre icon (Claude)
       const n = items.length;
       items.forEach((item, i) => {
         const centre = mid + (i - (n - 1) / 2) * step;
-        const t = Math.max(0, 1 - Math.abs(x - centre) / RANGE);
+        const t = Math.max(0, 1 - Math.abs(at - centre) / (step * RANGE_STEPS));
         // Cosine falloff reads smoother than linear, like the real dock.
         const m = 1 + (MAX - 1) * (0.5 - 0.5 * Math.cos(Math.PI * t));
         item.style.setProperty("--m", m.toFixed(3));
       });
     };
+    const apply = () => {
+      raf = 0;
+      magnify(x);
+    };
+    const rest = () => magnify(null);
+    rest();
+
     const onMove = (e: PointerEvent) => {
       if (!fine.matches || still.matches || e.pointerType !== "mouse") return;
       x = e.clientX;
@@ -82,11 +88,11 @@ export function AgentsSection() {
     const onLeave = () => {
       cancelAnimationFrame(raf);
       raf = 0;
-      for (const item of items) item.style.setProperty("--m", "1");
+      rest();
     };
     const onResize = () => {
+      measureStep();
       onLeave();
-      requestAnimationFrame(measureStep);
     };
 
     dock.addEventListener("pointermove", onMove);
@@ -119,21 +125,22 @@ export function AgentsSection() {
         <div
           ref={ref}
           data-shown={shown ? "true" : "false"}
-          className="canvas-dots flex flex-col items-center rounded-[var(--radius-card)] border border-border px-3 py-16 text-center sm:py-24"
+          className="flex flex-col items-center text-center"
         >
           {/* The dock. Fixed-height stage so magnified icons grow upward without shifting the page. */}
-          <div aria-hidden="true" className="flex h-[6.5rem] items-end sm:h-[9rem]">
+          <div aria-hidden="true" className="dock flex h-[calc(var(--base)*1.55+3rem)] items-end">
             <ul
               ref={dockRef}
-              className="dock flex h-[calc(var(--base)+1rem)] items-end gap-1 rounded-[14px] border border-white/70 bg-white/60 px-2 pt-2 pb-2 shadow-[0_24px_48px_-24px_rgb(1_8_43/0.35),inset_0_1px_0_rgb(255_255_255/0.9)] backdrop-blur-xl sm:h-[calc(var(--base)+1.25rem)] sm:gap-2 sm:rounded-[22px] sm:px-2.5 sm:pb-2.5"
+              className="relative flex h-[calc(var(--base)+1.25rem)] items-end gap-2.5 rounded-[calc(var(--base)*0.3)] border border-border/70 bg-bg-subtle/70 px-2.5 pb-2.5 shadow-[0_30px_60px_-30px_rgb(1_8_43/0.4),inset_0_1px_0_rgb(255_255_255/0.9)] backdrop-blur-xl sm:gap-3 sm:px-3 sm:pb-3"
             >
+              <span data-probe className="pointer-events-none invisible absolute w-[var(--base)]" />
               {AGENTS.map((a, i) => (
                 <li
                   key={a.id}
                   className="dock-item relative shrink-0"
                   style={{ "--d": `${i * 70}ms` } as React.CSSProperties}
                 >
-                  <span className="dock-label pointer-events-none absolute bottom-[calc(100%+10px)] left-1/2 rounded-[6px] bg-midnight/90 px-2.5 py-1 text-xs font-medium whitespace-nowrap text-white">
+                  <span className="dock-label pointer-events-none absolute bottom-[calc(100%+12px)] left-1/2 rounded-[6px] bg-midnight/90 px-2.5 py-1 text-sm font-medium whitespace-nowrap text-white">
                     {a.name}
                   </span>
                   <span
@@ -153,22 +160,22 @@ export function AgentsSection() {
                     />
                   </span>
                   {/* Running indicator */}
-                  <span className="absolute -bottom-[7px] left-1/2 size-1 -translate-x-1/2 rounded-full bg-fg-muted/70 sm:-bottom-2" />
+                  <span className="absolute -bottom-[7px] left-1/2 size-1 -translate-x-1/2 rounded-full bg-fg-muted/70 sm:-bottom-2 sm:size-1.5" />
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="mt-14 flex max-w-[48rem] flex-col items-center sm:mt-16">
+          <div className="mt-10 flex max-w-[48rem] flex-col items-center sm:mt-12">
             <h2
               id="agents-title"
               className="text-[clamp(2.25rem,5vw,4.5rem)] leading-[0.98] font-medium tracking-[-0.045em] text-balance text-fg"
             >
               Connect your agents.
             </h2>
-            <p className="mt-5 max-w-[36rem] text-lg text-pretty text-fg-muted">
-              Link Claude, ChatGPT, Gemini and more. Ask them to find the best moments, review the
-              clips and post them for you.
+            <p className="mt-5 max-w-[34rem] text-lg text-pretty text-fg-muted">
+              Let Claude, ChatGPT or Gemini find your best moments, review the clips and post them
+              for you.
             </p>
             <ul className="sr-only">
               {AGENTS.map((a) => (

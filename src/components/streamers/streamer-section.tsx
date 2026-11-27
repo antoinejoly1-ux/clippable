@@ -1,4 +1,5 @@
 import { Button } from "@/components/button";
+import { site } from "@/lib/site";
 import { StreamerShowcase } from "@/components/streamers/streamer-showcase";
 
 export function StreamerSection() {
@@ -19,12 +20,8 @@ export function StreamerSection() {
       <div className="mt-8 sm:mt-10">
         <StreamerShowcase />
       </div>
-      <div className="mx-auto mt-12 flex max-w-[42rem] flex-col items-center gap-6 px-5 text-center">
-        <p className="text-lg text-pretty text-fg-muted">
-          Follow the streamers you want. The moment they go live, Clippable clips them and sends
-          every clip straight to you.
-        </p>
-        <Button href="#early-access">Get early access</Button>
+      <div className="mx-auto mt-12 flex max-w-[42rem] flex-col items-center px-5 text-center">
+        <Button href={site.signupUrl}>Start clipping</Button>
       </div>
     </section>
   );

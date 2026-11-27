@@ -36,7 +36,11 @@ export function ClipPipeline() {
   const [line, setLine] = useState(0);
   const [word, setWord] = useState(0);
 
-  /* Connectors: measured from the real node positions, so any layout works. */
+  /*
+   * One flowing line, edge to edge: it enters the canvas, threads through each node's centre
+   * and leaves the other side. Points are smoothed with Catmull-Rom, so the line waves
+   * between the staggered nodes. Phones stack the nodes, so the line runs top to bottom.
+   */
   const measure = useCallback(() => {
     const canvas = canvasRef.current;
     const nodes = nodeRefs.current;
@@ -44,27 +48,22 @@ export function ClipPipeline() {
     const c = canvas.getBoundingClientRect();
     const r = nodes.map((n) => n!.getBoundingClientRect());
     const horizontal = r[1].left > r[0].right;
-    const next: string[] = [];
-    for (let i = 0; i < r.length - 1; i++) {
-      const a = r[i];
-      const b = r[i + 1];
-      if (horizontal) {
-        const x1 = a.right - c.left;
-        const y1 = a.top + a.height / 2 - c.top;
-        const x2 = b.left - c.left;
-        const y2 = b.top + b.height / 2 - c.top;
-        const dx = (x2 - x1) * 0.55;
-        next.push(`M${x1} ${y1}C${x1 + dx} ${y1} ${x2 - dx} ${y2} ${x2} ${y2}`);
-      } else {
-        const x1 = a.left + a.width / 2 - c.left;
-        const y1 = a.bottom - c.top;
-        const x2 = b.left + b.width / 2 - c.left;
-        const y2 = b.top - c.top;
-        const dy = (y2 - y1) * 0.55;
-        next.push(`M${x1} ${y1}C${x1} ${y1 + dy} ${x2} ${y2 - dy} ${x2} ${y2}`);
-      }
+    const centres = r.map((b) => [b.left + b.width / 2 - c.left, b.top + b.height / 2 - c.top]);
+    const pts: number[][] = horizontal
+      ? [[0, centres[0][1] + 40], ...centres, [c.width, centres[2][1] - 40]]
+      : [[centres[0][0] - 30, 0], ...centres, [centres[2][0] + 30, c.height]];
+    let d = `M${pts[0][0]} ${pts[0][1]}`;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[Math.max(0, i - 1)];
+      const p1 = pts[i];
+      const p2 = pts[i + 1];
+      const p3 = pts[Math.min(pts.length - 1, i + 2)];
+      const k = 1 / 5; // tension: lower is tighter
+      d += `C${p1[0] + (p2[0] - p0[0]) * k} ${p1[1] + (p2[1] - p0[1]) * k} ${
+        p2[0] - (p3[0] - p1[0]) * k
+      } ${p2[1] - (p3[1] - p1[1]) * k} ${p2[0]} ${p2[1]}`;
     }
-    setPaths(next);
+    setPaths([d]);
   }, []);
 
   useEffect(() => {
@@ -147,25 +146,29 @@ export function ClipPipeline() {
         ref={canvasRef}
         className="canvas-dots relative overflow-hidden rounded-[var(--radius-card)] border border-border px-5 py-14 sm:px-10 lg:px-12 lg:pt-20 lg:pb-14"
       >
-        {/* Connectors */}
+        {/* The flow line, behind the nodes */}
         <svg aria-hidden="true" className="pointer-events-none absolute inset-0 size-full">
           {paths.map((d, i) => (
-            <g key={i}>
+            <g key={i} fill="none" strokeLinecap="round">
               <path
                 d={d}
-                fill="none"
-                stroke="color-mix(in oklab, var(--fg) 22%, transparent)"
-                strokeWidth="1.25"
+                stroke="color-mix(in oklab, var(--fg) 16%, transparent)"
+                strokeWidth="3"
+              />
+              {/* A soft glow travelling with the pulse */}
+              <path
+                d={d}
+                stroke="var(--color-sky)"
+                strokeWidth="12"
+                pathLength={1}
+                className="flow-pulse opacity-40 blur-[6px]"
               />
               <path
                 d={d}
-                fill="none"
                 stroke="var(--color-electric)"
-                strokeWidth="2"
-                strokeLinecap="round"
+                strokeWidth="3.5"
                 pathLength={1}
                 className="flow-pulse"
-                style={{ animationDelay: `${i * 1.3}s` }}
               />
             </g>
           ))}

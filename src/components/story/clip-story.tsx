@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import { Button } from "@/components/button";
-import { useEffect, useRef } from "react";
+import { site } from "@/lib/site";
+import { useEffect, useRef, useState } from "react";
 import { storyClips } from "@/lib/story";
 import { streamers } from "@/lib/streamers";
 
@@ -26,7 +27,7 @@ const T = {
   text: [0.82, 0.92],
 } as const;
 
-const INTRO_MS = 3200; // how long the load animation keeps the player glued to its slot
+const INTRO_MS = 2400; // how long the load animation keeps the player glued to its slot
 
 type Range = readonly [number, number];
 const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -43,7 +44,79 @@ const roundedRect = (x: number, y: number, w: number, h: number, r: number) => {
 
 const N = storyClips.length;
 
-/** Letter-by-letter reveal. Visual only: the h1 carries the real text in aria-label. */
+type Audience = "clipper" | "streamer";
+
+/** Hero copy for each side of the marketplace. The switch flips between them. */
+const HERO: Record<
+  Audience,
+  { title: string; lead: string; sub: string; cta: string; proof: [string, string] }
+> = {
+  clipper: {
+    title: "Make clips instantly.",
+    lead: "Make clips",
+    sub: "Clippable turns Kick and Twitch streams into vertical clips while they're live. Post them and earn on every 1,000 views.",
+    cta: "Start clipping",
+    proof: ["100+ streamer campaigns", "on Kick and Twitch"],
+  },
+  streamer: {
+    title: "Get clipped instantly.",
+    lead: "Get clipped",
+    sub: "Go live as usual. Clippers post your best moments to TikTok, Shorts, Reels and X, and you only pay per 1,000 views.",
+    cta: "Start a campaign",
+    proof: ["Join 100+ streamers", "already getting clipped"],
+  },
+};
+
+/** Clipper / streamer switch: a sliding thumb inside a pill track. */
+function AudienceSwitch({ value, onChange }: { value: Audience; onChange: (a: Audience) => void }) {
+  const options: { id: Audience; label: string }[] = [
+    { id: "clipper", label: "I clip" },
+    { id: "streamer", label: "I stream" },
+  ];
+  return (
+    <div
+      role="radiogroup"
+      aria-label="Show Clippable for"
+      className="hero-rise pointer-events-auto relative grid grid-cols-2 rounded-full border border-white/80 bg-white/55 p-1 shadow-[0_10px_30px_-18px_rgb(1_8_43/0.4)] backdrop-blur-md [animation-delay:60ms]"
+      onKeyDown={(e) => {
+        if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) {
+          e.preventDefault();
+          const next = value === "clipper" ? "streamer" : "clipper";
+          onChange(next);
+          (e.currentTarget.querySelector(`[data-id="${next}"]`) as HTMLElement | null)?.focus();
+        }
+      }}
+    >
+      {/* The thumb slides under the chosen option. */}
+      <span
+        aria-hidden="true"
+        className="switch-thumb absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-full bg-midnight shadow-[0_6px_16px_-6px_rgb(1_8_43/0.6)]"
+        style={{ transform: value === "streamer" ? "translateX(100%)" : "translateX(0)" }}
+      />
+      {options.map((o) => {
+        const on = value === o.id;
+        return (
+          <button
+            key={o.id}
+            type="button"
+            role="radio"
+            aria-checked={on}
+            tabIndex={on ? 0 : -1}
+            data-id={o.id}
+            onClick={() => onChange(o.id)}
+            className={`relative z-[1] h-10 rounded-full px-5 text-[15px] font-medium whitespace-nowrap transition-colors duration-300 sm:px-6 ${
+              on ? "text-white" : "text-fg hover:text-fg-muted"
+            }`}
+          >
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Letter-by-letter reveal. Visual only: the h1 carries the real text in an sr-only span. */
 function Letters({ text, delay }: { text: string; delay: number }) {
   return (
     <span aria-hidden="true" className="inline-block whitespace-nowrap">
@@ -51,7 +124,7 @@ function Letters({ text, delay }: { text: string; delay: number }) {
         <span
           key={i}
           className="hero-letter inline-block"
-          style={{ animationDelay: `${delay + i * 45}ms` }}
+          style={{ animationDelay: `${delay + i * 32}ms` }}
         >
           {ch === " " ? "\u00a0" : ch}
         </span>
@@ -73,6 +146,37 @@ export function ClipStory() {
   const tileRefs = useRef<(HTMLDivElement | null)[]>([]);
   const tileVideoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const textRef = useRef<HTMLParagraphElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
+  const followRef = useRef<() => void>(() => {});
+  const [audience, setAudience] = useState<Audience>("clipper");
+  const [swapped, setSwapped] = useState(false);
+  const copy = HERO[audience];
+
+  // Restore the visitor's side (?for=streamers or their last choice) after hydration.
+  useEffect(() => {
+    let saved: string | null = null;
+    try {
+      saved = new URLSearchParams(location.search).get("for") ?? localStorage.getItem("audience");
+    } catch {}
+    if (saved === "streamer" || saved === "streamers") {
+      const t = window.setTimeout(() => setAudience("streamer"), 0);
+      return () => window.clearTimeout(t);
+    }
+  }, []);
+  useEffect(() => {
+    document.documentElement.dataset.audience = audience;
+  }, [audience]);
+
+  const switchAudience = (next: Audience) => {
+    if (next === audience) return;
+    setSwapped(true);
+    setAudience(next);
+    try {
+      localStorage.setItem("audience", next);
+    } catch {}
+    // The headline's first word changes width, so the player follows its slot for a moment.
+    requestAnimationFrame(() => followRef.current());
+  };
   const checkRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
@@ -169,6 +273,7 @@ export function ClipStory() {
       copy.style.opacity = String(1 - out);
       copy.style.transform = `translate3d(0, ${-24 * out}px, 0) scale(${lerp(1, 0.97, out)})`;
       copy.style.visibility = out >= 1 ? "hidden" : "visible";
+      if (glowRef.current) glowRef.current.style.opacity = String(1 - seg(p, [0, 0.12]));
       if (cueRef.current) {
         cueRef.current.style.opacity = String(1 - seg(p, [0, 0.03]));
         // display:none stops the looping cue animation; opacity 0 alone does not.
@@ -301,10 +406,15 @@ export function ClipStory() {
 
     // During the load animation the slot opens up, so the player follows it frame by frame.
     const introStart = performance.now();
+    let followUntil = introStart + INTRO_MS;
     const intro = () => {
       measureSlot();
       render(progress());
-      if (performance.now() - introStart < INTRO_MS) introRaf = requestAnimationFrame(intro);
+      introRaf = performance.now() < followUntil ? requestAnimationFrame(intro) : 0;
+    };
+    followRef.current = () => {
+      followUntil = performance.now() + 900;
+      if (!introRaf) introRaf = requestAnimationFrame(intro);
     };
 
     const io = new IntersectionObserver(
@@ -374,6 +484,8 @@ export function ClipStory() {
       >
         <span id="how" aria-hidden="true" className="absolute top-[120svh]" />
         <div ref={stageRef} className="sticky top-0 h-svh overflow-hidden bg-bg">
+          {/* A squeezed blue ellipse pressing down from the top; fades as the story starts. */}
+          <div ref={glowRef} aria-hidden="true" className="hero-sky absolute inset-0 z-0" />
           {/* Media layer: the player, the cuts and the clips */}
           <div className="absolute inset-0 z-20 overflow-hidden">
             <div
@@ -473,28 +585,31 @@ export function ClipStory() {
             ref={copyRef}
             className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center px-4 pt-20 text-center [@media(max-height:520px)]:pt-14"
           >
-            <p className="hero-rise text-[clamp(1.05rem,1.6vw,1.5rem)] leading-tight font-medium tracking-[-0.02em] text-fg [animation-delay:120ms]">
-              Watch less. <br />
-              Clip every live stream.
-            </p>
+            <AudienceSwitch value={audience} onChange={switchAudience} />
             <h1
               id="hero-title"
-              className="mt-6 text-[clamp(2.5rem,min(8.4vw,15svh),9.5rem)] leading-[0.9] font-semibold tracking-[-0.055em] text-fg [@media(max-height:520px)]:mt-3"
+              className="mt-7 text-[clamp(2.5rem,min(8.4vw,15svh),9.5rem)] leading-[0.9] font-semibold tracking-[-0.055em] text-fg [@media(max-height:520px)]:mt-3"
             >
               {/* Real text for crawlers and screen readers; the animated letters are aria-hidden. */}
-              <span className="sr-only">Make clips instantly.</span>
+              <span className="sr-only">{copy.title}</span>
               {/* A dot leads the reveal left to right, then becomes the full stop (desktop). */}
-              <span className="hero-reveal relative inline-flex flex-wrap items-center justify-center">
-                <Letters text="Make clips" delay={260} />
+              <span className="relative inline-block">
                 <span
-                  ref={slotRef}
-                  aria-hidden="true"
-                  className="hero-slot inline-block h-[0.8em] overflow-hidden rounded-[0.12em] bg-midnight"
-                />
-                <span className="inline-flex items-baseline">
-                  <Letters text="instantly" delay={700} />
-                  <span aria-hidden="true" className="hero-dot inline-block">
-                    .
+                  className={`hero-reveal relative inline-flex flex-wrap items-center justify-center ${
+                    swapped ? "hero-swap" : ""
+                  }`}
+                >
+                  <Letters key={`a-${audience}`} text={copy.lead} delay={swapped ? 0 : 150} />
+                  <span
+                    ref={slotRef}
+                    aria-hidden="true"
+                    className="hero-slot inline-block h-[0.8em] overflow-hidden rounded-[0.12em] bg-midnight"
+                  />
+                  <span className="inline-flex items-baseline">
+                    <Letters text="instantly" delay={420} />
+                    <span aria-hidden="true" className="hero-dot inline-block">
+                      .
+                    </span>
                   </span>
                 </span>
                 <span aria-hidden="true" className="hero-cover">
@@ -503,36 +618,46 @@ export function ClipStory() {
               </span>
             </h1>
 
-            <p className="hero-rise mt-6 max-w-[46ch] text-[clamp(1rem,1.3vw,1.2rem)] leading-snug text-pretty text-fg-muted [animation-delay:1350ms] [@media(max-height:520px)]:hidden">
-              Clippable turns Kick and Twitch streams into vertical clips while they&apos;re live.
-              Clippers earn on every 1,000 views.
+            <p
+              key={`s-${audience}`}
+              className={`${swapped ? "swap-in" : "hero-rise [animation-delay:950ms]"} mt-6 max-w-[50ch] text-[clamp(1rem,1.3vw,1.2rem)] leading-snug text-pretty text-fg-muted [@media(max-height:520px)]:hidden`}
+            >
+              {copy.sub}
             </p>
 
-            <Button
-              href="#early-access"
-              size="lg"
-              className="hero-rise pointer-events-auto mt-8 [animation-delay:1500ms] [@media(max-height:520px)]:mt-5"
-            >
-              Get early access
-            </Button>
+            {/* The CTA spans the proof row below it, so the two read as one block. */}
+            <div className="mt-8 inline-flex flex-col items-stretch [@media(max-height:520px)]:mt-5">
+              <Button
+                href={site.signupUrl}
+                size="xl"
+                className="hero-rise pointer-events-auto [animation-delay:1050ms]"
+              >
+                <span key={`c-${audience}`} className={swapped ? "swap-in" : ""}>
+                  {copy.cta}
+                </span>
+              </Button>
 
-            <div className="hero-rise mt-7 flex items-center gap-3 [animation-delay:1750ms] [@media(max-height:520px)]:hidden">
-              <span aria-hidden="true" className="flex -space-x-2">
-                {streamers.slice(0, 5).map((st) => (
-                  <Image
-                    key={st.id}
-                    src={st.avatar}
-                    alt=""
-                    width={32}
-                    height={32}
-                    className="size-8 rounded-full object-cover ring-2 ring-bg"
-                  />
-                ))}
-              </span>
-              <p className="text-left text-sm leading-snug text-fg-muted">
-                <span className="font-medium text-fg">100+ streamer campaigns</span> <br />
-                on Kick and Twitch
-              </p>
+              <div className="hero-rise mt-5 flex items-center gap-3 [animation-delay:1150ms] [@media(max-height:520px)]:hidden">
+                <span aria-hidden="true" className="flex -space-x-2">
+                  {streamers.slice(0, 5).map((st) => (
+                    <Image
+                      key={st.id}
+                      src={st.avatar}
+                      alt=""
+                      width={32}
+                      height={32}
+                      className="size-8 rounded-full object-cover ring-2 ring-white"
+                    />
+                  ))}
+                </span>
+                <p
+                  key={`t-${audience}`}
+                  className={`text-left text-sm leading-snug text-fg-muted ${swapped ? "swap-in" : ""}`}
+                >
+                  <span className="font-medium text-fg">{copy.proof[0]}</span> <br />
+                  {copy.proof[1]}
+                </p>
+              </div>
             </div>
           </div>
 
@@ -542,17 +667,21 @@ export function ClipStory() {
               ref={textRef}
               className="invisible text-[clamp(1.6rem,4vw,3.5rem)] leading-tight font-medium tracking-[-0.04em] text-balance text-fg opacity-0"
             >
-              Made without lifting a finger.
+              While you blinked. <br />
+              <span className="text-fg-muted">While you doomscrolled.</span>
             </p>
           </div>
 
           <div
             ref={cueRef}
             aria-hidden="true"
-            className="hero-rise absolute bottom-7 left-1/2 z-30 flex -translate-x-1/2 flex-col items-center gap-2 text-fg-muted [animation-delay:1600ms] motion-reduce:hidden"
+            className="hero-rise absolute bottom-6 left-1/2 z-30 flex -translate-x-1/2 flex-col items-center gap-2.5 [animation-delay:1300ms] motion-reduce:hidden"
           >
-            <span className="relative block h-8 w-px overflow-hidden bg-border">
-              <span className="absolute inset-x-0 top-0 h-3 animate-[scroll-cue_1.8s_var(--ease-out-expo)_infinite] bg-fg" />
+            <span className="font-mono text-[10px] tracking-[0.14em] text-fg-muted uppercase">
+              Scroll
+            </span>
+            <span className="relative block h-14 w-[2px] overflow-hidden rounded-full bg-fg/12">
+              <span className="absolute inset-x-0 top-0 h-6 animate-[scroll-cue_1.6s_var(--ease-out-expo)_infinite] rounded-full bg-electric" />
             </span>
           </div>
         </div>
@@ -571,7 +700,7 @@ function StaticStory() {
       className="hidden px-5 py-16 motion-reduce:block sm:px-10"
     >
       <p className="mx-auto mb-10 max-w-[18ch] text-center text-3xl font-medium tracking-[-0.04em] text-balance sm:text-5xl">
-        Made without lifting a finger.
+        While you blinked. <span className="text-fg-muted">While you doomscrolled.</span>
       </p>
       <div className="mx-auto grid max-w-5xl grid-cols-2 gap-3 sm:grid-cols-4">
         {storyClips.map((clip) => (

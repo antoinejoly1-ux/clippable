@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { PlatformIcon, platforms } from "@/components/platform-icons";
 import { streamers, type Streamer } from "@/lib/streamers";
 
-const CYCLE_MS = 2400;
+const CYCLE_MS = 2000;
 const channelUrl = (s: Streamer) =>
   s.platform === "kick" ? `kick.com/${s.handle}` : `twitch.tv/${s.handle}`;
 
