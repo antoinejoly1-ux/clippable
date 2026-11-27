@@ -7,32 +7,26 @@ import { storyClips } from "@/lib/story";
 /*
  * Hero + scroll story.
  *
- * Load:   the period lands, letters reveal, the CTA rises, then a gap opens in the
- *         headline and a 4:3 player springs in between the words.
- * Scroll: the player leaves the headline and grows to a large frame centred on white →
- *         white cuts slice it into vertical strips → the strips open into 9:16 clips while
- *         the page sinks to dark → one statement → the grid moves down, each clip ticks off.
- * Everything moves vertically.
+ * Load:   letters reveal, the period lands, the CTA rises, then a gap opens in
+ *         "Make clips ▶ instantly." and the 4:3 player springs in.
+ * Scroll: the player leaves the headline and takes the full screen → it is cut in half
+ *         top to bottom and into four across → each piece becomes its own vertical clip.
+ *         White throughout; everything moves vertically.
  */
 const T = {
-  copyOut: [0, 0.1],
-  grow: [0, 0.2],
-  cut: [0.23, 0.31],
-  morph: [0.29, 0.47],
-  clipsIn: [0.36, 0.48],
-  text: [0.5, 0.55, 0.64, 0.69],
-  pan: [0.68, 0.98],
+  copyOut: [0, 0.12],
+  grow: [0, 0.3],
+  cut: [0.33, 0.45],
+  morph: [0.44, 0.72],
+  clipsIn: [0.52, 0.74],
+  checks: [0.74, 0.96],
 } as const;
 
 const INTRO_MS = 2700; // how long the load animation keeps the player glued to its slot
-const VEIL_BASE = 0.38; // clips are darkened as soon as they exist
-const VEIL_TEXT = 0.7; // and darker still behind the statement
 
 type Range = readonly [number, number];
 const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const seg = (p: number, [a, b]: Range) => clamp((p - a) / (b - a));
-const win = (p: number, [a, b, c, d]: readonly [number, number, number, number]) =>
-  Math.min(seg(p, [a, b]), 1 - seg(p, [c, d]));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
 const easeOut = (t: number) => 1 - (1 - t) ** 3;
@@ -44,10 +38,6 @@ const roundedRect = (x: number, y: number, w: number, h: number, r: number) => {
 };
 
 const N = storyClips.length;
-const WHITE = [255, 255, 255];
-const MIDNIGHT = [1, 8, 43];
-const mix = (t: number) =>
-  `rgb(${WHITE.map((w, i) => Math.round(lerp(w, MIDNIGHT[i], t))).join(" ")})`;
 
 /** Letter-by-letter reveal. Visual only: the h1 carries the real text in aria-label. */
 function Letters({ text, delay }: { text: string; delay: number }) {
@@ -59,7 +49,7 @@ function Letters({ text, delay }: { text: string; delay: number }) {
           className="hero-letter inline-block"
           style={{ animationDelay: `${delay + i * 45}ms` }}
         >
-          {ch}
+          {ch === " " ? "\u00a0" : ch}
         </span>
       ))}
     </span>
@@ -74,10 +64,8 @@ export function ClipStory() {
   const cueRef = useRef<HTMLDivElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const heroVideoRef = useRef<HTMLVideoElement>(null);
-  const veilRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<SVGSVGElement>(null);
   const overlayPathRef = useRef<SVGPathElement>(null);
-  const textRef = useRef<HTMLHeadingElement>(null);
   const tileRefs = useRef<(HTMLDivElement | null)[]>([]);
   const tileVideoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const checkRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -167,13 +155,14 @@ export function ClipStory() {
       if (cueRef.current) cueRef.current.style.opacity = String(1 - seg(p, [0, 0.03]));
 
       const g = easeInOut(seg(p, T.grow));
-      const ch0 = Math.min(H * (mobile ? 0.42 : 0.64), (W - (mobile ? 32 : 96)) * 0.75);
-      const cw0 = (ch0 * 4) / 3;
-      const center = { x: (W - cw0) / 2, y: (H - ch0) / 2 + (mobile ? 12 : 24), w: cw0, h: ch0 };
-      const bx = lerp(slotRect.x, center.x, g);
-      const by = lerp(slotRect.y, center.y, g);
-      const bw = lerp(slotRect.w, center.w, g);
-      const bh = lerp(slotRect.h, center.h, g);
+      const pad = mobile ? 12 : 24;
+      const top = mobile ? 76 : 88;
+      // "Full screen": the whole viewport below the nav, minus a small margin.
+      const full = { x: pad, y: top, w: W - 2 * pad, h: H - top - pad };
+      const bx = lerp(slotRect.x, full.x, g);
+      const by = lerp(slotRect.y, full.y, g);
+      const bw = lerp(slotRect.w, full.w, g);
+      const bh = lerp(slotRect.h, full.h, g);
       const br = lerp(slotRect.r, mobile ? 14 : 18, g);
       box.style.transform = `translate3d(${bx}px, ${by}px, 0)`;
       box.style.width = `${bw}px`;
@@ -183,82 +172,64 @@ export function ClipStory() {
       // The slot's dark fill is only a stand-in until the player is drawn over it.
       slot.style.backgroundColor = "transparent";
 
-      /* ── 2 · Cut into vertical strips, which open into a grid of 9:16 clips ── */
-      const c = easeInOut(seg(p, T.cut));
-      const m = easeInOut(seg(p, T.morph));
-      const gStrip = lerp(0, mobile ? 5 : 10, c);
-      const sw = (center.w - gStrip * (N - 1)) / N;
-
+      /* ── 2 · Cut into a grid (2 rows × 4 across; 4 × 2 on phones) ─────── */
       const cols = mobile ? 2 : 4;
       const rows = Math.ceil(N / cols);
-      const G = mobile ? 10 : 20;
-      const M = mobile ? 16 : Math.max(32, W * 0.05);
-      const topPad = mobile ? 84 : 104;
-      const botPad = mobile ? 24 : 40;
-      const cw = Math.min(
-        (H * (mobile ? 0.5 : 0.66) * 9) / 16,
-        (W - 2 * M - (cols - 1) * G) / cols,
+      const c = easeInOut(seg(p, T.cut));
+      const m = easeInOut(seg(p, T.morph));
+      const cutGap = lerp(0, mobile ? 8 : 14, c);
+      const pw = (full.w - cutGap * (cols - 1)) / cols;
+      const ph = (full.h - cutGap * (rows - 1)) / rows;
+
+      /* ── 3 · Each piece becomes a vertical 9:16 clip ─────────────────── */
+      const G = mobile ? 10 : 18;
+      const clipH = Math.min(
+        (full.h - G * (rows - 1)) / rows,
+        (((full.w - G * (cols - 1)) / cols) * 16) / 9,
       );
-      const chh = (cw * 16) / 9;
-      const gridW = cols * cw + (cols - 1) * G;
-      const gridH = rows * chh + (rows - 1) * G;
-      const left = (W - gridW) / 2;
-      const travel = Math.max(0, gridH - (H - topPad - botPad));
-      const pan = easeInOut(seg(p, T.pan));
-      const baseTop = travel > 0 ? topPad : (H - gridH) / 2 + (topPad - botPad) / 2;
-      const top0 = baseTop - travel * pan;
-      const radius = lerp(mobile ? 4 : 6, mobile ? 10 : 12, m);
+      const clipW = (clipH * 9) / 16;
+      const gridW = cols * clipW + (cols - 1) * G;
+      const gridH = rows * clipH + (rows - 1) * G;
+      const gx = (W - gridW) / 2;
+      const gy = full.y + (full.h - gridH) / 2;
+      const radius = lerp(mobile ? 8 : 12, mobile ? 10 : 12, m);
       const fadeIn = seg(p, T.clipsIn);
+      const k = seg(p, T.checks);
 
       let d = "";
       for (let i = 0; i < N; i++) {
         const col = i % cols;
         const row = Math.floor(i / cols);
-        const x = lerp(center.x + i * (sw + gStrip), left + col * (cw + G), m);
-        const y = lerp(center.y, top0 + row * (chh + G), m);
-        const w = lerp(sw, cw, m);
-        const h = lerp(center.h, chh, m);
+        const x = lerp(full.x + col * (pw + cutGap), gx + col * (clipW + G), m);
+        const y = lerp(full.y + row * (ph + cutGap), gy + row * (clipH + G), m);
+        const w = lerp(pw, clipW, m);
+        const h = lerp(ph, clipH, m);
         if (c > 0) d += roundedRect(x, y, w, h, radius);
 
         const tile = tileRefs.current[i];
         if (!tile) continue;
         const o = easeOut(seg(fadeIn, [i * 0.06, i * 0.06 + 0.5]));
+        // The tile frame shows as soon as the cut starts; its own clip fades in on top.
         tile.style.transform = `translate3d(${x}px, ${y}px, 0)`;
         tile.style.width = `${w}px`;
         tile.style.height = `${h}px`;
         tile.style.borderRadius = `${radius}px`;
-        // The tile's dark frame shows as soon as the cut starts; its clip fades in on top.
-        tile.style.opacity = c > 0 ? "1" : "0";
-        tile.style.visibility = c > 0 ? "visible" : "hidden";
+        tile.style.opacity = o > 0 ? "1" : "0";
+        tile.style.visibility = o > 0 ? "visible" : "hidden";
         const tv = tileVideoRefs.current[i];
         if (tv) tv.style.opacity = String(o);
 
-        /* ── 3 · As the grid moves, each clip ticks off: Apple Pay-style ── */
-        const startAt = (row / rows) * 0.62 + (col / cols) * 0.16;
-        const done = pan > startAt + 0.04 || p >= T.pan[1];
+        // Apple Pay-style tick as each finished clip lands.
+        const done = k > (i / N) * 0.8 + 0.05;
         const check = checkRefs.current[i];
         if (check && check.dataset.done !== String(done)) check.dataset.done = String(done);
       }
-      // White cuts on white, deepening to dark as the strips open into clips.
+      // White cuts: the page shows through everywhere except the pieces.
       overlayPath.setAttribute("d", c > 0 ? `M0 0H${W}V${H}H0Z${d}` : "");
-      overlayPath.setAttribute("fill", mix(m));
-      stage.style.backgroundColor = mix(m);
-
-      // Clips never show at full brightness: the veil builds with the morph.
-      const t = win(p, T.text);
-      const base = VEIL_BASE * m;
-      if (veilRef.current) veilRef.current.style.opacity = String(lerp(base, VEIL_TEXT, t));
-
-      const text = textRef.current;
-      if (text) {
-        text.style.opacity = String(t);
-        text.style.transform = `translate3d(0, ${(1 - t) * 24}px, 0) scale(${lerp(0.97, 1, t)})`;
-        text.style.visibility = t > 0 ? "visible" : "hidden";
-      }
 
       if (!reduced) {
         setHeroPlaying(inView && fadeIn < 1);
-        setTilesPlaying(inView && p > T.cut[0] - 0.03);
+        setTilesPlaying(inView && p > T.cut[0] - 0.05);
       }
     };
 
@@ -348,9 +319,9 @@ export function ClipStory() {
       <section
         ref={sectionRef}
         aria-labelledby="hero-title"
-        className="relative h-[600svh] motion-reduce:h-svh"
+        className="relative h-[380svh] motion-reduce:h-svh"
       >
-        <span id="how" aria-hidden="true" className="absolute top-[110svh]" />
+        <span id="how" aria-hidden="true" className="absolute top-[120svh]" />
         <div ref={stageRef} className="sticky top-0 h-svh overflow-hidden bg-bg">
           {/* Media layer: the player, the cuts and the clips */}
           <div className="absolute inset-0 z-20 overflow-hidden">
@@ -365,7 +336,7 @@ export function ClipStory() {
                 priority
                 fetchPriority="high"
                 sizes="(min-width: 768px) 70vw, 100vw"
-                className="object-cover"
+                className="object-cover object-[64%_50%] md:object-center"
               />
               <video
                 ref={heroVideoRef}
@@ -374,7 +345,7 @@ export function ClipStory() {
                 playsInline
                 preload="metadata"
                 aria-hidden="true"
-                className="absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-700 data-[ready=true]:opacity-100"
+                className="absolute inset-0 size-full object-cover object-[64%_50%] opacity-0 transition-opacity duration-700 data-[ready=true]:opacity-100 md:object-center"
               >
                 <source src="/media/hero.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"' />
                 <source src="/media/hero.h264.mp4" type="video/mp4" />
@@ -387,7 +358,7 @@ export function ClipStory() {
               className="pointer-events-none absolute inset-0 size-full"
               preserveAspectRatio="none"
             >
-              <path ref={overlayPathRef} fill="#ffffff" fillRule="evenodd" />
+              <path ref={overlayPathRef} fill="var(--bg)" fillRule="evenodd" />
             </svg>
 
             {storyClips.map((clip, i) => (
@@ -432,12 +403,6 @@ export function ClipStory() {
                 </div>
               </div>
             ))}
-
-            <div
-              ref={veilRef}
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 bg-midnight opacity-0"
-            />
           </div>
 
           {/* Hero copy, centred. The player sits in the headline's slot. */}
@@ -452,17 +417,17 @@ export function ClipStory() {
             </p>
             <h1
               id="hero-title"
-              aria-label="Clip everything."
+              aria-label="Make clips instantly."
               className="mt-6 flex flex-wrap items-center justify-center text-[clamp(3.25rem,8.4vw,9.5rem)] leading-[0.9] font-semibold tracking-[-0.055em] text-fg"
             >
-              <Letters text="Clip" delay={260} />
+              <Letters text="Make clips" delay={260} />
               <span
                 ref={slotRef}
                 aria-hidden="true"
                 className="hero-slot inline-block h-[0.8em] overflow-hidden rounded-[0.12em] bg-midnight"
               />
               <span className="inline-flex items-baseline">
-                <Letters text="everything" delay={440} />
+                <Letters text="instantly" delay={700} />
                 <span aria-hidden="true" className="hero-dot inline-block">
                   .
                 </span>
@@ -499,16 +464,6 @@ export function ClipStory() {
               <span className="absolute inset-x-0 top-0 h-3 animate-[scroll-cue_1.8s_var(--ease-out-expo)_infinite] bg-fg" />
             </span>
           </div>
-
-          {/* The statement */}
-          <div className="pointer-events-none absolute inset-0 z-30 grid place-items-center px-6 text-center">
-            <h2
-              ref={textRef}
-              className="invisible max-w-[13ch] text-[clamp(2.75rem,7.6vw,7rem)] leading-[0.95] font-medium tracking-[-0.045em] text-balance text-white opacity-0"
-            >
-              Clipped without lifting a finger.
-            </h2>
-          </div>
         </div>
       </section>
 
@@ -517,17 +472,14 @@ export function ClipStory() {
   );
 }
 
-/** Reduced-motion version: the statement and the clips, laid out as a normal section. */
+/** Reduced-motion version: the clips, laid out as a normal section. */
 function StaticStory() {
   return (
     <section
-      aria-label="How Clippable works"
-      className="hidden bg-midnight px-5 py-20 text-white motion-reduce:block sm:px-10"
+      aria-label="Clips made instantly"
+      className="hidden px-5 py-16 motion-reduce:block sm:px-10"
     >
-      <h2 className="mx-auto max-w-[14ch] text-center text-4xl font-medium tracking-[-0.04em] text-balance sm:text-6xl">
-        Clipped without lifting a finger.
-      </h2>
-      <div className="mx-auto mt-12 grid max-w-6xl grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="mx-auto grid max-w-5xl grid-cols-2 gap-3 sm:grid-cols-4">
         {storyClips.map((clip) => (
           <div
             key={clip.id}
