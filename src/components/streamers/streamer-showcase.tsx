@@ -3,11 +3,9 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { PlatformIcon, platforms } from "@/components/platform-icons";
-import { streamers, type Streamer } from "@/lib/streamers";
+import { streamers } from "@/lib/streamers";
 
 const CYCLE_MS = 2000;
-const channelUrl = (s: Streamer) =>
-  s.platform === "kick" ? `kick.com/${s.handle}` : `twitch.tv/${s.handle}`;
 
 export function StreamerShowcase() {
   const [active, setActive] = useState(0);
@@ -39,7 +37,7 @@ export function StreamerShowcase() {
       on ? "blur-none scale-100 opacity-100" : "scale-[1.04] opacity-0 blur-xl"
     }`;
 
-  // Left: the streamer's real photo, as a live card.
+  // Left: the streamer's photo, nothing on top of it.
   const photoSide = (
     <div aria-hidden="true" className="relative hidden h-[40rem] lg:block">
       <div className="absolute top-[4%] right-[4%] aspect-[3/4] w-[82%] overflow-hidden rounded-[14px] bg-midnight shadow-[0_30px_60px_-30px_rgb(1_8_43/0.55)]">
@@ -50,50 +48,29 @@ export function StreamerShowcase() {
               alt=""
               fill
               sizes="(min-width: 1024px) 22vw, 1px"
-              className="object-cover"
+              className="object-cover object-[50%_25%]"
             />
-            <div className="absolute inset-0 bg-[linear-gradient(to_top,rgb(1_8_43/0.78),transparent_45%)]" />
-            <div className="absolute inset-x-4 bottom-4 flex items-end justify-between text-white">
-              <div>
-                <p className="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.08em] uppercase">
-                  <span className="size-1.5 rounded-full bg-success" />
-                  Active campaign
-                </p>
-                <p className="mt-1 text-lg font-semibold tracking-[-0.02em]">{st.name}</p>
-                <p className="mt-2 inline-flex rounded-[5px] bg-white/15 px-2 py-1 text-xs font-medium backdrop-blur-sm">
-                  {st.rate}
-                </p>
-              </div>
-              <span
-                className="flex size-6 items-center justify-center rounded-[5px]"
-                style={{ backgroundColor: platforms[st.platform].color }}
-              >
-                <PlatformIcon
-                  platform={st.platform}
-                  className={`size-3.5 ${st.platform === "kick" ? "text-black" : "text-white"}`}
-                />
-              </span>
-            </div>
           </div>
         ))}
       </div>
     </div>
   );
 
-  // Right: the streamer's channel — their real banner, or a card built from their avatar.
-  const channelSide = (
+  // Right: a second photo, full-bleed. Falls back to the channel banner, then a blurred avatar.
+  const secondSide = (
     <div aria-hidden="true" className="relative hidden h-[40rem] lg:block">
-      <div className="absolute bottom-[4%] left-[4%] aspect-[4/5] w-[78%] overflow-hidden rounded-[14px] border border-border bg-bg shadow-[0_30px_60px_-30px_rgb(1_8_43/0.45)]">
-        {streamers.map((st, s) => (
-          <div key={st.id} className={`absolute inset-0 flex flex-col ${swap(s === active)}`}>
-            <div className="relative min-h-0 flex-1 overflow-hidden bg-midnight">
-              {st.banner ? (
+      <div className="absolute bottom-[4%] left-[4%] aspect-[4/5] w-[78%] overflow-hidden rounded-[14px] bg-midnight shadow-[0_30px_60px_-30px_rgb(1_8_43/0.45)]">
+        {streamers.map((st, s) => {
+          const src = st.photo2 ?? st.banner;
+          return (
+            <div key={st.id} className={`absolute inset-0 ${swap(s === active)}`}>
+              {src ? (
                 <Image
-                  src={st.banner}
+                  src={src}
                   alt=""
                   fill
                   sizes="(min-width: 1024px) 20vw, 1px"
-                  className="object-cover"
+                  className="object-cover object-[50%_25%]"
                 />
               ) : (
                 <>
@@ -116,26 +93,8 @@ export function StreamerShowcase() {
                 </>
               )}
             </div>
-            <div className="flex items-center gap-2.5 px-3.5 py-3">
-              <Image
-                src={st.avatar}
-                alt=""
-                width={32}
-                height={32}
-                className="size-8 rounded-full object-cover"
-              />
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-[13px] font-semibold text-fg">{st.name}</span>
-                <span className="block truncate font-mono text-[10px] text-fg-muted">
-                  {channelUrl(st)}
-                </span>
-              </span>
-              <span className="rounded-[5px] bg-midnight px-2.5 py-1 text-[11px] font-medium text-white">
-                Clipping
-              </span>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
@@ -194,8 +153,8 @@ export function StreamerShowcase() {
           );
         })}
       </ul>
-      {channelSide}
-      <p aria-hidden="true" className="-mt-4 text-center text-sm text-fg-muted lg:hidden">
+      {secondSide}
+      <p aria-hidden="true" className="-mt-4 text-center text-sm text-fg-muted lg:col-start-2">
         <span className="font-medium text-fg">{streamers[active].name}</span> ·{" "}
         {streamers[active].rate}
       </p>

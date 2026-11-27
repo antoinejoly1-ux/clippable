@@ -14,6 +14,8 @@ export type Streamer = {
   photo: string;
   /** Portrait crop of the official channel banner, when there's a good one. */
   banner?: string;
+  /** A second photo (client-supplied), shown full-bleed on the right of the showcase. */
+  photo2?: string;
   /** Channel handle on the platform. */
   handle: string;
   /** Campaign payout per 1,000 views, as listed on the current Clippable site (converted from per-100K). */
@@ -27,6 +29,7 @@ export const streamers: Streamer[] = [
     platform: "kick",
     avatar: "/media/streamers/n3on.webp",
     photo: "/media/streamers/n3on-photo.webp",
+    photo2: "/media/streamers/n3on-photo-2.webp",
     banner: "/media/streamers/n3on-banner.webp",
     handle: "n3on",
     rate: "up to $0.40 / 1K views",
@@ -37,6 +40,7 @@ export const streamers: Streamer[] = [
     platform: "twitch",
     avatar: "/media/streamers/plaqueboymax.webp",
     photo: "/media/streamers/plaqueboymax-photo.webp",
+    photo2: "/media/streamers/plaqueboymax-photo-2.webp",
     handle: "plaqueboymax",
     rate: "up to $0.75 / 1K views",
   },
@@ -46,6 +50,7 @@ export const streamers: Streamer[] = [
     platform: "twitch",
     avatar: "/media/streamers/lacy.webp",
     photo: "/media/streamers/lacy-photo.webp",
+    photo2: "/media/streamers/lacy-photo-2.webp",
     handle: "lacy",
     rate: "$0.20 / 1K views",
   },
@@ -74,6 +79,7 @@ export const streamers: Streamer[] = [
     platform: "kick",
     avatar: "/media/streamers/clavicular.webp",
     photo: "/media/streamers/clavicular-photo.webp",
+    photo2: "/media/streamers/clavicular-photo-2.webp",
     banner: "/media/streamers/clavicular-banner.webp",
     handle: "clavicular",
     rate: "$0.40 / 1K views",
@@ -93,6 +99,7 @@ export const streamers: Streamer[] = [
     platform: "kick",
     avatar: "/media/streamers/lospollostv.webp",
     photo: "/media/streamers/lospollostv-photo.webp",
+    photo2: "/media/streamers/lospollostv-photo-2.webp",
     handle: "lospollostv",
     rate: "up to $0.30 / 1K views",
   },
