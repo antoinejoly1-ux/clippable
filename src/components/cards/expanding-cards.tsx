@@ -36,8 +36,9 @@ export function ExpandingCards({
     <ul className="xcards relative" aria-label={label}>
       {cards.map((c) => {
         const dark = c.tone === "dark";
-        const titleLight = dark || sky;
-        const copyLight = dark;
+        // The sky rises from the bottom: titles stay ink, the copy below sits on the dark.
+        const titleLight = dark;
+        const copyLight = dark || sky;
         return (
           <li
             key={c.index}

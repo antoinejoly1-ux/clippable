@@ -1,106 +1,132 @@
 import type { Platform } from "@/components/platform-icons";
 
 /**
- * Streamer campaigns, taken from the current Clippable site.
+ * Streamers shown on the site, in the client's order (Nov 2026 list).
  * Photos and banners are each streamer's own official channel images (Kick / Twitch),
  * fetched Nov 2026. TODO(client): confirm each streamer approves this use before launch.
  */
 export type Streamer = {
   id: string;
   name: string;
-  platform: Extract<Platform, "kick" | "twitch">;
+  /** Where they stream. Left out where it isn't confirmed; the badge is then hidden. */
+  platform?: Extract<Platform, "kick" | "twitch">;
   avatar: string;
-  /** Portrait (3:4) crop of the official profile picture. */
+  /** Portrait photo, shown on the left of the showcase. */
   photo: string;
+  /** A second photo, shown full-bleed on the right. */
+  photo2?: string;
   /** Portrait crop of the official channel banner, when there's a good one. */
   banner?: string;
-  /** A second photo (client-supplied), shown full-bleed on the right of the showcase. */
-  photo2?: string;
-  /** Channel handle on the platform. */
   handle: string;
   /** Campaign payout per 1,000 views, as listed on the current Clippable site (converted from per-100K). */
-  rate: string;
+  rate?: string;
 };
 
+const m = (id: string) => `/media/streamers/${id}`;
+
+// TODO(client): confirm platform for IShowSpeed, Rakai, DDG and BenDaDonnn, and rates for the new names.
 export const streamers: Streamer[] = [
   {
     id: "n3on",
     name: "N3on",
     platform: "kick",
-    avatar: "/media/streamers/n3on.webp",
-    photo: "/media/streamers/n3on-photo.webp",
-    photo2: "/media/streamers/n3on-photo-2.webp",
-    banner: "/media/streamers/n3on-banner.webp",
+    avatar: m("n3on.webp"),
+    photo: m("n3on-photo.webp"),
+    photo2: m("n3on-photo-2.webp"),
+    banner: m("n3on-banner.webp"),
     handle: "n3on",
     rate: "up to $0.40 / 1K views",
-  },
-  {
-    id: "plaqueboymax",
-    name: "PlaqueBoyMax",
-    platform: "twitch",
-    avatar: "/media/streamers/plaqueboymax.webp",
-    photo: "/media/streamers/plaqueboymax-photo.webp",
-    photo2: "/media/streamers/plaqueboymax-photo-2.webp",
-    handle: "plaqueboymax",
-    rate: "up to $0.75 / 1K views",
   },
   {
     id: "lacy",
     name: "Lacy",
     platform: "twitch",
-    avatar: "/media/streamers/lacy.webp",
-    photo: "/media/streamers/lacy-photo.webp",
-    photo2: "/media/streamers/lacy-photo-2.webp",
+    avatar: m("lacy.webp"),
+    photo: m("lacy-photo.webp"),
+    photo2: m("lacy-photo-2.webp"),
     handle: "lacy",
     rate: "$0.20 / 1K views",
+  },
+  {
+    id: "plaqueboymax",
+    name: "PlaqueBoyMax",
+    platform: "twitch",
+    avatar: m("plaqueboymax.webp"),
+    photo: m("plaqueboymax-photo.webp"),
+    photo2: m("plaqueboymax-photo-2.webp"),
+    handle: "plaqueboymax",
+    rate: "up to $0.75 / 1K views",
   },
   {
     id: "cuffem",
     name: "Cuffem",
     platform: "kick",
-    avatar: "/media/streamers/cuffem.webp",
-    photo: "/media/streamers/cuffem-photo.webp",
-    banner: "/media/streamers/cuffem-banner.webp",
+    avatar: m("cuffem.webp"),
+    photo: m("cuffem-photo.webp"),
+    photo2: m("cuffem-photo-2.webp"),
     handle: "cuffem",
+    rate: "$0.40 / 1K views",
+  },
+  {
+    id: "clavicular",
+    name: "Clavicular",
+    platform: "kick",
+    avatar: m("clavicular.webp"),
+    photo: m("clavicular-photo.webp"),
+    photo2: m("clavicular-photo-2.webp"),
+    banner: m("clavicular-banner.webp"),
+    handle: "clavicular",
     rate: "$0.40 / 1K views",
   },
   {
     id: "blueface",
     name: "Blueface",
     platform: "kick",
-    avatar: "/media/streamers/blueface.webp",
-    photo: "/media/streamers/blueface-photo.webp",
+    avatar: m("blueface.webp"),
+    photo: m("blueface-photo.webp"),
     handle: "blueface",
     rate: "$0.10 / 1K views",
   },
   {
-    id: "clavicular",
-    name: "Clavicular",
-    platform: "kick",
-    avatar: "/media/streamers/clavicular.webp",
-    photo: "/media/streamers/clavicular-photo.webp",
-    photo2: "/media/streamers/clavicular-photo-2.webp",
-    banner: "/media/streamers/clavicular-banner.webp",
-    handle: "clavicular",
-    rate: "$0.40 / 1K views",
-  },
-  {
-    id: "yourrage",
-    name: "YourRAGE",
+    id: "kaicenat",
+    name: "Kai Cenat",
     platform: "twitch",
-    avatar: "/media/streamers/yourrage.webp",
-    photo: "/media/streamers/yourrage-photo.webp",
-    handle: "yourragegaming",
-    rate: "up to $0.40 / 1K views",
+    avatar: m("kaicenat.webp"),
+    photo: m("kaicenat-photo.webp"),
+    photo2: m("kaicenat-photo-2.webp"),
+    handle: "kaicenat",
   },
   {
-    id: "lospollostv",
-    name: "LosPollosTV",
-    platform: "kick",
-    avatar: "/media/streamers/lospollostv.webp",
-    photo: "/media/streamers/lospollostv-photo.webp",
-    photo2: "/media/streamers/lospollostv-photo-2.webp",
-    handle: "lospollostv",
-    rate: "up to $0.30 / 1K views",
+    id: "ishowspeed",
+    name: "IShowSpeed",
+    avatar: m("ishowspeed.webp"),
+    photo: m("ishowspeed-photo.webp"),
+    photo2: m("ishowspeed-photo-2.webp"),
+    handle: "ishowspeed",
+  },
+  {
+    id: "rakai",
+    name: "Rakai",
+    avatar: m("rakai.webp"),
+    photo: m("rakai-photo.webp"),
+    handle: "rakai",
+  },
+  {
+    id: "stableronaldo",
+    name: "Stable Ronaldo",
+    platform: "twitch",
+    avatar: m("stableronaldo.webp"),
+    photo: m("stableronaldo-photo.webp"),
+    photo2: m("stableronaldo-photo-2.webp"),
+    handle: "stableronaldo",
+  },
+  { id: "ddg", name: "DDG", avatar: m("ddg.webp"), photo: m("ddg-photo.webp"), handle: "ddg" },
+  {
+    id: "bendadonnn",
+    name: "BenDaDonnn",
+    avatar: m("bendadonnn.webp"),
+    photo: m("bendadonnn-photo.webp"),
+    photo2: m("bendadonnn-photo-2.webp"),
+    handle: "bendadonnn",
   },
 ];

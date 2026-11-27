@@ -199,6 +199,7 @@ export function ClipStory() {
     let mobile = false;
     let short = false;
     let headerH = 64;
+    let textRatio = 0; // statement width per px of font size, on one line
     let disposed = false;
     let slotRect = { x: 0, y: 0, w: 0, h: 0, r: 0 };
     let lastP = -1;
@@ -262,6 +263,15 @@ export function ClipStory() {
       short = H < 520;
       // The fixed header is 64px, or 80px from sm up. Read it so the full-screen player clears it.
       headerH = document.querySelector<HTMLElement>("header > div")?.offsetHeight ?? 64;
+      const st = textRef.current;
+      if (st) {
+        st.style.fontSize = "100px";
+        st.style.whiteSpace = "nowrap";
+        st.style.width = "auto";
+        st.style.display = "inline-block";
+        textRatio = st.offsetWidth / 100;
+        st.style.display = "";
+      }
       overlay.setAttribute("viewBox", `0 0 ${W} ${H}`);
       measureSlot();
       lastP = -1;
@@ -373,8 +383,22 @@ export function ClipStory() {
       if (text) {
         const t = seg(p, T.text);
         const midY = gy + half * clipH + (half - 1) * G + (G + extra) / 2;
+        // Sized to span the clip grid exactly: one line where it fits, two on narrow screens.
+        const gridW1 = cols * ((clipH1 * 9) / 16) + (cols - 1) * G;
+        const one = textRatio ? (gridW1 / textRatio) * 0.98 : 48;
+        const twoLines = one < 30;
+        // Narrow screens: two lines across the screen width, sized to fit the gap between rows.
+        const wide = W - 40;
+        const size = twoLines
+          ? Math.min(textRatio ? ((wide * 1.6) / textRatio) * 0.95 : 36, (TG + G) * 0.4)
+          : Math.min(one, TG * 0.78);
+        text.style.fontSize = `${size}px`;
+        text.style.whiteSpace = twoLines ? "normal" : "nowrap";
+        text.style.width = `${twoLines ? wide : gridW1}px`;
         text.style.opacity = String(t);
-        text.style.transform = `translate3d(0, ${midY}px, 0) translateY(-50%) scale(${lerp(0.96, 1, t)})`;
+        // Lands with a slight settle: rises 18px and un-blurs as it fades in.
+        text.style.filter = t < 1 ? `blur(${(1 - t) * 8}px)` : "";
+        text.style.transform = `translate3d(0, ${midY + (1 - easeOut(t)) * 18}px, 0) translateY(-50%)`;
         text.style.visibility = t > 0 ? "visible" : "hidden";
       }
 
@@ -457,6 +481,33 @@ export function ClipStory() {
     update();
     introRaf = requestAnimationFrame(intro);
     window.addEventListener("scroll", schedule, { passive: true });
+
+    // Magnetic stops: when scrolling settles near a key frame of the story (the hero, the
+    // full player, the clip grid, the posted grid, the statement), glide onto it.
+    const STOPS = [0, T.grow[1], T.clipsIn[1], T.send[1], T.text[1]];
+    let idle = 0;
+    const settle = () => {
+      const lenis = (
+        window as unknown as {
+          __lenis?: { scrollTo: (y: number, o: object) => void; isScrolling: unknown };
+        }
+      ).__lenis;
+      if (!lenis || lenis.isScrolling || reduced || !inView) return;
+      const distance = section.offsetHeight - H;
+      const p = progress();
+      if (p <= 0 || p >= 1) return;
+      const k = STOPS.reduce((a, b) => (Math.abs(b - p) < Math.abs(a - p) ? b : a));
+      if (Math.abs(k - p) > 0.06 || Math.abs(k - p) < 0.003) return;
+      lenis.scrollTo(section.offsetTop + k * distance, {
+        duration: 0.9,
+        easing: (x: number) => 1 - Math.pow(1 - x, 3),
+      });
+    };
+    const onScrollIdle = () => {
+      window.clearTimeout(idle);
+      idle = window.setTimeout(settle, 180);
+    };
+    window.addEventListener("scroll", onScrollIdle, { passive: true });
     document.fonts?.ready.then(() => {
       if (disposed) return;
       measure();
@@ -466,6 +517,8 @@ export function ClipStory() {
     return () => {
       disposed = true;
       window.removeEventListener("scroll", schedule);
+      window.removeEventListener("scroll", onScrollIdle);
+      window.clearTimeout(idle);
       reducedQuery.removeEventListener("change", onReducedChange);
       heroVideo.removeEventListener("playing", showVideo);
       io.disconnect();
@@ -668,9 +721,9 @@ export function ClipStory() {
           <div className="pointer-events-none absolute inset-x-0 top-0 z-30 px-6 text-center">
             <p
               ref={textRef}
-              className="invisible text-[clamp(1.6rem,4vw,3.5rem)] leading-tight font-medium tracking-[-0.04em] text-balance text-fg opacity-0"
+              className="invisible mx-auto leading-[1.02] font-medium tracking-[-0.045em] text-balance text-fg opacity-0"
             >
-              While you watched live.
+              While it&apos;s happening live.
             </p>
           </div>
 
@@ -702,7 +755,7 @@ function StaticStory() {
       className="hidden px-5 py-16 motion-reduce:block sm:px-10"
     >
       <p className="mx-auto mb-10 max-w-[18ch] text-center text-3xl font-medium tracking-[-0.04em] text-balance sm:text-5xl">
-        While you watched live.
+        While it&apos;s happening live.
       </p>
       <div className="mx-auto grid max-w-5xl grid-cols-2 gap-3 sm:grid-cols-4">
         {storyClips.map((clip) => (

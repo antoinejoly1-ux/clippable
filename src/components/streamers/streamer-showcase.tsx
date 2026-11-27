@@ -121,7 +121,7 @@ export function StreamerShowcase() {
                 setHovering(true);
                 setActive(i);
               }}
-              className={`cursor-default text-[clamp(2.4rem,5.4vw,4.75rem)] leading-[1.06] font-semibold tracking-[-0.045em] transition-colors duration-500 ${
+              className={`cursor-default text-[clamp(2rem,4.2vw,3.6rem)] leading-[1.08] font-semibold tracking-[-0.045em] transition-colors duration-500 ${
                 on ? "text-fg" : "text-fg-subtle"
               }`}
             >
@@ -136,21 +136,23 @@ export function StreamerShowcase() {
                   <Image src={s.avatar} alt="" fill sizes="80px" className="object-cover" />
                 </span>
                 {s.name}
-                <span
-                  aria-hidden="true"
-                  className={`absolute top-1/2 left-full ml-[0.25em] flex size-[0.4em] -translate-y-1/2 items-center justify-center rounded-[0.08em] transition-[opacity,scale] duration-500 ease-out-expo ${
-                    on ? "scale-100 opacity-100" : "scale-75 opacity-0"
-                  }`}
-                  style={{ backgroundColor: platforms[s.platform].color }}
-                >
-                  <PlatformIcon
-                    platform={s.platform}
-                    className={`size-[62%] ${s.platform === "kick" ? "text-black" : "text-white"}`}
-                  />
-                </span>
+                {s.platform && (
+                  <span
+                    aria-hidden="true"
+                    className={`absolute top-1/2 left-full ml-[0.25em] flex size-[0.4em] -translate-y-1/2 items-center justify-center rounded-[0.08em] transition-[opacity,scale] duration-500 ease-out-expo ${
+                      on ? "scale-100 opacity-100" : "scale-75 opacity-0"
+                    }`}
+                    style={{ backgroundColor: platforms[s.platform!].color }}
+                  >
+                    <PlatformIcon
+                      platform={s.platform!}
+                      className={`size-[62%] ${s.platform === "kick" ? "text-black" : "text-white"}`}
+                    />
+                  </span>
+                )}
               </span>
               <span className="sr-only">
-                , on {platforms[s.platform].title}, {s.rate}
+                {s.platform ? `, on ${platforms[s.platform].title}` : ""}
               </span>
             </li>
           );

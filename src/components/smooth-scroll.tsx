@@ -48,7 +48,7 @@ export function SmoothScroll() {
       };
     }
 
-    const lenis = new Lenis({ autoRaf: false, lerp: 0.09, anchors: true });
+    const lenis = new Lenis({ autoRaf: false, lerp: 0.1, anchors: true });
     let id = 0;
     const loop = (t: number) => {
       lenis.raf(t);
@@ -60,6 +60,17 @@ export function SmoothScroll() {
     const events = ["wheel", "touchstart", "keydown", "click", "pointerdown"] as const;
     for (const ev of events) window.addEventListener(ev, kick, { passive: true });
     lenis.on("scroll", kick);
+    // Shared so the clip story can glide onto its key frames. Starting a glide also wakes
+    // the rAF loop, which otherwise only runs while the user is scrolling.
+    (window as unknown as { __lenis?: object }).__lenis = {
+      scrollTo: (y: number, o: object) => {
+        lenis.scrollTo(y, o);
+        kick();
+      },
+      get isScrolling() {
+        return lenis.isScrolling;
+      },
+    };
     kick();
     return () => {
       io.disconnect();
@@ -67,6 +78,7 @@ export function SmoothScroll() {
       cancelAnimationFrame(id);
       for (const ev of events) window.removeEventListener(ev, kick);
       lenis.destroy();
+      delete (window as unknown as { __lenis?: object }).__lenis;
     };
   }, []);
   return null;

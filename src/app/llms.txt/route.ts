@@ -15,9 +15,10 @@ export function GET() {
     `- [FAQ](${site.url}/#faq)`,
     `- [Early access](${site.url}/#early-access)`,
     "",
-    "## Current campaigns",
+    "## Streamers",
     ...streamers.map(
-      (s) => `- ${s.name} (${s.platform === "kick" ? "Kick" : "Twitch"}): ${s.rate}`,
+      (s) =>
+        `- ${s.name}${s.platform ? ` (${s.platform === "kick" ? "Kick" : "Twitch"})` : ""}${s.rate ? `: ${s.rate}` : ""}`,
     ),
     "",
     "## FAQ",

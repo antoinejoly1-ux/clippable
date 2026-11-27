@@ -121,7 +121,8 @@ const Kbd = ({ children }: { children: React.ReactNode }) => (
 /* 01 · Set up: an "Add streamers" menu. Rows open on hover and tick    */
 /* ─────────────────────────────────────────────────────────────────── */
 
-const MENU = [streamers[0], streamers[2], streamers[5], streamers[1]]; // N3on, Lacy, Clavicular, PlaqueBoyMax
+const pick = (id: string) => streamers.find((s) => s.id === id)!;
+const MENU = ["n3on", "lacy", "clavicular", "plaqueboymax"].map(pick);
 const STYLE_ROW = MENU.length; // index of the "My branding" row
 const PICKS = [0, 2, 1, STYLE_ROW]; // the cursor's route
 
@@ -245,15 +246,15 @@ export function SetupVisual() {
                 {s.name}
                 <span
                   className="flex size-3.5 shrink-0 items-center justify-center rounded-[3px]"
-                  style={{ backgroundColor: platforms[s.platform].color }}
+                  style={{ backgroundColor: platforms[s.platform!].color }}
                 >
                   <PlatformIcon
-                    platform={s.platform}
+                    platform={s.platform!}
                     className={`size-2.5 ${s.platform === "kick" ? "text-black" : "text-white"}`}
                   />
                 </span>
               </>,
-              `${platforms[s.platform].title} · ${s.rate}`,
+              `${platforms[s.platform!].title} · ${s.rate}`,
               s.name[0].toUpperCase(),
             ),
           )}
