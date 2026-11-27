@@ -1,10 +1,12 @@
 import { Logo } from "@/components/logo";
+import { MobileMenu } from "@/components/mobile-menu";
 import { site } from "@/lib/site";
 
 const links = [
   { label: "How it works", href: "#steps" },
   { label: "Workflow", href: "#live" },
   { label: "Streamers", href: "#streamers" },
+  { label: "FAQ", href: "#faq" },
   { label: "Contact", href: `mailto:${site.email}` },
 ];
 
@@ -45,6 +47,7 @@ export function SiteHeader() {
           >
             Create account
           </a>
+          <MobileMenu links={links} loginUrl={site.loginUrl} />
         </div>
       </div>
     </header>

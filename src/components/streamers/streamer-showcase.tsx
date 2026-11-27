@@ -54,10 +54,13 @@ export function StreamerShowcase() {
             <div className="absolute inset-x-4 bottom-4 flex items-end justify-between text-white">
               <div>
                 <p className="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.08em] uppercase">
-                  <span className="size-1.5 animate-live rounded-full bg-live" />
-                  Live now
+                  <span className="size-1.5 rounded-full bg-success" />
+                  Active campaign
                 </p>
                 <p className="mt-1 text-lg font-semibold tracking-[-0.02em]">{st.name}</p>
+                <p className="mt-2 inline-flex rounded-[5px] bg-white/15 px-2 py-1 text-xs font-medium backdrop-blur-sm">
+                  {st.rate}
+                </p>
               </div>
               <span
                 className="flex size-6 items-center justify-center rounded-[5px]"
@@ -125,8 +128,8 @@ export function StreamerShowcase() {
                   {channelUrl(st)}
                 </span>
               </span>
-              <span className="rounded-full bg-midnight px-2.5 py-1 text-[11px] font-medium text-white">
-                Following
+              <span className="rounded-[5px] bg-midnight px-2.5 py-1 text-[11px] font-medium text-white">
+                Clipping
               </span>
             </div>
           </div>
@@ -180,12 +183,18 @@ export function StreamerShowcase() {
                   className={`size-[62%] ${s.platform === "kick" ? "text-black" : "text-white"}`}
                 />
               </span>
-              <span className="sr-only">, on {platforms[s.platform].title}</span>
+              <span className="sr-only">
+                , on {platforms[s.platform].title}, {s.rate}
+              </span>
             </li>
           );
         })}
       </ul>
       {channelSide}
+      <p aria-hidden="true" className="-mt-4 text-center text-sm text-fg-muted lg:hidden">
+        <span className="font-medium text-fg">{streamers[active].name}</span> ·{" "}
+        {streamers[active].rate}
+      </p>
     </div>
   );
 }

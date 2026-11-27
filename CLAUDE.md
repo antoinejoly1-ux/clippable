@@ -25,7 +25,7 @@ Follow it, especially the Definition of Done (§12).
 ## Design rules (client direction)
 
 - **Light mode only.** Generous white space; restraint over decoration.
-- **Tight corners:** 6px controls (`--radius-control`), 10–12px cards (`--radius-card`). Exception (client direction): the hero CTA (plain solid blue, no icons) and the header account buttons are full pills.
+- **Tight corners:** 6px controls (`--radius-control`), 10–12px cards (`--radius-card`). Exception (client direction): every CTA is a full pill and uses `<Button>` (`src/components/button.tsx`), plain, no icons. The header account buttons are pills too.
 - No gradient text, glow blobs or badge clutter. Two-tone type (ink + muted) for emphasis.
 - Big statements sit centered in open space (e.g. between the clip rows), never tucked in a corner card.
 - Posting moments use `.send-check`: a paper plane flies off, then the disc turns green and a tick strokes in.

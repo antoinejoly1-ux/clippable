@@ -1,4 +1,4 @@
-import { CtaButton } from "@/components/cta-button";
+import { Button } from "@/components/button";
 import { StreamerShowcase } from "@/components/streamers/streamer-showcase";
 
 export function StreamerSection() {
@@ -24,7 +24,7 @@ export function StreamerSection() {
           Follow the streamers you want. The moment they go live, Clippable clips them and sends
           every clip straight to you.
         </p>
-        <CtaButton href="#early-access">Start clipping</CtaButton>
+        <Button href="#early-access">Get early access</Button>
       </div>
     </section>
   );

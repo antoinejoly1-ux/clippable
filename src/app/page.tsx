@@ -1,4 +1,6 @@
 import { AgentsSection } from "@/components/agents/agents-section";
+import { AudienceSection } from "@/components/audience/audience-section";
+import { FaqSection } from "@/components/faq-section";
 import { FinalCta } from "@/components/final-cta";
 import { JsonLd } from "@/components/json-ld";
 import { LiveSection } from "@/components/live/live-section";
@@ -31,6 +33,8 @@ export default function Home() {
         <LiveSection />
         <StepsSection />
         <AgentsSection />
+        <AudienceSection />
+        <FaqSection />
         <FinalCta />
       </main>
       <SiteFooter />

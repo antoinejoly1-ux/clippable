@@ -1,4 +1,4 @@
-import { CtaButton } from "@/components/cta-button";
+import { Button } from "@/components/button";
 import { LogoMark } from "@/components/logo";
 import { site } from "@/lib/site";
 
@@ -39,9 +39,7 @@ export function SiteFooter() {
               <span className="text-fg-muted">clipped live.</span>
             </p>
             <div className="mt-8">
-              <CtaButton href="#early-access" tone="dark">
-                Get early access
-              </CtaButton>
+              <Button href="#early-access">Get early access</Button>
             </div>
           </div>
 

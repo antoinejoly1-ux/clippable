@@ -1,4 +1,4 @@
-import { CtaButton } from "@/components/cta-button";
+import { Button } from "@/components/button";
 import { LazyVideo } from "@/components/lazy-video";
 import { site } from "@/lib/site";
 
@@ -35,12 +35,13 @@ export function FinalCta() {
             in.
           </p>
           <div className="mt-9 flex flex-col items-center gap-3">
-            <CtaButton
+            <Button
               href={`mailto:${site.email}?subject=${encodeURIComponent("Clippable early access")}`}
-              tone="light"
+              variant="inverse"
+              size="lg"
             >
-              Request early access
-            </CtaButton>
+              Get early access
+            </Button>
             <p className="font-mono text-xs tracking-[0.04em] text-white/70 select-all">
               {site.email}
             </p>

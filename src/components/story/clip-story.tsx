@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { Button } from "@/components/button";
 import { useEffect, useRef } from "react";
 import { storyClips } from "@/lib/story";
 import { streamers } from "@/lib/streamers";
@@ -484,12 +485,18 @@ export function ClipStory() {
               </span>
             </h1>
 
-            <a
+            <p className="hero-rise mt-6 max-w-[34ch] text-[clamp(1rem,1.3vw,1.2rem)] leading-snug text-pretty text-fg-muted [animation-delay:1350ms] [@media(max-height:520px)]:hidden">
+              Clippable turns Kick and Twitch streams into vertical clips while they&apos;re live.
+              Clippers earn on every 1,000 views.
+            </p>
+
+            <Button
               href="#early-access"
-              className="hero-rise pointer-events-auto mt-10 inline-flex h-14 items-center rounded-full bg-electric px-9 text-lg font-semibold text-white shadow-[0_18px_40px_-18px_rgb(0_97_255/0.75)] transition-[transform,background-color] duration-300 ease-out-expo [animation-delay:1500ms] hover:-translate-y-0.5 hover:bg-royal sm:h-16 sm:px-10 sm:text-xl [@media(max-height:520px)]:mt-5"
+              size="lg"
+              className="hero-rise pointer-events-auto mt-8 [animation-delay:1500ms] [@media(max-height:520px)]:mt-5"
             >
               Get early access
-            </a>
+            </Button>
 
             <div className="hero-rise mt-7 flex items-center gap-3 [animation-delay:1750ms] [@media(max-height:520px)]:hidden">
               <span aria-hidden="true" className="flex -space-x-2">

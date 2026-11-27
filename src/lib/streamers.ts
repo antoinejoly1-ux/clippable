@@ -16,6 +16,7 @@ export type Streamer = {
   banner?: string;
   /** Channel handle on the platform. */
   handle: string;
+  /** Campaign payout per 1,000 views, as listed on the current Clippable site (converted from per-100K). */
   rate: string;
 };
 
@@ -28,7 +29,7 @@ export const streamers: Streamer[] = [
     photo: "/media/streamers/n3on-photo.webp",
     banner: "/media/streamers/n3on-banner.webp",
     handle: "n3on",
-    rate: "up to $40 / 100K views",
+    rate: "up to $0.40 / 1K views",
   },
   {
     id: "plaqueboymax",
@@ -37,7 +38,7 @@ export const streamers: Streamer[] = [
     avatar: "/media/streamers/plaqueboymax.webp",
     photo: "/media/streamers/plaqueboymax-photo.webp",
     handle: "plaqueboymax",
-    rate: "up to $75 / 100K views",
+    rate: "up to $0.75 / 1K views",
   },
   {
     id: "lacy",
@@ -46,7 +47,7 @@ export const streamers: Streamer[] = [
     avatar: "/media/streamers/lacy.webp",
     photo: "/media/streamers/lacy-photo.webp",
     handle: "lacy",
-    rate: "$20 / 100K views",
+    rate: "$0.20 / 1K views",
   },
   {
     id: "cuffem",
@@ -56,7 +57,7 @@ export const streamers: Streamer[] = [
     photo: "/media/streamers/cuffem-photo.webp",
     banner: "/media/streamers/cuffem-banner.webp",
     handle: "cuffem",
-    rate: "$40 / 100K views",
+    rate: "$0.40 / 1K views",
   },
   {
     id: "blueface",
@@ -65,7 +66,7 @@ export const streamers: Streamer[] = [
     avatar: "/media/streamers/blueface.webp",
     photo: "/media/streamers/blueface-photo.webp",
     handle: "blueface",
-    rate: "$10 / 100K views",
+    rate: "$0.10 / 1K views",
   },
   {
     id: "clavicular",
@@ -75,7 +76,7 @@ export const streamers: Streamer[] = [
     photo: "/media/streamers/clavicular-photo.webp",
     banner: "/media/streamers/clavicular-banner.webp",
     handle: "clavicular",
-    rate: "$40 / 100K views",
+    rate: "$0.40 / 1K views",
   },
   {
     id: "yourrage",
@@ -84,7 +85,7 @@ export const streamers: Streamer[] = [
     avatar: "/media/streamers/yourrage.webp",
     photo: "/media/streamers/yourrage-photo.webp",
     handle: "yourragegaming",
-    rate: "up to $40 / 100K views",
+    rate: "up to $0.40 / 1K views",
   },
   {
     id: "lospollostv",
@@ -93,6 +94,6 @@ export const streamers: Streamer[] = [
     avatar: "/media/streamers/lospollostv.webp",
     photo: "/media/streamers/lospollostv-photo.webp",
     handle: "lospollostv",
-    rate: "up to $30 / 100K views",
+    rate: "up to $0.30 / 1K views",
   },
 ];
