@@ -82,7 +82,7 @@ export function FlowGradient({ className }: { className?: string }) {
     const start = performance.now();
 
     const draw = (now: number) => {
-      gl.uniform1f(uT, still ? 4 : (now - start) / 1000);
+      gl.uniform1f(uT, still ? 4 : ((now - start) / 1000) * 2.2); // ×2.2: a quicker flow
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     };
     const loop = (now: number) => {

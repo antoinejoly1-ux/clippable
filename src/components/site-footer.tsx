@@ -39,8 +39,8 @@ export function SiteFooter() {
           <div className="flex flex-col gap-14 md:flex-row md:justify-between">
             <div>
               <p className="text-[clamp(2rem,3.6vw,3.25rem)] leading-[1] font-medium tracking-[-0.045em] text-fg">
-                Every stream, <br />
-                <span className="text-fg-muted">clipped live.</span>
+                Every live stream, <br />
+                <span className="text-fg-muted">clipped instantly.</span>
               </p>
               <Button href={site.signupUrl} className="mt-8">
                 Create account

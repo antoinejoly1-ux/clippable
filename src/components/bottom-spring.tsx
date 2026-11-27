@@ -3,15 +3,14 @@
 import { useEffect } from "react";
 
 /**
- * Elastic end of page. Pull past the bottom (wheel or touch) and the page lifts with rising
- * resistance, uncovering more of the footer sky while the wordmark rises and swells. Let go
- * and a damped spring settles it back. Writes --pull (px) on <html>; CSS does the rest.
+ * Elastic end of page. Pull past the bottom (wheel or touch) and the page lifts a little with
+ * rising resistance, showing a touch more of the footer sky. Let go and it springs back. Writes --pull (px) on <html>; CSS does the rest.
  */
 export function BottomSpring() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const root = document.documentElement;
-    const MAX = 220;
+    const MAX = 90;
     let pull = 0;
     let vel = 0;
     let raf = 0;

@@ -111,6 +111,7 @@ export const streamers: Streamer[] = [
     name: "Rakai",
     avatar: m("rakai.webp"),
     photo: m("rakai-photo.webp"),
+    photo2: m("rakai-photo-2.webp"),
     handle: "rakai",
   },
   {
@@ -128,6 +129,7 @@ export const streamers: Streamer[] = [
     platform: "kick",
     avatar: m("ddg.webp"),
     photo: m("ddg-photo.webp"),
+    photo2: m("ddg-photo-2.webp"),
     handle: "ddg",
   },
   {
