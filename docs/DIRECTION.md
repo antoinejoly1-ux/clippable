@@ -50,7 +50,7 @@ The site moved away from the dark Live Board to a **light, editorial scroll stor
 
 1. Split hero: copy on the left, the live stream on the right. Scroll to dive in.
 2. The stream fills the screen, then **"One live stream."** appears centered over it.
-3. It is cut into vertical strips that open into a reel of **9:16 clips**. The clips dim and **"Cut the second it happens."** appears centered.
+3. It is cut into vertical strips that open into a reel of **9:16 clips**. The clips dim and **"Clipped without lifting a finger."** appears centered.
 4. The reel pans. Each clip gets an **Apple Pay-style check** as it posts, and its views climb.
 5. The clips dim and a giant **4.1M** view counter appears centered.
 6. Streamers: centered headline, one row of streamer icons, and a cursor that follows them one by one.

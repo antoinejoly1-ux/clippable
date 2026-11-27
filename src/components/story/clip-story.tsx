@@ -476,8 +476,8 @@ export function ClipStory() {
               className="invisible col-start-1 row-start-1 text-fg opacity-0"
             >
               <p className="eyebrow text-royal">02 — Clipped</p>
-              <h2 className="mx-auto mt-4 max-w-[14ch] text-[clamp(2.75rem,8vw,7.5rem)] leading-[0.95] font-medium tracking-[-0.045em] text-balance">
-                Cut the second it happens.
+              <h2 className="mx-auto mt-4 max-w-[13ch] text-[clamp(2.75rem,7.6vw,7rem)] leading-[0.95] font-medium tracking-[-0.045em] text-balance">
+                Clipped without lifting a finger.
               </h2>
               <p className="mx-auto mt-5 max-w-[36ch] text-lg text-pretty text-fg-muted">
                 The best moments are found, trimmed, captioned and scored. Vertical, ready for every
@@ -520,7 +520,11 @@ function StaticStory() {
       <ol className="mx-auto grid max-w-6xl gap-8 sm:grid-cols-3">
         {[
           ["01 — Live", "One live stream.", "Clippable watches it in real time."],
-          ["02 — Clipped", "Cut the second it happens.", "Found, trimmed, captioned and scored."],
+          [
+            "02 — Clipped",
+            "Clipped without lifting a finger.",
+            "Found, trimmed, captioned and scored.",
+          ],
           ["03 — Posted", "Posted everywhere.", "Vertical clips, ready for every feed."],
         ].map(([label, title, body]) => (
           <li key={label}>

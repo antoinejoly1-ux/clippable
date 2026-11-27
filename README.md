@@ -42,3 +42,13 @@ inspiration/        references for the design phase
 ## Deploy
 
 Vercel recommended. Set `NEXT_PUBLIC_SITE_URL` and, on production only, `SITE_INDEXABLE=true`.
+
+## Swapping in real clips
+
+Drop the 8 clips (any orientation; they're centre-cropped to 9:16) and, optionally, the landscape stream for the hero into a folder, then run:
+
+```bash
+scripts/encode-clips.sh ~/clippable-clips ~/clippable-clips/stream.mp4
+```
+
+Clips are used in alphabetical order. Set `START_<n>=<seconds>` to choose where clip _n_ starts (e.g. `START_3=12`). The script writes AV1 and H.264 versions plus posters into `public/media/`.
