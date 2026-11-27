@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { LazyVideo } from "@/components/lazy-video";
+import { FlowGradient } from "@/components/live/flow-gradient";
 import { PlatformIcon, platforms } from "@/components/platform-icons";
 
 const COLS = 8;
@@ -106,13 +107,11 @@ export function ClipPipeline() {
         ref={canvasRef}
         className="relative isolate overflow-hidden rounded-[var(--radius-card)] border border-border bg-bg-subtle px-5 py-14 sm:px-10 lg:px-12 lg:pt-20 lg:pb-14"
       >
-        {/* Waves in the brand gradient, rolling left to right behind the nodes */}
+        {/* The brand gradient, flowing left to right behind the nodes */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="waves">
-            <div className="wave wave-1" />
-            <div className="wave wave-2" />
-            <div className="wave wave-3" />
-          </div>
+          {/* Still gradient first (fallback), the flowing one fades in over it */}
+          <div className="steps-sky absolute inset-0" />
+          <FlowGradient className="absolute inset-0 size-full" />
           <div className="grain absolute inset-0" />
         </div>
 
