@@ -8,11 +8,12 @@ export function LiveSection() {
       aria-labelledby="live-title"
       className="relative scroll-mt-16 bg-bg py-24 sm:py-32"
     >
-      <div className="mx-auto max-w-4xl px-5 text-center sm:px-10">
+      <div className="mx-auto max-w-6xl px-5 text-center sm:px-10">
         <h2
           id="live-title"
           className="mx-auto text-[clamp(2.25rem,5vw,4.5rem)] leading-[0.98] font-medium tracking-[-0.045em] text-balance text-fg"
         >
+          <span className="block text-fg-muted">Fully automated.</span>
           Build repeatable workflows.
         </h2>
       </div>
