@@ -13,11 +13,15 @@ import { useEffect, useRef } from "react";
 const VERT = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
 
 const FRAG = `precision highp float;
-uniform vec2 r;uniform float t;
+uniform vec2 r;uniform float t;uniform float inv;
 float hash(vec2 q){return fract(sin(dot(q,vec2(12.9898,78.233)))*43758.5453);}
 vec3 ramp(float d){
-  vec3 k0=vec3(0.),k1=vec3(.004,.008,.059),k2=vec3(.027,.039,.29),k3=vec3(.086,.188,.784),
-       k4=vec3(.043,.361,1.),k5=vec3(.29,.576,1.),k6=vec3(.639,.8,1.),k7=vec3(.89,.937,1.),k8=vec3(.957,.965,.984);
+  // Day (clipper): black core → blue → pale. Night (streamer): white core → blue → black.
+  vec3 k0=mix(vec3(0.),vec3(1.),inv),k1=mix(vec3(.004,.008,.059),vec3(.918,.953,1.),inv),
+       k2=mix(vec3(.027,.039,.29),vec3(.639,.8,1.),inv),k3=mix(vec3(.086,.188,.784),vec3(.29,.576,1.),inv),
+       k4=vec3(.043,.361,1.),k5=mix(vec3(.29,.576,1.),vec3(.086,.188,.784),inv),
+       k6=mix(vec3(.639,.8,1.),vec3(.027,.039,.29),inv),k7=mix(vec3(.89,.937,1.),vec3(.004,.008,.059),inv),
+       k8=mix(vec3(.957,.965,.984),vec3(0.),inv);
   if(d<.14)return mix(k0,k1,d/.14);
   if(d<.27)return mix(k1,k2,(d-.14)/.13);
   if(d<.40)return mix(k2,k3,(d-.27)/.13);
@@ -75,6 +79,7 @@ export function FlowGradient({ className }: { className?: string }) {
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
     const uR = gl.getUniformLocation(prog, "r");
     const uT = gl.getUniformLocation(prog, "t");
+    const uInv = gl.getUniformLocation(prog, "inv");
 
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let raf = 0;
@@ -83,6 +88,7 @@ export function FlowGradient({ className }: { className?: string }) {
 
     const draw = (now: number) => {
       gl.uniform1f(uT, still ? 4 : ((now - start) / 1000) * 2.2); // ×2.2: a quicker flow
+      gl.uniform1f(uInv, document.documentElement.dataset.audience === "streamer" ? 1 : 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     };
     const loop = (now: number) => {

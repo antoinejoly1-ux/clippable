@@ -323,7 +323,7 @@ function Node({
   children: React.ReactNode;
 }) {
   return (
-    <figure className={`relative ${className ?? ""}`}>
+    <figure className={`ui-light relative ${className ?? ""}`}>
       <figcaption className="mb-2 flex items-center justify-between text-[12px]">
         <span className="rounded-[6px] bg-white/85 px-2 py-0.5 font-medium text-fg backdrop-blur-sm">
           {label}

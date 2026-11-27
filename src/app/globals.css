@@ -851,43 +851,56 @@
 }
 
 /*
- * Streamer side: a deep-blue variant of the whole page. Only the tokens flip, so every
- * section follows. The hero sky inverts: a bright glow at the top falling into deep blue.
+ * Streamer side: the night version of the page. Only the tokens flip, so every section
+ * follows: black ground, white type, and every gradient turned around so it runs
+ * white → blue → black (the clipper side runs black → blue → white).
  */
 html[data-audience="streamer"] {
-  --bg: #050d3a;
-  --bg-subtle: #0a1650;
+  --bg: #000000;
+  --bg-subtle: #0b0d14;
   --fg: #ffffff;
-  --fg-muted: #b3c3ff;
-  --fg-subtle: #6878bd;
-  --border: rgb(255 255 255 / 0.12);
+  --fg-muted: #a3abc2;
+  --fg-subtle: #5d667f;
+  --border: rgb(255 255 255 / 0.1);
   --accent: var(--color-electric);
   --link: #8fc0ff;
+  --night-ramp:
+    #ffffff 0%, #eaf3ff 12%, #a3ccff 26%, #4a93ff 38%, #0b5cff 50%, #1630c8 62%, #070a4a 76%,
+    #01020f 88%, #000000 100%;
   color-scheme: dark;
 }
 html[data-audience="streamer"] .hero-sky {
   background:
-    radial-gradient(55% 40% at 0% 0%, rgb(140 110 255 / 0.45), rgb(140 110 255 / 0) 70%),
-    radial-gradient(55% 40% at 100% 0%, rgb(140 110 255 / 0.45), rgb(140 110 255 / 0) 70%),
-    radial-gradient(
-      110% 50% at 50% -10%,
-      #ffffff 0%,
-      #eef5ff 26%,
-      #a3ccff 40%,
-      #3f8dff 50%,
-      #0b5cff 58%,
-      #1630c8 68%,
-      #0a1a6e 80%,
-      #050d3a 100%
-    );
+    radial-gradient(55% 40% at 0% 0%, rgb(58 28 196 / 0.4), rgb(58 28 196 / 0) 70%),
+    radial-gradient(55% 40% at 100% 0%, rgb(58 28 196 / 0.4), rgb(58 28 196 / 0) 70%),
+    radial-gradient(120% 62% at 50% -6%, var(--night-ramp));
+}
+html[data-audience="streamer"] .steps-sky {
+  background: radial-gradient(100% 78% at 50% 116%, var(--night-ramp));
+}
+html[data-audience="streamer"] .campaign-card {
+  background: radial-gradient(110% 130% at 100% 100%, var(--night-ramp));
+}
+html[data-audience="streamer"] .footer-sky {
+  background: radial-gradient(110% 80% at 50% 118%, var(--night-ramp));
 }
 html[data-audience="streamer"] .site-header::before {
-  background: rgb(5 13 58 / 0.82);
+  background: rgb(0 0 0 / 0.78);
   box-shadow: 0 1px 0 rgb(255 255 255 / 0.08);
 }
 html[data-audience="streamer"] .hdr-cta {
   background: white !important;
   color: var(--color-midnight) !important;
+}
+/* Product UI (demo windows, app icons) stays light on both sides, like real apps do. */
+html[data-audience="streamer"] .ui-light {
+  --bg: #ffffff;
+  --bg-subtle: #f4f6fb;
+  --fg: var(--color-ink);
+  --fg-muted: #5b5f6e;
+  --fg-subtle: #8b91a0;
+  --border: #e4e8f2;
+  color: var(--fg);
 }
 
 /*
@@ -900,53 +913,30 @@ html[data-audience="streamer"] .hdr-cta {
   animation: none;
   mix-blend-mode: normal;
 }
-.wipe-edge {
-  position: fixed;
-  inset-block: 0;
-  left: 0;
-  width: 2px;
-  z-index: 100;
-  pointer-events: none;
-  view-transition-name: wipe-edge;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    #8fc0ff 20%,
-    white 50%,
-    #8fc0ff 80%,
-    transparent
-  );
-  box-shadow: 0 0 24px 6px rgb(11 92 255 / 0.55);
+/* After a switch, the new headline is revealed from the same side, a beat behind the page. */
+.hero-reveal[data-reveal="right"] {
+  animation: reveal-from-left 620ms cubic-bezier(0.7, 0, 0.25, 1) 110ms both !important;
 }
-.wipe-edge::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: white;
-  box-shadow:
-    0 0 0 5px rgb(11 92 255 / 0.35),
-    0 0 30px 8px rgb(11 92 255 / 0.7);
-  transform: translate(-50%, -50%);
+.hero-reveal[data-reveal="left"] {
+  animation: reveal-from-right 620ms cubic-bezier(0.7, 0, 0.25, 1) 110ms both !important;
 }
-::view-transition-group(wipe-edge) {
-  animation: none;
+.hero-reveal[data-reveal] .hero-letter,
+.hero-reveal[data-reveal] .hero-dot {
+  animation: none !important;
 }
-::view-transition-old(wipe-edge) {
-  display: none;
+@keyframes reveal-from-left {
+  from {
+    clip-path: inset(-30% 100% -30% -10%);
+  }
+  to {
+    clip-path: inset(-30% -10% -30% -10%);
+  }
 }
-::view-transition-new(wipe-edge) {
-  position: absolute;
-  left: 0;
-}
-/* Both pseudo-elements are animated from script on the same frame (see clip-story), so
-   the glowing edge stays exactly on the wipe's leading line. */
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-new(root),
-  ::view-transition-new(wipe-edge) {
-    animation: none !important;
+@keyframes reveal-from-right {
+  from {
+    clip-path: inset(-30% -10% -30% 100%);
+  }
+  to {
+    clip-path: inset(-30% -10% -30% -10%);
   }
 }

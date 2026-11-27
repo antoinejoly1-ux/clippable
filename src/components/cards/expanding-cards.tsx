@@ -67,7 +67,7 @@ export function ExpandingCards({
               <span className={titleLight ? "text-white/50" : "text-fg-subtle"}>{c.index}</span>{" "}
               {c.title}
             </p>
-            <div className="xcard-fade relative flex min-h-0 flex-1 items-center justify-center px-6 transition-[transform,opacity] duration-[460ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover/x:scale-[1.03]">
+            <div className="xcard-fade ui-light relative flex min-h-0 flex-1 items-center justify-center px-6 transition-[transform,opacity] duration-[460ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover/x:scale-[1.03]">
               {c.visual}
             </div>
             <div className="xcard-fade relative px-7 pb-7 transition-opacity duration-[460ms] ease-[cubic-bezier(0.65,0,0.35,1)]">

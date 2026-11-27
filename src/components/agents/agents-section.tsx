@@ -134,7 +134,7 @@ export function AgentsSection() {
           <div aria-hidden="true" className="dock flex h-[calc(var(--base)*1.55+3rem)] items-end">
             <ul
               ref={dockRef}
-              className="relative flex h-[calc(var(--base)+1.25rem)] items-end gap-2.5 rounded-[calc(var(--base)*0.3)] border border-border/70 bg-bg-subtle/70 px-2.5 pb-2.5 shadow-[0_30px_60px_-30px_rgb(1_8_43/0.4),inset_0_1px_0_rgb(255_255_255/0.9)] backdrop-blur-xl sm:gap-3 sm:px-3 sm:pb-3"
+              className="ui-light relative flex h-[calc(var(--base)+1.25rem)] items-end gap-2.5 rounded-[calc(var(--base)*0.3)] border border-border/70 bg-bg-subtle/70 px-2.5 pb-2.5 shadow-[0_30px_60px_-30px_rgb(1_8_43/0.4),inset_0_1px_0_rgb(255_255_255/0.9)] backdrop-blur-xl sm:gap-3 sm:px-3 sm:pb-3"
             >
               <span data-probe className="pointer-events-none invisible absolute w-[var(--base)]" />
               {AGENTS.map((a, i) => (
@@ -191,7 +191,7 @@ export function AgentsSection() {
             </div>
             {/* TODO(client): confirm the integration count. */}
             <p className="mt-6 flex items-center gap-3 text-sm text-fg-muted">
-              <span aria-hidden="true" className="flex -space-x-1.5">
+              <span aria-hidden="true" className="ui-light flex -space-x-1.5">
                 {MORE.map((id) => (
                   <span
                     key={id}

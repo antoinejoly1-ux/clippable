@@ -71,8 +71,8 @@ const HERO: Record<
 /** Clipper / streamer switch: a sliding thumb inside a pill track. */
 function AudienceSwitch({ value, onChange }: { value: Audience; onChange: (a: Audience) => void }) {
   const options: { id: Audience; label: string }[] = [
-    { id: "clipper", label: "I clip" },
-    { id: "streamer", label: "I stream" },
+    { id: "clipper", label: "Clipper" },
+    { id: "streamer", label: "Streamer" },
   ];
   return (
     <div
@@ -174,12 +174,20 @@ export function ClipStory() {
       localStorage.setItem("audience", next);
     } catch {}
     const root = document.documentElement;
+    const toRight = next === "streamer";
     const apply = () => {
       root.dataset.audience = next;
       flushSync(() => {
         setSwapped(true);
         setAudience(next);
       });
+      // The new headline draws itself in from the same side, a beat behind the page.
+      const reveal = root.querySelector<HTMLElement>(".hero-reveal");
+      if (reveal) {
+        delete reveal.dataset.reveal;
+        void reveal.offsetWidth;
+        reveal.dataset.reveal = toRight ? "right" : "left";
+      }
     };
     const doc = document as Document & {
       startViewTransition?: (cb: () => void) => {
@@ -191,35 +199,21 @@ export function ClipStory() {
     if (!doc.startViewTransition || still) {
       apply();
     } else {
-      // The new side sweeps in from the switch's direction, led by a glowing edge.
-      root.dataset.wipe = next === "streamer" ? "right" : "left";
-      const edge = document.createElement("div");
-      edge.className = "wipe-edge";
-      edge.setAttribute("aria-hidden", "true");
-      const vt = doc.startViewTransition(() => {
-        document.body.appendChild(edge);
-        apply();
-      });
-      const toRight = next === "streamer";
+      // The new side sweeps in from the switch's direction: right for Streamer, left for Clipper.
+      root.dataset.wipe = toRight ? "right" : "left";
+      const vt = doc.startViewTransition(apply);
       vt.ready.then(() => {
-        const timing = {
-          duration: 900,
-          easing: "cubic-bezier(0.7, 0, 0.25, 1)",
-          fill: "both" as const,
-        };
         root.animate(
           { clipPath: [toRight ? "inset(0 100% 0 0)" : "inset(0 0 0 100%)", "inset(0 0 0 0)"] },
-          { ...timing, pseudoElement: "::view-transition-new(root)" },
-        );
-        root.animate(
-          // `left` (not transform) on purpose: the clip-path wipe runs on the main thread,
-          // and so must the edge, or the two drift apart whenever the page is busy.
-          { left: toRight ? ["0px", "100vw"] : ["100vw", "0px"] },
-          { ...timing, pseudoElement: "::view-transition-new(wipe-edge)" },
+          {
+            duration: 520,
+            easing: "cubic-bezier(0.7, 0, 0.25, 1)",
+            fill: "both",
+            pseudoElement: "::view-transition-new(root)",
+          },
         );
       });
       vt.finished.finally(() => {
-        edge.remove();
         delete root.dataset.wipe;
       });
     }
