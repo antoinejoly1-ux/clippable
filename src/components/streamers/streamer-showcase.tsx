@@ -34,7 +34,7 @@ export function StreamerShowcase() {
   /* Each side swaps with a blur as the active streamer changes. */
   const swap = (on: boolean) =>
     `transition-[opacity,filter,transform] duration-700 ease-out-expo ${
-      on ? "blur-none scale-100 opacity-100" : "scale-[1.04] opacity-0 blur-xl"
+      on ? "scale-100 opacity-100" : "scale-[1.04] opacity-0"
     }`;
 
   // Left: the streamer's photo, nothing on top of it.

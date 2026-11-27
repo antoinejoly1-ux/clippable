@@ -16,6 +16,9 @@ const AGENTS = [
   { id: "deepseek", name: "DeepSeek" },
 ] as const;
 
+/** More integrations, shown as a small row under the button. */
+const MORE = ["copilot", "perplexity", "mistral", "meta", "qwen", "cursor"];
+
 /** Magnification: icons near the pointer grow, up to MAX× at the pointer. */
 const MAX = 1.45;
 const RANGE_STEPS = 2.2; // falloff radius, in icon widths
@@ -186,6 +189,30 @@ export function AgentsSection() {
             <div className="mt-7">
               <Button href={site.signupUrl}>Create account</Button>
             </div>
+            {/* TODO(client): confirm the integration count. */}
+            <p className="mt-6 flex items-center gap-3 text-sm text-fg-muted">
+              <span aria-hidden="true" className="flex -space-x-1.5">
+                {MORE.map((id) => (
+                  <span
+                    key={id}
+                    className="flex size-7 items-center justify-center rounded-full bg-bg shadow-[0_2px_6px_-2px_rgb(1_8_43/0.25)] ring-2 ring-bg"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`/media/agents/${id}.svg`}
+                      alt=""
+                      width={16}
+                      height={16}
+                      loading="lazy"
+                      className="size-4"
+                    />
+                  </span>
+                ))}
+              </span>
+              <span>
+                Integrates with <span className="font-medium text-fg">30+ AI tools</span>
+              </span>
+            </p>
           </div>
         </div>
       </div>

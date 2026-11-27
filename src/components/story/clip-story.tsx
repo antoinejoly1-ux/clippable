@@ -199,6 +199,8 @@ export function ClipStory() {
     let mobile = false;
     let short = false;
     let headerH = 64;
+    let lastBox = "";
+    let lastOverlay = "x";
     let textRatio = 0; // statement width per px of font size, on one line
     let disposed = false;
     let slotRect = { x: 0, y: 0, w: 0, h: 0, r: 0 };
@@ -275,6 +277,7 @@ export function ClipStory() {
       overlay.setAttribute("viewBox", `0 0 ${W} ${H}`);
       measureSlot();
       lastP = -1;
+      lastBox = "";
     };
 
     const render = (p: number) => {
@@ -300,10 +303,15 @@ export function ClipStory() {
       const bw = lerp(slotRect.w, full.w, g);
       const bh = lerp(slotRect.h, full.h, g);
       const br = lerp(slotRect.r, mobile ? 14 : 18, g);
-      box.style.transform = `translate3d(${bx}px, ${by}px, 0)`;
-      box.style.width = `${bw}px`;
-      box.style.height = `${bh}px`;
-      box.style.borderRadius = `${br}px`;
+      // Only touch the player when it actually changes (each write can cost a layout).
+      const boxKey = `${bx.toFixed(1)}|${by.toFixed(1)}|${bw.toFixed(1)}|${bh.toFixed(1)}|${br.toFixed(1)}`;
+      if (boxKey !== lastBox) {
+        lastBox = boxKey;
+        box.style.transform = `translate3d(${bx}px, ${by}px, 0)`;
+        box.style.width = `${bw}px`;
+        box.style.height = `${bh}px`;
+        box.style.borderRadius = `${br}px`;
+      }
       box.style.opacity = slotRect.w > 1 ? "1" : "0";
       // The slot's dark fill is only a stand-in until the player is drawn over it.
       if (slotRect.w > 1) {
@@ -396,14 +404,21 @@ export function ClipStory() {
         text.style.whiteSpace = twoLines ? "normal" : "nowrap";
         text.style.width = `${twoLines ? wide : gridW1}px`;
         text.style.opacity = String(t);
-        // Lands with a slight settle: rises 18px and un-blurs as it fades in.
-        text.style.filter = t < 1 ? `blur(${(1 - t) * 8}px)` : "";
+        // Lands with a slight settle: rises 18px as it fades in.
         text.style.transform = `translate3d(0, ${midY + (1 - easeOut(t)) * 18}px, 0) translateY(-50%)`;
         text.style.visibility = t > 0 ? "visible" : "hidden";
       }
 
       // White cuts: the page shows through everywhere except the pieces.
-      overlayPath.setAttribute("d", c > 0 ? `M0 0H${W}V${H}H0Z${d}` : "");
+      // Once every clip has faded in it covers the player and the cut-out mask, so both
+      // switch off: no full-screen mask redraw or video decode for the rest of the story.
+      const covered = fadeIn >= 1;
+      box.style.visibility = covered ? "hidden" : "visible";
+      const od = c > 0 && !covered ? `M0 0H${W}V${H}H0Z${d}` : "";
+      if (od !== lastOverlay) {
+        lastOverlay = od;
+        overlayPath.setAttribute("d", od);
+      }
 
       if (!reduced) {
         setHeroPlaying(inView && fadeIn < 1);

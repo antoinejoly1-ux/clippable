@@ -91,7 +91,8 @@ export function FlowGradient({ className }: { className?: string }) {
     };
     const resize = () => {
       // Soft gradients don't need full resolution; cap the pixel ratio to keep it cheap.
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
+      // Half resolution: a soft gradient upscales invisibly, at a quarter of the GPU work.
+      const dpr = 0.5;
       canvas.width = Math.max(1, Math.round(canvas.clientWidth * dpr));
       canvas.height = Math.max(1, Math.round(canvas.clientHeight * dpr));
       gl.viewport(0, 0, canvas.width, canvas.height);

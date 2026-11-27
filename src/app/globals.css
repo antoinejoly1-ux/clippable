@@ -307,7 +307,6 @@
   from {
     opacity: 0;
     transform: translateY(0.28em);
-    filter: blur(8px);
   }
 }
 .hero-dot {
@@ -422,9 +421,6 @@
     transform 720ms cubic-bezier(0.45, 0, 0.15, 1),
     opacity 300ms ease,
     filter 200ms ease;
-}
-.demo-cursor[data-moving="true"] {
-  filter: blur(0.7px);
 }
 
 /*
@@ -561,7 +557,6 @@
   from {
     opacity: 0;
     translate: 0 0.35em;
-    filter: blur(3px);
   }
 }
 
@@ -629,13 +624,13 @@
       #ffffff 100%
     );
   transform-origin: 50% 0%;
+  will-change: transform, opacity;
   animation: sky-set 1800ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 @keyframes sky-set {
   from {
     opacity: 0;
-    transform: translateY(-22%) scale(1.18, 0.82);
-    filter: blur(28px) saturate(1.4);
+    transform: translateY(-14%) scale(1.12, 0.88);
   }
   55% {
     opacity: 1;
@@ -643,19 +638,16 @@
   to {
     opacity: 1;
     transform: none;
-    filter: none;
   }
 }
 /* Fine film grain over the sky, so the long blue ramps never band. */
 .grain {
-  opacity: 0.08;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.32;
+  background-image: url("/media/grain.png");
 }
 .hero-grain {
-  opacity: 0.07;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.4;
+  background-image: url("/media/grain.png");
   mask-image: linear-gradient(to bottom, black 0%, black 30%, transparent 45%);
   animation: rise-in 1800ms ease both;
 }
@@ -679,7 +671,6 @@
   from {
     opacity: 0;
     translate: 0 0.4em;
-    filter: blur(6px);
   }
 }
 
@@ -688,15 +679,21 @@
  * Fill, blur, hairline and every colour blend continuously from "on the dark sky" (clear,
  * white type) to "on the page" (frosted white, ink type).
  */
-:root {
+.site-header {
   --hdr: 0;
   --hdr-ink: 0;
 }
-.site-header {
-  background: rgb(255 255 255 / calc(var(--hdr) * 0.88));
-  backdrop-filter: blur(calc(var(--hdr) * 18px)) saturate(calc(1 + var(--hdr) * 0.6));
-  -webkit-backdrop-filter: blur(calc(var(--hdr) * 18px)) saturate(calc(1 + var(--hdr) * 0.6));
-  box-shadow: 0 1px 0 rgb(1 8 43 / calc(var(--hdr) * 0.06));
+.site-header::before {
+  /* The frost never changes radius (expensive); only its opacity follows the scroll. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgb(255 255 255 / 0.86);
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  box-shadow: 0 1px 0 rgb(1 8 43 / 0.06);
+  opacity: var(--hdr);
 }
 .hdr-ink,
 .hdr-logo {
@@ -710,9 +707,8 @@
   background: color-mix(
     in oklab,
     var(--bg-subtle) calc(var(--hdr-ink) * 100%),
-    rgb(255 255 255 / 0.1)
+    rgb(255 255 255 / 0.12)
   );
-  backdrop-filter: blur(12px);
 }
 .hdr-rule {
   background: color-mix(
@@ -751,14 +747,6 @@
   }
 }
 
-/* Elastic end of page (see bottom-spring.tsx): the page just lifts a little by --pull. */
-:root {
-  --pull: 0;
-}
-html[data-pulling="true"] .page-lift {
-  transform: translate3d(0, calc(var(--pull) * -1px), 0);
-}
-
 /* Campaigns card: the hero sky from a corner. A black core behind the text at top-left,
    ringed by indigo and electric blue, opening to sky behind the posters. */
 .campaign-card {
@@ -780,20 +768,23 @@ html[data-pulling="true"] .page-lift {
    --i is 0, 1, 2 (back to front). Hover spreads the fan. */
 .campaign-tile {
   left: calc(16% + var(--i) * 19%);
-  top: 22%;
+  top: 16%;
   z-index: var(--i);
   transform-origin: 50% 160%;
   translate: 0 calc((var(--i) - 1) * (var(--i) - 1) * 5%);
   rotate: calc((var(--i) - 1) * 7deg);
   transition:
-    translate 900ms var(--ease-out-expo),
-    rotate 900ms var(--ease-out-expo),
-    left 900ms var(--ease-out-expo);
+    translate 650ms var(--ease-out-expo),
+    rotate 650ms var(--ease-out-expo);
 }
-.campaign-card:hover .campaign-tile {
-  left: calc(12% + var(--i) * 24%);
-  rotate: calc((var(--i) - 1) * 10deg);
-  translate: 0 calc(-4% + (var(--i) - 1) * (var(--i) - 1) * 5%);
+/* Only the card under the pointer reacts: it lifts up and to the left and tilts a little
+   further, coming forward. Moving to another card hands the lift over to that one. */
+@media (hover: hover) {
+  .campaign-tile:hover {
+    z-index: 5;
+    translate: -7% calc(-9% + (var(--i) - 1) * (var(--i) - 1) * 5%);
+    rotate: calc((var(--i) - 1) * 7deg - 5deg);
+  }
 }
 .gta-poster {
   background:
@@ -803,7 +794,7 @@ html[data-pulling="true"] .page-lift {
 @media (max-width: 1023px) {
   .campaign-tile {
     left: calc(10% + var(--i) * 24%);
-    top: 14%;
+    top: 10%;
   }
 }
 

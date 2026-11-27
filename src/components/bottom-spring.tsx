@@ -2,62 +2,127 @@
 
 import { useEffect } from "react";
 
-/**
- * Elastic end of page, iOS-style. Pulling past the bottom (wheel, trackpad or touch) lifts
- * the page with rubber-band resistance, and a spring is always pulling it back: no waiting
- * for the gesture to end, so trackpad momentum can't hold it up. It snaps home in ~0.4s with
- * a small, lively overshoot. Writes --pull (px) on <html>; CSS lifts the page by it.
+/*
+ * Elastic end of page, modelled on iOS overscroll.
+ *
+ * - While you pull (wheel, trackpad or finger) the page follows the input directly, through
+ *   Apple's rubber-band curve: easy at first, stiffer the further you go, never past MAX.
+ * - The moment the gesture ends (input stops, or trackpad momentum starts decaying), a
+ *   spring takes over. Its pull is proportional to the stretch, so the further you pulled,
+ *   the faster it snaps back, with one small settle.
+ * - Rendering is one rAF loop writing a transform straight onto the page and footer. No
+ *   layout reads on input (the scroll limit is cached), no global CSS variables.
  */
+const MAX = 160; // the most the page can lift, in px
+const RUBBER = 0.55; // Apple's rubber-band constant
+const K = 260; // spring stiffness on release
+const ZETA = 0.78; // damping ratio: <1 gives one small, quick settle
+const FOLLOW = 0.45; // per-frame smoothing while pulling, so mouse wheel steps glide
+
+const rubber = (x: number) => (1 - 1 / ((x * RUBBER) / MAX + 1)) * MAX;
+const unrubber = (y: number) => (MAX / RUBBER) * (1 / (1 - Math.min(y, MAX - 0.01) / MAX) - 1);
+
 export function BottomSpring() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const root = document.documentElement;
-    const MAX = 110;
-    const K = 420; // stiffness: how hard it pulls home
-    const C = 2 * 0.72 * Math.sqrt(K); // damping ratio 0.72: one quick, small overshoot
-    let pull = 0;
+    const targets = Array.from(document.querySelectorAll<HTMLElement>(".page-lift"));
+    if (!targets.length) return;
+
+    let limit = 0; // max scrollY, cached
+    const measure = () => {
+      limit = document.documentElement.scrollHeight - window.innerHeight;
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(document.body);
+
+    // Lenis knows the scroll position without a layout read; fall back to the window.
+    const lenis = () =>
+      (window as unknown as { __lenis?: { scroll: number; limit: number } }).__lenis;
+    const atBottom = () => {
+      const l = lenis();
+      return l ? l.scroll >= l.limit - 2 : window.scrollY >= limit - 2;
+    };
+
+    let raw = 0; // accumulated overscroll input, px
+    let pull = 0; // what's on screen, px
     let vel = 0;
+    let mode: "idle" | "pull" | "spring" = "idle";
     let raf = 0;
     let last = 0;
-    let holding = false; // a finger is down and dragging
+    let lastInput = 0;
+    let lastDelta = 0;
+    let decays = 0;
+    let lockout = 0; // ignore trackpad momentum after a release
 
-    const atBottom = () => window.innerHeight + window.scrollY >= root.scrollHeight - 2;
-    const write = () => {
-      root.style.setProperty("--pull", pull.toFixed(2));
-      const on = Math.abs(pull) > 0.3 ? "true" : "false";
-      if (root.dataset.pulling !== on) root.dataset.pulling = on;
+    const paint = () => {
+      const t = pull > 0.05 ? `translate3d(0, ${(-pull).toFixed(2)}px, 0)` : "";
+      for (const el of targets) el.style.transform = t;
     };
-    const step = (now: number) => {
-      const dt = Math.min(0.032, (now - last) / 1000);
+
+    const frame = (now: number) => {
+      const dt = Math.min(0.032, (now - last) / 1000 || 0.016);
       last = now;
-      if (!holding) {
-        vel += (-K * pull - C * vel) * dt;
+      if (mode === "pull") {
+        const target = rubber(raw);
+        const prev = pull;
+        pull += (target - pull) * (1 - Math.pow(1 - FOLLOW, dt * 60));
+        vel = (pull - prev) / dt;
+        // The gesture has ended when input stops for a moment.
+        if (now - lastInput > 90) release(now);
+      } else if (mode === "spring") {
+        const c = 2 * ZETA * Math.sqrt(K);
+        vel += (-K * pull - c * vel) * dt;
         pull += vel * dt;
+        if (Math.abs(pull) < 0.15 && Math.abs(vel) < 4) {
+          pull = vel = raw = 0;
+          mode = "idle";
+        }
       }
-      write();
-      if (holding || Math.abs(pull) > 0.2 || Math.abs(vel) > 2) raf = requestAnimationFrame(step);
-      else {
-        pull = vel = 0;
-        raf = 0;
-        write();
-      }
+      paint();
+      raf = mode === "idle" ? 0 : requestAnimationFrame(frame);
     };
-    const run = () => {
+    const start = () => {
       if (!raf) {
         last = performance.now();
-        raf = requestAnimationFrame(step);
+        raf = requestAnimationFrame(frame);
       }
     };
-    // Rubber band: the further it's pulled, the less each input moves it.
-    const push = (delta: number) => {
-      const r = 1 - Math.min(1, Math.max(0, pull) / MAX);
-      pull = Math.min(MAX, pull + delta * 0.9 * r * r);
-      run();
+    const release = (now: number) => {
+      mode = "spring";
+      raw = 0;
+      lockout = now + 260;
+      decays = 0;
+    };
+
+    const input = (delta: number, now: number) => {
+      if (mode === "spring") {
+        if (now < lockout) return; // momentum tail of the gesture just released
+        raw = unrubber(Math.max(0, pull)); // a new pull grabs the page mid-spring
+        vel = 0;
+      }
+      mode = "pull";
+      raw = Math.max(0, raw + delta);
+      lastInput = now;
+      start();
     };
 
     const onWheel = (e: WheelEvent) => {
-      if (e.deltaY > 0 && atBottom()) push(e.deltaY);
+      const now = performance.now();
+      const d = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+      if (mode === "idle" && (d <= 0 || !atBottom())) return;
+      if (mode === "pull") {
+        // Trackpad momentum: deltas shrinking event after event means the finger has lifted.
+        decays = Math.abs(d) < Math.abs(lastDelta) * 0.92 && Math.abs(d) < 60 ? decays + 1 : 0;
+        lastDelta = d;
+        if (decays >= 3) {
+          release(now);
+          return;
+        }
+      } else lastDelta = d;
+      input(d, now);
     };
+
     let touchY: number | null = null;
     const onTouchStart = (e: TouchEvent) => {
       touchY = e.touches[0].clientY;
@@ -65,34 +130,31 @@ export function BottomSpring() {
     const onTouchMove = (e: TouchEvent) => {
       if (touchY === null) return;
       const y = e.touches[0].clientY;
-      const dy = touchY - y;
+      const d = touchY - y;
       touchY = y;
-      if (dy > 0 && atBottom()) {
-        holding = true;
-        vel = 0;
-        push(dy * 1.4);
-      } else if (holding) {
-        pull = Math.max(0, pull + dy);
-        if (pull === 0) holding = false;
-      }
+      if (mode === "idle" && (d <= 0 || !atBottom())) return;
+      lockout = 0;
+      input(d, performance.now() + 1e6); // fingers never time out; touchend releases
     };
     const onTouchEnd = () => {
       touchY = null;
-      holding = false;
-      run();
+      if (mode === "pull") release(performance.now());
     };
 
     window.addEventListener("wheel", onWheel, { passive: true });
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchmove", onTouchMove, { passive: true });
     window.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("touchcancel", onTouchEnd, { passive: true });
     return () => {
+      ro.disconnect();
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchcancel", onTouchEnd);
       cancelAnimationFrame(raf);
-      root.style.removeProperty("--pull");
+      for (const el of targets) el.style.transform = "";
     };
   }, []);
   return null;

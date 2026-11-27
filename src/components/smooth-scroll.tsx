@@ -13,26 +13,45 @@ export function SmoothScroll() {
   useEffect(() => {
     // The header is clear over the hero's sky and frosts once the page moves.
     const root = document.documentElement;
+    const header = document.querySelector<HTMLElement>(".site-header");
     // The header blends in with the scroll instead of switching:
     // --hdr (frost) eases 0 → 1 over the first 30% of a screen; --hdr-ink (type colour)
     // crosses over in the middle of that, once the frost is light enough to read ink on.
     const ease = (t: number) => t * t * (3 - 2 * t);
+    let vh = window.innerHeight;
+    const onResize = () => (vh = window.innerHeight);
+    window.addEventListener("resize", onResize, { passive: true });
     let last = "";
-    const onScroll = () => {
-      const t = window.scrollY / (window.innerHeight * 0.3);
+    let lastY = -1;
+    // Takes the scroll position as a value (from Lenis), so it never reads window.scrollY,
+    // which can force a synchronous layout mid-frame.
+    const update = (y: number) => {
+      if (y === lastY) return;
+      lastY = y;
+      if (y > vh * 0.35 && last === "1.00|1.00" && root.dataset.scrolled === "true") return;
+      const t = y / (vh * 0.3);
       const frost = ease(Math.min(1, Math.max(0, t)));
       const ink = ease(Math.min(1, Math.max(0, (t - 0.42) / 0.2)));
       const key = `${frost.toFixed(2)}|${ink.toFixed(2)}`;
       if (key !== last) {
         last = key;
-        root.style.setProperty("--hdr", frost.toFixed(3));
-        root.style.setProperty("--hdr-ink", ink.toFixed(3));
+        // Scoped to the header, so only it restyles (a :root variable restyles the page).
+        header?.style.setProperty("--hdr", frost.toFixed(3));
+        header?.style.setProperty("--hdr-ink", ink.toFixed(3));
       }
-      const on = window.scrollY > 8 ? "true" : "false";
+      const on = y > 8 ? "true" : "false";
       if (root.dataset.scrolled !== on) root.dataset.scrolled = on;
     };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
+    // Without Lenis (reduced motion), read once per frame.
+    let pending = 0;
+    const onScroll = () => {
+      if (!pending)
+        pending = requestAnimationFrame(() => {
+          pending = 0;
+          update(window.scrollY);
+        });
+    };
+    update(window.scrollY);
 
     const io = new IntersectionObserver((entries) => {
       for (const e of entries) {
@@ -42,9 +61,11 @@ export function SmoothScroll() {
     document.querySelectorAll("[data-pause-offscreen]").forEach((el) => io.observe(el));
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      window.addEventListener("scroll", onScroll, { passive: true });
       return () => {
         io.disconnect();
         window.removeEventListener("scroll", onScroll);
+        window.removeEventListener("resize", onResize);
       };
     }
 
@@ -59,7 +80,10 @@ export function SmoothScroll() {
     };
     const events = ["wheel", "touchstart", "keydown", "click", "pointerdown"] as const;
     for (const ev of events) window.addEventListener(ev, kick, { passive: true });
-    lenis.on("scroll", kick);
+    lenis.on("scroll", (l: Lenis) => {
+      kick();
+      update(l.scroll);
+    });
     // Shared so the clip story can glide onto its key frames. Starting a glide also wakes
     // the rAF loop, which otherwise only runs while the user is scrolling.
     (window as unknown as { __lenis?: object }).__lenis = {
@@ -70,11 +94,17 @@ export function SmoothScroll() {
       get isScrolling() {
         return lenis.isScrolling;
       },
+      get scroll() {
+        return lenis.scroll;
+      },
+      get limit() {
+        return lenis.limit;
+      },
     };
     kick();
     return () => {
       io.disconnect();
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
       cancelAnimationFrame(id);
       for (const ev of events) window.removeEventListener(ev, kick);
       lenis.destroy();

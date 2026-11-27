@@ -73,12 +73,12 @@ export function AudienceSection() {
           {/* Fan of posters, hanging off the right edge */}
           <div
             aria-hidden="true"
-            className="campaign-fan relative h-[20rem] sm:h-[24rem] lg:absolute lg:inset-y-0 lg:right-0 lg:h-auto lg:w-[54%]"
+            className="campaign-fan relative h-[20rem] sm:h-[24rem] lg:absolute lg:inset-y-0 lg:right-0 lg:h-auto lg:w-[54%] [&_.campaign-tile]:cursor-default"
           >
             {campaigns.map((c, i) => (
               <div
                 key={c.id}
-                className="campaign-tile absolute aspect-[3/4] w-[12.5rem] overflow-hidden rounded-[20px] bg-midnight shadow-[0_40px_80px_-30px_rgb(0_0_0/0.75)] ring-1 ring-white/15 sm:w-[15rem] lg:w-[19rem]"
+                className="campaign-tile absolute aspect-[5/7] w-[12.5rem] overflow-hidden rounded-[20px] bg-midnight shadow-[0_40px_80px_-30px_rgb(0_0_0/0.75)] ring-1 ring-white/15 sm:w-[15rem] lg:w-[19rem]"
                 style={{ "--i": i } as React.CSSProperties}
               >
                 {c.image ? (

@@ -172,13 +172,6 @@ export function ClipPipeline() {
               <path d={path} stroke="rgb(255 255 255 / 0.55)" strokeWidth="2.5" />
               <path
                 d={path}
-                stroke="var(--color-sky)"
-                strokeWidth="10"
-                pathLength={1}
-                className="flow-pulse opacity-60 blur-[5px]"
-              />
-              <path
-                d={path}
                 stroke="white"
                 strokeWidth="3.5"
                 pathLength={1}
