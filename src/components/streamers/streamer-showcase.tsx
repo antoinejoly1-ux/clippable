@@ -9,6 +9,15 @@ const CYCLE_MS = 1000;
 
 export function StreamerShowcase() {
   const [active, setActive] = useState(0);
+  const [prev, setPrev] = useState(-1);
+  // Track the photo being replaced, so it stays fully opaque underneath while the new one
+  // fades in on top (a true crossfade, no dip to the background).
+  const select = (next: number | ((i: number) => number)) =>
+    setActive((cur) => {
+      const n = typeof next === "function" ? next(cur) : next;
+      if (n !== cur) setPrev(cur);
+      return n;
+    });
   const [hovering, setHovering] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -20,7 +29,7 @@ export function StreamerShowcase() {
       window.clearInterval(timer);
       if (e.isIntersecting) {
         timer = window.setInterval(() => {
-          if (!document.hidden) setActive((i) => (i + 1) % streamers.length);
+          if (!document.hidden) select((i) => (i + 1) % streamers.length);
         }, CYCLE_MS);
       }
     });
@@ -31,39 +40,46 @@ export function StreamerShowcase() {
     };
   }, [hovering]);
 
-  /* Each side swaps with a blur as the active streamer changes. */
-  const swap = (on: boolean) =>
-    `transition-[opacity,transform] duration-[450ms] ease-out-expo ${
-      on ? "scale-100 opacity-100" : "scale-[1.04] opacity-0"
-    }`;
+  /* Incoming photo fades and settles in on top; the outgoing one holds still beneath it. */
+  const n = streamers.length;
+  const near = (s: number) => s === active || s === prev || s === (active + 1) % n; // only these are mounted
+  const swap = (s: number) =>
+    s === active
+      ? "z-10 scale-100 opacity-100 transition-[opacity,scale] duration-[450ms] ease-out-expo"
+      : s === prev
+        ? "z-0 opacity-100"
+        : "z-0 scale-[1.04] opacity-0";
 
   // Left: the streamer's photo, nothing on top of it.
   const photoSide = (
-    <div aria-hidden="true" className="relative hidden h-[40rem] lg:block">
-      <div className="absolute top-[4%] right-[4%] aspect-[3/4] w-[82%] overflow-hidden rounded-[14px] bg-midnight shadow-[0_30px_60px_-30px_rgb(1_8_43/0.55)]">
-        {streamers.map((st, s) => (
-          <div key={st.id} className={`absolute inset-0 ${swap(s === active)}`}>
-            <Image
-              src={st.photo}
-              alt=""
-              fill
-              sizes="(min-width: 1024px) 22vw, 1px"
-              className="object-cover object-[50%_25%]"
-            />
-          </div>
-        ))}
+    <div aria-hidden="true" className="relative hidden h-[min(40rem,72svh)] lg:block">
+      <div className="absolute top-[4%] right-[4%] aspect-[3/4] w-[82%] overflow-hidden rounded-[14px] bg-bg-subtle shadow-[0_30px_60px_-30px_rgb(1_8_43/0.55)]">
+        {streamers.map((st, s) =>
+          !near(s) ? null : (
+            <div key={st.id} className={`absolute inset-0 ${swap(s)}`}>
+              <Image
+                src={st.photo}
+                alt=""
+                fill
+                sizes="(min-width: 1024px) 22vw, 1px"
+                className="object-cover object-[50%_25%]"
+              />
+            </div>
+          ),
+        )}
       </div>
     </div>
   );
 
   // Right: a second photo, full-bleed. Falls back to the channel banner, then a blurred avatar.
   const secondSide = (
-    <div aria-hidden="true" className="relative hidden h-[40rem] lg:block">
-      <div className="absolute bottom-[4%] left-[4%] aspect-[4/5] w-[78%] overflow-hidden rounded-[14px] bg-midnight shadow-[0_30px_60px_-30px_rgb(1_8_43/0.45)]">
+    <div aria-hidden="true" className="relative hidden h-[min(40rem,72svh)] lg:block">
+      <div className="absolute bottom-[4%] left-[4%] aspect-[4/5] w-[78%] overflow-hidden rounded-[14px] bg-bg-subtle shadow-[0_30px_60px_-30px_rgb(1_8_43/0.45)]">
         {streamers.map((st, s) => {
+          if (!near(s)) return null;
           const src = st.photo2 ?? st.banner;
           return (
-            <div key={st.id} className={`absolute inset-0 ${swap(s === active)}`}>
+            <div key={st.id} className={`absolute inset-0 ${swap(s)}`}>
               {src ? (
                 <Image
                   src={src}
@@ -119,9 +135,9 @@ export function StreamerShowcase() {
               onPointerEnter={(e) => {
                 if (e.pointerType !== "mouse") return;
                 setHovering(true);
-                setActive(i);
+                select(i);
               }}
-              className={`cursor-default text-[clamp(2rem,4.2vw,3.6rem)] leading-[1.08] font-semibold tracking-[-0.045em] transition-colors duration-500 ${
+              className={`cursor-default text-[clamp(1.75rem,3.4vw,3.1rem)] leading-[1.06] font-semibold tracking-[-0.045em] transition-colors duration-500 ${
                 on ? "text-fg" : "text-fg-subtle"
               }`}
             >

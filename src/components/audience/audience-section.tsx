@@ -62,7 +62,7 @@ export function AudienceSection() {
             <h3 className="mt-7 max-w-[14ch] text-[clamp(2.4rem,4.4vw,4rem)] leading-[1] font-medium tracking-[-0.045em]">
               Get paid for every 1,000 views.
             </h3>
-            <p className="mt-5 max-w-[38ch] text-xl text-pretty text-white/75">
+            <p className="mt-5 max-w-[38ch] text-xl text-pretty text-white/90">
               Pick a campaign, post the clips Clippable makes for you, earn on every view.
             </p>
             <div className="mt-8">
@@ -99,7 +99,7 @@ export function AudienceSection() {
                       {c.title}
                     </p>
                   </div>
-                  <p className="rounded-[8px] bg-white px-2 py-1 text-xs font-semibold text-midnight">
+                  <p className="ui-light rounded-[8px] bg-white px-2 py-1 text-xs font-semibold text-midnight">
                     {c.rate}
                     <span className="font-medium text-fg-muted">/1K</span>
                   </p>
@@ -107,6 +107,13 @@ export function AudienceSection() {
               </div>
             ))}
           </CampaignFan>
+          <ul className="sr-only">
+            {campaigns.map((c) => (
+              <li key={c.id}>
+                {c.title}, {c.tag}: {c.rate} per 1,000 views
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

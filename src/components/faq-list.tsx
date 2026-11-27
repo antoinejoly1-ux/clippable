@@ -34,6 +34,7 @@ export function FaqList({ items }: { items: { q: string; a: string }[] }) {
                   <button
                     type="button"
                     aria-expanded={on}
+                    id={`${id}-q${i}`}
                     aria-controls={`${id}-${i}`}
                     onClick={() => setOpen(on ? null : i)}
                     className="group/q flex w-full cursor-pointer items-center justify-between gap-6 rounded-[var(--radius-card)] px-5 py-5 text-left text-[17px] font-medium tracking-[-0.01em] text-fg select-none [-webkit-tap-highlight-color:transparent]"
@@ -42,7 +43,7 @@ export function FaqList({ items }: { items: { q: string; a: string }[] }) {
                     <span
                       aria-hidden="true"
                       className={`flex size-8 shrink-0 items-center justify-center rounded-full transition-[background-color,color,rotate,scale] duration-500 ease-out-expo group-active/q:scale-90 ${
-                        on ? "rotate-45 bg-midnight text-white" : "bg-bg-subtle text-fg"
+                        on ? "rotate-45 bg-fg text-bg" : "bg-bg-subtle text-fg"
                       }`}
                     >
                       <svg viewBox="0 0 16 16" className="size-3.5">
@@ -59,7 +60,7 @@ export function FaqList({ items }: { items: { q: string; a: string }[] }) {
                 <div
                   id={`${id}-${i}`}
                   role="region"
-                  aria-hidden={!on}
+                  aria-labelledby={`${id}-q${i}`}
                   inert={!on}
                   className={`grid transition-[grid-template-rows,opacity] duration-500 ease-out-expo ${
                     on ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"

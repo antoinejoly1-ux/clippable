@@ -864,6 +864,10 @@ html[data-audience="streamer"] {
   --border: rgb(255 255 255 / 0.1);
   --accent: var(--color-electric);
   --link: #8fc0ff;
+  /* Same ramp without the white crown, for surfaces that carry white text. */
+  --night-ramp-deep:
+    #4a93ff 0%, var(--color-electric) 22%, var(--color-royal) 45%, var(--color-midnight) 72%,
+    #000000 100%;
   --night-ramp:
     #ffffff 0%, #eaf3ff 12%, #a3ccff 26%, #4a93ff 38%, #0b5cff 50%, #1630c8 62%, #070a4a 76%,
     #01020f 88%, #000000 100%;
@@ -873,16 +877,16 @@ html[data-audience="streamer"] .hero-sky {
   background:
     radial-gradient(55% 40% at 0% 0%, rgb(58 28 196 / 0.4), rgb(58 28 196 / 0) 70%),
     radial-gradient(55% 40% at 100% 0%, rgb(58 28 196 / 0.4), rgb(58 28 196 / 0) 70%),
-    radial-gradient(120% 62% at 50% -6%, var(--night-ramp));
+    radial-gradient(120% 66% at 50% -18%, var(--night-ramp));
 }
 html[data-audience="streamer"] .steps-sky {
-  background: radial-gradient(100% 78% at 50% 116%, var(--night-ramp));
+  background: radial-gradient(100% 78% at 50% 116%, var(--night-ramp-deep));
 }
 html[data-audience="streamer"] .campaign-card {
   background: radial-gradient(110% 130% at 100% 100%, var(--night-ramp));
 }
 html[data-audience="streamer"] .footer-sky {
-  background: radial-gradient(110% 80% at 50% 118%, var(--night-ramp));
+  background: radial-gradient(110% 80% at 50% 118%, var(--night-ramp-deep));
 }
 html[data-audience="streamer"] .site-header::before {
   background: rgb(0 0 0 / 0.78);
@@ -962,4 +966,93 @@ html[data-audience="streamer"] .night-lift {
     rgb(255 255 255 / 0) 70%
   );
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14);
+}
+
+/* Until React syncs to a returning streamer, keep the clipper words off screen. */
+html[data-pending] [data-hero-copy] {
+  visibility: hidden;
+}
+
+/* Night header: the nav, Log in and logo sit on dark glass so they read over the bright crown. */
+html[data-audience="streamer"] .hdr-pill {
+  background: color-mix(in oklab, var(--bg-subtle) calc(var(--hdr-ink) * 100%), rgb(1 8 43 / 0.55));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+html[data-audience="streamer"] .hdr-logo {
+  --logo-mark: var(--color-electric);
+}
+html[data-audience="streamer"] .hdr-cta:hover {
+  background: var(--color-sky) !important;
+}
+
+/* Night switch: glass track, white thumb, dark active label. */
+html[data-audience="streamer"] .audience-switch {
+  background: rgb(255 255 255 / 0.08);
+  border-color: rgb(255 255 255 / 0.16);
+}
+html[data-audience="streamer"] .switch-thumb {
+  background: #fff;
+}
+html[data-audience="streamer"] .audience-switch [aria-checked="true"] {
+  color: var(--color-midnight);
+}
+
+/* Night surfaces: every card keeps an edge; light product windows get a hairline + depth. */
+html[data-audience="streamer"] .xcard {
+  border-color: rgb(255 255 255 / 0.12);
+}
+html[data-audience="streamer"] .ui-light .ui-window,
+html[data-audience="streamer"] .dock-icon {
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.14),
+    0 24px 60px -30px rgb(0 0 0 / 0.8);
+}
+html[data-audience="streamer"] .dock-tray {
+  background: rgb(255 255 255 / 0.06);
+  border-color: rgb(255 255 255 / 0.12);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.1),
+    0 30px 60px -30px rgb(0 0 0 / 0.8);
+}
+html[data-audience="streamer"] .dock-run {
+  background: rgb(255 255 255 / 0.4);
+}
+html[data-audience="streamer"] .node-chip {
+  background: rgb(255 255 255 / 0.1);
+  color: rgb(255 255 255 / 0.92);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
+}
+
+/* Phones stack the step cards: widen the dome so the copy band always sits on deep blue. */
+@media (max-width: 1023px) {
+  .steps-sky {
+    background:
+      radial-gradient(
+        170% 70% at 50% 108%,
+        #000000 0%,
+        #01020f 14%,
+        #070a4a 27%,
+        #1630c8 40%,
+        #0b5cff 50%,
+        #4a93ff 60%,
+        #a3ccff 72%,
+        #e3efff 84%,
+        var(--bg-subtle) 96%
+      ),
+      var(--bg-subtle);
+  }
+  html[data-audience="streamer"] .steps-sky {
+    background: radial-gradient(170% 70% at 50% 108%, var(--night-ramp-deep));
+  }
+}
+
+[data-tracking="true"] .dock-item {
+  transition: none;
+}
+@media (max-width: 639px) {
+  .campaign-tile {
+    left: calc(50% - 6.25rem + (var(--i) - 1) * 30%);
+    rotate: calc((var(--i) - 1) * 5deg + var(--dr));
+  }
 }

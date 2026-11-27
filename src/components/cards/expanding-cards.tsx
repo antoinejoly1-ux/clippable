@@ -44,7 +44,7 @@ export function ExpandingCards({
             key={c.index}
             tabIndex={0}
             aria-labelledby={`xcard-${c.index}`}
-            className={`xcard group/x isolate flex h-[34rem] flex-col rounded-[var(--radius-card)] border outline-none [clip-path:inset(0_round_var(--radius-card))] focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white max-lg:relative lg:h-[38rem] ${
+            className={`xcard group/x isolate flex flex-col rounded-[var(--radius-card)] border outline-none [clip-path:inset(0_round_var(--radius-card))] focus-visible:ring-2 focus-visible:ring-link focus-visible:ring-inset max-lg:relative max-lg:h-auto max-lg:min-h-[34rem] lg:h-[38rem] ${
               dark ? "border-white/10 bg-midnight text-white" : "border-border bg-bg-subtle text-fg"
             }`}
           >
@@ -68,7 +68,7 @@ export function ExpandingCards({
               <span className={titleLight ? "text-white/50" : "text-fg-subtle"}>{c.index}</span>{" "}
               {c.title}
             </p>
-            <div className="xcard-fade ui-light relative flex min-h-0 flex-1 items-center justify-center px-6 transition-[transform,opacity] duration-[460ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover/x:scale-[1.03]">
+            <div className="xcard-fade ui-light relative flex min-h-0 flex-1 items-center justify-center overflow-hidden px-6 transition-[transform,opacity] duration-[460ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover/x:scale-[1.03] max-lg:py-8">
               {c.visual}
             </div>
             <div className="xcard-fade relative px-7 pb-7 transition-opacity duration-[460ms] ease-[cubic-bezier(0.65,0,0.35,1)]">
@@ -79,7 +79,7 @@ export function ExpandingCards({
                 {c.heading}
               </h3>
               <div
-                className={`mt-2 max-w-[46ch] text-[0.95rem] leading-relaxed ${copyLight ? "text-white/75" : "text-fg-muted"}`}
+                className={`mt-2 max-w-[46ch] text-[0.95rem] leading-relaxed ${copyLight ? "text-white/90" : "text-fg-muted"}`}
               >
                 {c.body}
               </div>

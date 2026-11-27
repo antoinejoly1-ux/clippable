@@ -68,8 +68,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       data-scrolled="false"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        {/* Set the visitor's side before first paint, so streamers never see a white flash. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var a=new URLSearchParams(location.search).get("for")||localStorage.getItem("audience");if(a==="streamer"||a==="streamers"){document.documentElement.dataset.audience="streamer";document.documentElement.dataset.pending="true"}}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="flex min-h-full flex-col">
         <a
           href="#main"

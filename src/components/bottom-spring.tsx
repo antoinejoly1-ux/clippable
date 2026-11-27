@@ -27,6 +27,9 @@ export function BottomSpring() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const targets = Array.from(document.querySelectorAll<HTMLElement>(".page-lift"));
     if (!targets.length) return;
+    // One rubber band only: switch off the browser's own (Safari/iOS) bounce.
+    const html = document.documentElement;
+    html.style.overscrollBehaviorY = "none";
 
     let limit = 0; // max scrollY, cached
     const measure = () => {
@@ -166,6 +169,7 @@ export function BottomSpring() {
       window.removeEventListener("touchcancel", onTouchEnd);
       cancelAnimationFrame(raf);
       for (const el of targets) el.style.transform = "";
+      html.style.overscrollBehaviorY = "";
     };
   }, []);
   return null;

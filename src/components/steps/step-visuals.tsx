@@ -157,7 +157,7 @@ export function SetupVisual() {
       });
       PICKS.forEach((row) => {
         tl.at(t + 30, () => {
-          cursorTo(root, cursor, rowRefs.current[row], 0.42, 0.5);
+          cursorTo(root, cursor, rowRefs.current[row], 0.9, 0.32);
           setHover(row);
         });
         t += 760;
@@ -229,7 +229,7 @@ export function SetupVisual() {
 
   return (
     <div ref={rootRef} className="relative w-[min(18rem,100%)]" aria-hidden="true">
-      <div className="overflow-hidden rounded-[12px] border border-border bg-bg shadow-[0_24px_48px_-28px_rgb(1_8_43/0.45)]">
+      <div className="ui-window overflow-hidden rounded-[12px] border border-border bg-bg shadow-[0_24px_48px_-28px_rgb(1_8_43/0.45)]">
         <p className="px-3.5 pt-3 pb-1 text-[11px] text-fg-muted">Add streamers</p>
         <ul className="px-1.5">
           {MENU.map((s, i) =>
@@ -357,7 +357,7 @@ export function ClipVisual() {
         </svg>
       </div>
 
-      <div className="w-full rounded-[12px] border border-border bg-bg p-2.5 shadow-[0_24px_48px_-28px_rgb(1_8_43/0.45)]">
+      <div className="ui-window w-full rounded-[12px] border border-border bg-bg p-2.5 shadow-[0_24px_48px_-28px_rgb(1_8_43/0.45)]">
         <div className="mb-2 flex items-center justify-between px-0.5 text-[11px]">
           <span className="font-medium text-fg">Making clips</span>
           <span className="font-mono text-fg-muted tabular-nums">{made}</span>

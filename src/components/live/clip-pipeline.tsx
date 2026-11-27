@@ -220,16 +220,16 @@ export function ClipPipeline() {
           </Node>
 
           {/* 2 · Brand template: just the caption style, nothing else */}
-          <Node label="Brand template" meta="Captions" className="w-[240px] lg:mt-14">
+          <Node label="Brand template" meta="Captions" className="w-[272px] lg:mt-14">
             <div
               ref={(el) => {
                 nodeRefs.current[1] = el;
               }}
-              className="rounded-[10px] border border-border bg-bg px-5 py-6 shadow-[0_18px_40px_-24px_rgb(1_8_43/0.5)]"
+              className="ui-light ui-window rounded-[10px] border border-border bg-bg px-5 py-6 shadow-[0_18px_40px_-24px_rgb(1_8_43/0.5)]"
             >
               <p
                 aria-hidden="true"
-                className="flex min-h-[4.5rem] flex-wrap content-center justify-center gap-x-0.5 gap-y-1 text-center text-[1.35rem] leading-tight font-extrabold tracking-[-0.035em] text-fg"
+                className="flex min-h-[4.5rem] flex-wrap content-center justify-center gap-x-1.5 gap-y-1 text-center text-[1.35rem] leading-tight font-extrabold tracking-[-0.035em] text-balance text-fg"
               >
                 {captions[line].map((w, i) => (
                   <span
@@ -272,7 +272,7 @@ export function ClipPipeline() {
               ref={(el) => {
                 nodeRefs.current[2] = el;
               }}
-              className="rounded-[10px] border border-border bg-bg p-2.5 shadow-[0_18px_40px_-24px_rgb(1_8_43/0.5)]"
+              className="ui-light ui-window rounded-[10px] border border-border bg-bg p-2.5 shadow-[0_18px_40px_-24px_rgb(1_8_43/0.5)]"
             >
               <span className="sr-only">Finished vertical clips, made automatically.</span>
               <ul aria-hidden="true" className="grid grid-cols-8 gap-1.5">
@@ -324,15 +324,15 @@ function Node({
   children: React.ReactNode;
 }) {
   return (
-    <figure className={`ui-light relative ${className ?? ""}`}>
+    <figure className={`relative ${className ?? ""}`}>
       <figcaption className="mb-2 flex items-center justify-between text-[12px]">
-        <span className="rounded-[6px] bg-white/85 px-2 py-0.5 font-medium text-fg backdrop-blur-sm">
+        <span className="node-chip rounded-[6px] bg-white/85 px-2 py-0.5 font-medium text-fg backdrop-blur-sm">
           {label}
         </span>
         {/* Live counters would chatter in a screen reader; the label carries the meaning. */}
         <span
           aria-hidden="true"
-          className="rounded-[6px] bg-white/85 px-2 py-0.5 font-mono text-fg-muted tabular-nums backdrop-blur-sm"
+          className="node-chip rounded-[6px] bg-white/85 px-2 py-0.5 font-mono text-fg-muted tabular-nums backdrop-blur-sm"
         >
           {meta}
         </span>

@@ -59,7 +59,7 @@ export function SiteFooter() {
                       <li key={l.label}>
                         <a
                           href={l.href}
-                          className="relative inline-block text-[15px] text-fg underline decoration-transparent underline-offset-4 transition-[text-decoration-color] after:absolute after:-inset-x-2 after:-inset-y-[5px] after:content-[''] hover:decoration-current"
+                          className="relative inline-flex min-h-11 items-center text-[15px] text-fg underline decoration-transparent underline-offset-4 transition-[text-decoration-color] after:absolute after:-inset-x-2 after:-inset-y-[5px] after:content-[''] hover:decoration-current"
                         >
                           {l.label}
                         </a>

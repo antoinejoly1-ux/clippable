@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Button } from "@/components/button";
 import { site } from "@/lib/site";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { storyClips, storyTiles } from "@/lib/story";
 import { streamers } from "@/lib/streamers";
@@ -78,7 +78,7 @@ function AudienceSwitch({ value, onChange }: { value: Audience; onChange: (a: Au
     <div
       role="radiogroup"
       aria-label="Show Clippable for"
-      className="hero-rise pointer-events-auto relative grid grid-cols-2 rounded-[14px] border border-white/80 bg-white/55 p-1 shadow-[0_10px_30px_-18px_rgb(1_8_43/0.4)] backdrop-blur-md [animation-delay:60ms]"
+      className="audience-switch hero-rise pointer-events-auto relative grid grid-cols-2 rounded-[14px] border border-white/80 bg-white/55 p-1 shadow-[0_10px_30px_-18px_rgb(1_8_43/0.4)] backdrop-blur-md [animation-delay:60ms]"
       onKeyDown={(e) => {
         if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) {
           e.preventDefault();
@@ -106,7 +106,7 @@ function AudienceSwitch({ value, onChange }: { value: Audience; onChange: (a: Au
             data-id={o.id}
             onClick={() => onChange(o.id)}
             className={`relative z-[1] h-10 rounded-[10px] px-5 text-[15px] font-medium whitespace-nowrap transition-[color,scale] duration-300 select-none [-webkit-tap-highlight-color:transparent] active:scale-[0.96] sm:px-6 ${
-              on ? "text-white" : "text-fg hover:text-fg-muted"
+              on ? "text-white" : "text-fg-muted hover:text-fg"
             }`}
           >
             {o.label}
@@ -153,15 +153,14 @@ export function ClipStory() {
   const [swapped, setSwapped] = useState(false);
   const copy = HERO[audience];
 
-  // Restore the visitor's side (?for=streamers or their last choice) after hydration.
-  useEffect(() => {
-    let saved: string | null = null;
-    try {
-      saved = new URLSearchParams(location.search).get("for") ?? localStorage.getItem("audience");
-    } catch {}
-    if (saved === "streamer" || saved === "streamers") {
-      const t = window.setTimeout(() => setAudience("streamer"), 0);
-      return () => window.clearTimeout(t);
+  // The inline script in layout.tsx already set the theme before paint; sync React to it
+  // before the browser paints the hydrated tree, then reveal the (hidden) streamer copy.
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    if (root.dataset.audience === "streamer") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- must sync before paint
+      setAudience("streamer");
+      requestAnimationFrame(() => delete root.dataset.pending);
     }
   }, []);
   useEffect(() => {
@@ -571,15 +570,21 @@ export function ClipStory() {
           __lenis?: { scrollTo: (y: number, o: object) => void; isScrolling: unknown };
         }
       ).__lenis;
-      if (!lenis || lenis.isScrolling || reduced || !inView) return;
+      if (!lenis || reduced || !inView || touching) return;
+      // Never fight a gesture: wait until any scrolling has fully stopped.
+      if (lenis.isScrolling) {
+        idle = window.setTimeout(settle, 250);
+        return;
+      }
       const distance = section.offsetHeight - H;
       const p = progress();
       if (p <= 0 || p >= 1) return;
       const k = STOPS.reduce((a, b) => (Math.abs(b - p) < Math.abs(a - p) ? b : a));
-      if (Math.abs(k - p) > 0.06 || Math.abs(k - p) < 0.003) return;
+      if (Math.abs(k - p) > 0.045 || Math.abs(k - p) < 0.003) return;
+      // Eases from rest and lands softly; short hops are quick.
       lenis.scrollTo(section.offsetTop + k * distance, {
-        duration: 0.9,
-        easing: (x: number) => 1 - Math.pow(1 - x, 3),
+        duration: Math.min(0.9, 0.45 + Math.abs(k - p) * 6),
+        easing: (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2),
       });
     };
     const onScrollIdle = () => {
@@ -587,6 +592,18 @@ export function ClipStory() {
       idle = window.setTimeout(settle, 180);
     };
     window.addEventListener("scroll", onScrollIdle, { passive: true });
+    let touching = false;
+    const onTouchStart = () => {
+      touching = true;
+      window.clearTimeout(idle);
+    };
+    const onTouchEnd = () => {
+      touching = false;
+      onScrollIdle();
+    };
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("touchcancel", onTouchEnd, { passive: true });
     document.fonts?.ready.then(() => {
       if (disposed) return;
       measure();
@@ -597,6 +614,9 @@ export function ClipStory() {
       disposed = true;
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("scroll", onScrollIdle);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchcancel", onTouchEnd);
       window.clearTimeout(idle);
       reducedQuery.removeEventListener("change", onReducedChange);
       heroVideo.removeEventListener("playing", showVideo);
@@ -718,6 +738,7 @@ export function ClipStory() {
           {/* Hero copy, centred. The player sits in the headline's slot. */}
           <div
             ref={copyRef}
+            data-hero-copy
             className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center px-4 pt-20 text-center [@media(max-height:520px)]:pt-14"
           >
             <AudienceSwitch value={audience} onChange={switchAudience} />
@@ -738,7 +759,7 @@ export function ClipStory() {
                   <span
                     ref={slotRef}
                     aria-hidden="true"
-                    className="hero-slot inline-block h-[0.8em] overflow-hidden rounded-[0.12em] bg-midnight"
+                    className="hero-slot inline-block h-[0.8em] shrink-0 overflow-hidden rounded-[0.12em] bg-midnight"
                   />
                   <span className="inline-flex items-baseline">
                     <Letters text="instantly" delay={420} />

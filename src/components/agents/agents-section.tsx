@@ -86,11 +86,14 @@ export function AgentsSection() {
     const onMove = (e: PointerEvent) => {
       if (!fine.matches || still.matches || e.pointerType !== "mouse") return;
       x = e.clientX;
+      // While the pointer is on the dock, icons follow it 1:1; the ease is only for settling.
+      dock.dataset.tracking = "true";
       if (!raf) raf = requestAnimationFrame(apply);
     };
     const onLeave = () => {
       cancelAnimationFrame(raf);
       raf = 0;
+      delete dock.dataset.tracking;
       rest();
     };
     const onResize = () => {
@@ -134,7 +137,7 @@ export function AgentsSection() {
           <div aria-hidden="true" className="dock flex h-[calc(var(--base)*1.55+3rem)] items-end">
             <ul
               ref={dockRef}
-              className="ui-light relative flex h-[calc(var(--base)+1.25rem)] items-end gap-2.5 rounded-[calc(var(--base)*0.3)] border border-border/70 bg-bg-subtle/70 px-2.5 pb-2.5 shadow-[0_30px_60px_-30px_rgb(1_8_43/0.4),inset_0_1px_0_rgb(255_255_255/0.9)] backdrop-blur-xl sm:gap-3 sm:px-3 sm:pb-3"
+              className="dock-tray relative flex h-[calc(var(--base)+1.25rem)] items-end gap-2.5 rounded-[calc(var(--base)*0.3)] border border-border/70 bg-bg-subtle/70 px-2.5 pb-2.5 shadow-[0_30px_60px_-30px_rgb(1_8_43/0.4),inset_0_1px_0_rgb(255_255_255/0.9)] backdrop-blur-xl sm:gap-3 sm:px-3 sm:pb-3"
             >
               <span data-probe className="pointer-events-none invisible absolute w-[var(--base)]" />
               {AGENTS.map((a, i) => (
@@ -149,7 +152,7 @@ export function AgentsSection() {
                   <span
                     onClick={bounce}
                     onAnimationEnd={(e) => (e.currentTarget.dataset.bounce = "false")}
-                    className="dock-icon flex size-full items-center justify-center rounded-[22%] border border-border bg-bg shadow-[0_8px_16px_-8px_rgb(1_8_43/0.35)]"
+                    className="dock-icon ui-light flex size-full items-center justify-center rounded-[22%] border border-border bg-bg shadow-[0_8px_16px_-8px_rgb(1_8_43/0.35)]"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -163,7 +166,7 @@ export function AgentsSection() {
                     />
                   </span>
                   {/* Running indicator */}
-                  <span className="absolute -bottom-[7px] left-1/2 size-1 -translate-x-1/2 rounded-full bg-fg-muted/70 sm:-bottom-2 sm:size-1.5" />
+                  <span className="dock-run absolute -bottom-[7px] left-1/2 size-1 -translate-x-1/2 rounded-full bg-fg-muted/70 sm:-bottom-2 sm:size-1.5" />
                 </li>
               ))}
             </ul>
