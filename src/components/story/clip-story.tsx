@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Button } from "@/components/button";
 import { site } from "@/lib/site";
 import { useEffect, useRef, useState } from "react";
-import { storyClips } from "@/lib/story";
+import { storyClips, storyTiles } from "@/lib/story";
 import { streamers } from "@/lib/streamers";
 
 /*
@@ -42,7 +42,7 @@ const roundedRect = (x: number, y: number, w: number, h: number, r: number) => {
   return `M${x + rr} ${y}H${x + w - rr}A${rr} ${rr} 0 0 1 ${x + w} ${y + rr}V${y + h - rr}A${rr} ${rr} 0 0 1 ${x + w - rr} ${y + h}H${x + rr}A${rr} ${rr} 0 0 1 ${x} ${y + h - rr}V${y + rr}A${rr} ${rr} 0 0 1 ${x + rr} ${y}Z`;
 };
 
-const N = storyClips.length;
+const N = storyTiles.length; // tiles in the DOM; how many show depends on the screen
 
 type Audience = "clipper" | "streamer";
 
@@ -200,6 +200,7 @@ export function ClipStory() {
     let short = false;
     let headerH = 64;
     let lastBox = "";
+    let visibleN = 8;
     let lastOverlay = "x";
     let textRatio = 0; // statement width per px of font size, on one line
     let disposed = false;
@@ -234,9 +235,9 @@ export function ClipStory() {
       }
       if (on === tilesPlaying) return;
       tilesPlaying = on;
-      tileVideoRefs.current.forEach((v) => {
+      tileVideoRefs.current.forEach((v, i) => {
         if (!v) return;
-        if (on) playSafe(v);
+        if (on && i < visibleN) playSafe(v);
         else v.pause();
       });
     };
@@ -320,8 +321,10 @@ export function ClipStory() {
       }
 
       /* ── 2 · Cut into a grid (2 rows × 4 across; 4 × 2 on phones) ─────── */
-      const cols = mobile ? 2 : 4;
-      const rows = Math.ceil(N / cols);
+      // Big screens (16" laptops and up) get a 5 × 2 grid; everything else 4 × 2, phones 2 × 4.
+      const cols = mobile ? 2 : W >= 1600 ? 5 : 4;
+      const n = mobile ? 8 : cols * 2;
+      const rows = Math.ceil(n / cols);
       const c = easeInOut(seg(p, T.cut));
       const m = easeInOut(seg(p, T.morph));
       const cutGap = lerp(0, mobile ? 8 : 14, c);
@@ -351,7 +354,17 @@ export function ClipStory() {
       const k = seg(p, T.send);
 
       let d = "";
+      visibleN = n;
       for (let i = 0; i < N; i++) {
+        if (i >= n) {
+          const t = tileRefs.current[i];
+          if (t && t.style.visibility !== "hidden") {
+            t.style.visibility = "hidden";
+            t.style.opacity = "0";
+            tileVideoRefs.current[i]?.pause();
+          }
+          continue;
+        }
         const col = i % cols;
         const row = Math.floor(i / cols);
         const rowY = gy + row * (clipH + G) + (row >= half ? extra : 0);
@@ -375,7 +388,7 @@ export function ClipStory() {
         if (tv) tv.style.opacity = String(o);
 
         /* ── 4 · Posting: a paper plane flies off, then a green check ──── */
-        const startAt = (i / N) * 0.7;
+        const startAt = (i / n) * 0.7;
         const state = k > startAt + 0.14 ? "done" : k > startAt ? "sending" : "idle";
         const check = checkRefs.current[i];
         if (check) {
@@ -595,9 +608,9 @@ export function ClipStory() {
               <path ref={overlayPathRef} fill="var(--bg)" fillRule="evenodd" />
             </svg>
 
-            {storyClips.map((clip, i) => (
+            {storyTiles.map((clip, i) => (
               <div
-                key={clip.id}
+                key={clip.key}
                 ref={(el) => {
                   tileRefs.current[i] = el;
                 }}
@@ -747,9 +760,6 @@ export function ClipStory() {
             aria-hidden="true"
             className="hero-rise absolute bottom-6 left-1/2 z-30 flex -translate-x-1/2 flex-col items-center gap-2.5 [animation-delay:1300ms] motion-reduce:hidden"
           >
-            <span className="font-mono text-[10px] tracking-[0.14em] text-fg-muted uppercase">
-              Scroll
-            </span>
             <span className="relative block h-14 w-[2px] overflow-hidden rounded-full bg-fg/12">
               <span className="absolute inset-x-0 top-0 h-6 animate-[scroll-cue_1.6s_var(--ease-out-expo)_infinite] rounded-full bg-electric" />
             </span>

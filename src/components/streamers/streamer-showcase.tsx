@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { PlatformIcon, platforms } from "@/components/platform-icons";
 import { streamers } from "@/lib/streamers";
 
-const CYCLE_MS = 2000;
+const CYCLE_MS = 1000;
 
 export function StreamerShowcase() {
   const [active, setActive] = useState(0);
@@ -33,7 +33,7 @@ export function StreamerShowcase() {
 
   /* Each side swaps with a blur as the active streamer changes. */
   const swap = (on: boolean) =>
-    `transition-[opacity,filter,transform] duration-700 ease-out-expo ${
+    `transition-[opacity,transform] duration-[450ms] ease-out-expo ${
       on ? "scale-100 opacity-100" : "scale-[1.04] opacity-0"
     }`;
 

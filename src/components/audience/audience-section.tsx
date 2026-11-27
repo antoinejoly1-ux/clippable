@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { CampaignFan } from "@/components/audience/campaign-fan";
 import { Button } from "@/components/button";
 import { site } from "@/lib/site";
 
@@ -10,13 +11,7 @@ import { site } from "@/lib/site";
 const AVAILABLE = 12;
 
 const campaigns = [
-  {
-    id: "n3on",
-    title: "N3on",
-    tag: "Streamer",
-    rate: "$0.40",
-    image: "/media/streamers/n3on-photo.webp",
-  },
+  { id: "gta", title: "GTA VI", tag: "Game launch", rate: "$0.60", image: null },
   {
     id: "kaicenat",
     title: "Kai Cenat",
@@ -24,7 +19,13 @@ const campaigns = [
     rate: "$0.50",
     image: "/media/streamers/kaicenat-photo.webp",
   },
-  { id: "gta", title: "GTA VI", tag: "Game launch", rate: "$0.60", image: null },
+  {
+    id: "n3on",
+    title: "N3on",
+    tag: "Streamer",
+    rate: "$0.40",
+    image: "/media/streamers/n3on-photo.webp",
+  },
 ] as const;
 
 export function AudienceSection() {
@@ -71,10 +72,7 @@ export function AudienceSection() {
           </div>
 
           {/* Fan of posters, hanging off the right edge */}
-          <div
-            aria-hidden="true"
-            className="campaign-fan relative h-[20rem] sm:h-[24rem] lg:absolute lg:inset-y-0 lg:right-0 lg:h-auto lg:w-[54%] [&_.campaign-tile]:cursor-default"
-          >
+          <CampaignFan className="campaign-fan relative h-[20rem] sm:h-[24rem] lg:absolute lg:inset-y-0 lg:right-0 lg:h-auto lg:w-[54%]">
             {campaigns.map((c, i) => (
               <div
                 key={c.id}
@@ -107,7 +105,7 @@ export function AudienceSection() {
                 </div>
               </div>
             ))}
-          </div>
+          </CampaignFan>
         </div>
       </div>
     </section>

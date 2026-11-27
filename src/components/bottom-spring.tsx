@@ -15,8 +15,8 @@ import { useEffect } from "react";
  */
 const MAX = 160; // the most the page can lift, in px
 const RUBBER = 0.55; // Apple's rubber-band constant
-const K = 260; // spring stiffness on release
-const ZETA = 0.78; // damping ratio: <1 gives one small, quick settle
+const K = 380; // spring stiffness on release: a quick, firm return
+const ZETA = 0.8; // damping ratio: <1 gives one small, quick settle
 const FOLLOW = 0.45; // per-frame smoothing while pulling, so mouse wheel steps glide
 
 const rubber = (x: number) => (1 - 1 / ((x * RUBBER) / MAX + 1)) * MAX;
@@ -54,6 +54,7 @@ export function BottomSpring() {
     let lastDelta = 0;
     let decays = 0;
     let lockout = 0; // ignore trackpad momentum after a release
+    let lockDelta = 0; // the last delta seen while locked out
 
     const paint = () => {
       const t = pull > 0.05 ? `translate3d(0, ${(-pull).toFixed(2)}px, 0)` : "";
@@ -69,7 +70,7 @@ export function BottomSpring() {
         pull += (target - pull) * (1 - Math.pow(1 - FOLLOW, dt * 60));
         vel = (pull - prev) / dt;
         // The gesture has ended when input stops for a moment.
-        if (now - lastInput > 90) release(now);
+        if (now - lastInput > 70) release(now);
       } else if (mode === "spring") {
         const c = 2 * ZETA * Math.sqrt(K);
         vel += (-K * pull - c * vel) * dt;
@@ -91,13 +92,22 @@ export function BottomSpring() {
     const release = (now: number) => {
       mode = "spring";
       raw = 0;
-      lockout = now + 260;
+      lockout = now + 140;
+      lockDelta = lastDelta;
       decays = 0;
     };
 
     const input = (delta: number, now: number) => {
+      // Trackpad momentum keeps firing for ~1s after the finger lifts. Any event that
+      // arrives while that stream is still flowing extends the lockout (in every state,
+      // including after the spring has settled), so momentum can never grab the page
+      // again; only a fresh swipe after a pause can.
+      if (now < lockout && Math.abs(delta) <= Math.abs(lockDelta) * 1.05) {
+        lockout = now + 140;
+        lockDelta = delta; // momentum only ever shrinks; a bigger event is a new gesture
+        return;
+      }
       if (mode === "spring") {
-        if (now < lockout) return; // momentum tail of the gesture just released
         raw = unrubber(Math.max(0, pull)); // a new pull grabs the page mid-spring
         vel = 0;
       }
@@ -113,9 +123,10 @@ export function BottomSpring() {
       if (mode === "idle" && (d <= 0 || !atBottom())) return;
       if (mode === "pull") {
         // Trackpad momentum: deltas shrinking event after event means the finger has lifted.
-        decays = Math.abs(d) < Math.abs(lastDelta) * 0.92 && Math.abs(d) < 60 ? decays + 1 : 0;
+        // Shrinking deltas, event after event, is the hand-off to momentum.
+        decays = Math.abs(d) < Math.abs(lastDelta) && Math.abs(d) < 80 ? decays + 1 : 0;
         lastDelta = d;
-        if (decays >= 3) {
+        if (decays >= 2) {
           release(now);
           return;
         }
