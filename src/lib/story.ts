@@ -21,23 +21,5 @@ export const storyClips: StoryClip[] = [
   { id: 8, length: "0:29", score: "4.3", platform: "x", views: 97_000 },
 ];
 
-export const storySteps = [
-  {
-    label: "01 · Live",
-    title: "One live stream.",
-    body: "Clippable watches it in real time, every minute, so you don't have to.",
-  },
-  {
-    label: "02 · Clipped",
-    title: "Cut into clips as it happens.",
-    body: "The best moments are found, trimmed, titled and scored automatically.",
-  },
-  {
-    label: "03 · Posted",
-    title: "Posted everywhere. Views keep climbing.",
-    body: "Download, post to TikTok, Shorts, Reels and X, and earn per 1,000 views.",
-  },
-] as const;
-
 const compact = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 });
 export const formatViews = (n: number) => compact.format(Math.round(n));

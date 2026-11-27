@@ -21,3 +21,13 @@ Follow it, especially the Definition of Done (§12).
 - White text on `blue` (#3574EF) is 4.29:1: large/bold text only. Use `royal` (#204FCE) behind small white text.
 - Security headers and the CSP live in `next.config.ts`. Adding a third-party origin means updating the CSP deliberately.
 - Before saying anything is done: `npm run check && npm run build`.
+
+## Design rules (client direction)
+
+- **Light mode only.** Generous white space; restraint over decoration.
+- **Tight corners:** 6px controls (`--radius-control`), 10–12px cards (`--radius-card`). No pill buttons or pill chips.
+- No gradient text, glow blobs or badge clutter. Two-tone type (ink + muted) for emphasis.
+- Big statements are **centered over dimmed media**, never tucked in a corner card.
+- Completion moments use the Apple Pay-style `PayCheck` (ring draws, disc fills, tick strokes). Use `.on-light` on white.
+- Clips are always **vertical 9:16**.
+- If CSS changes don't show up in a build, clear Turbopack's cache: `rm -rf .next`.
