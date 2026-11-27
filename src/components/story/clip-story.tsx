@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Button } from "@/components/button";
 import { site } from "@/lib/site";
 import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { storyClips, storyTiles } from "@/lib/story";
 import { streamers } from "@/lib/streamers";
 
@@ -169,11 +170,59 @@ export function ClipStory() {
 
   const switchAudience = (next: Audience) => {
     if (next === audience) return;
-    setSwapped(true);
-    setAudience(next);
     try {
       localStorage.setItem("audience", next);
     } catch {}
+    const root = document.documentElement;
+    const apply = () => {
+      root.dataset.audience = next;
+      flushSync(() => {
+        setSwapped(true);
+        setAudience(next);
+      });
+    };
+    const doc = document as Document & {
+      startViewTransition?: (cb: () => void) => {
+        finished: Promise<void>;
+        ready: Promise<void>;
+      };
+    };
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!doc.startViewTransition || still) {
+      apply();
+    } else {
+      // The new side sweeps in from the switch's direction, led by a glowing edge.
+      root.dataset.wipe = next === "streamer" ? "right" : "left";
+      const edge = document.createElement("div");
+      edge.className = "wipe-edge";
+      edge.setAttribute("aria-hidden", "true");
+      const vt = doc.startViewTransition(() => {
+        document.body.appendChild(edge);
+        apply();
+      });
+      const toRight = next === "streamer";
+      vt.ready.then(() => {
+        const timing = {
+          duration: 900,
+          easing: "cubic-bezier(0.7, 0, 0.25, 1)",
+          fill: "both" as const,
+        };
+        root.animate(
+          { clipPath: [toRight ? "inset(0 100% 0 0)" : "inset(0 0 0 100%)", "inset(0 0 0 0)"] },
+          { ...timing, pseudoElement: "::view-transition-new(root)" },
+        );
+        root.animate(
+          // `left` (not transform) on purpose: the clip-path wipe runs on the main thread,
+          // and so must the edge, or the two drift apart whenever the page is busy.
+          { left: toRight ? ["0px", "100vw"] : ["100vw", "0px"] },
+          { ...timing, pseudoElement: "::view-transition-new(wipe-edge)" },
+        );
+      });
+      vt.finished.finally(() => {
+        edge.remove();
+        delete root.dataset.wipe;
+      });
+    }
     // The headline's first word changes width, so the player follows its slot for a moment.
     requestAnimationFrame(() => followRef.current());
   };

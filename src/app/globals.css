@@ -849,3 +849,104 @@
   opacity: 1;
   clip-path: circle(150% at 50% 72%);
 }
+
+/*
+ * Streamer side: a deep-blue variant of the whole page. Only the tokens flip, so every
+ * section follows. The hero sky inverts: a bright glow at the top falling into deep blue.
+ */
+html[data-audience="streamer"] {
+  --bg: #050d3a;
+  --bg-subtle: #0a1650;
+  --fg: #ffffff;
+  --fg-muted: #b3c3ff;
+  --fg-subtle: #6878bd;
+  --border: rgb(255 255 255 / 0.12);
+  --accent: var(--color-electric);
+  --link: #8fc0ff;
+  color-scheme: dark;
+}
+html[data-audience="streamer"] .hero-sky {
+  background:
+    radial-gradient(55% 40% at 0% 0%, rgb(140 110 255 / 0.45), rgb(140 110 255 / 0) 70%),
+    radial-gradient(55% 40% at 100% 0%, rgb(140 110 255 / 0.45), rgb(140 110 255 / 0) 70%),
+    radial-gradient(
+      110% 50% at 50% -10%,
+      #ffffff 0%,
+      #eef5ff 26%,
+      #a3ccff 40%,
+      #3f8dff 50%,
+      #0b5cff 58%,
+      #1630c8 68%,
+      #0a1a6e 80%,
+      #050d3a 100%
+    );
+}
+html[data-audience="streamer"] .site-header::before {
+  background: rgb(5 13 58 / 0.82);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.08);
+}
+html[data-audience="streamer"] .hdr-cta {
+  background: white !important;
+  color: var(--color-midnight) !important;
+}
+
+/*
+ * Switching sides: the browser snapshots the page, then the new theme sweeps across,
+ * led by a glowing line with a dot on it (like the headline reveal). To the right for
+ * "I stream", back to the left for "I clip".
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+.wipe-edge {
+  position: fixed;
+  inset-block: 0;
+  left: 0;
+  width: 2px;
+  z-index: 100;
+  pointer-events: none;
+  view-transition-name: wipe-edge;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    #8fc0ff 20%,
+    white 50%,
+    #8fc0ff 80%,
+    transparent
+  );
+  box-shadow: 0 0 24px 6px rgb(11 92 255 / 0.55);
+}
+.wipe-edge::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  box-shadow:
+    0 0 0 5px rgb(11 92 255 / 0.35),
+    0 0 30px 8px rgb(11 92 255 / 0.7);
+  transform: translate(-50%, -50%);
+}
+::view-transition-group(wipe-edge) {
+  animation: none;
+}
+::view-transition-old(wipe-edge) {
+  display: none;
+}
+::view-transition-new(wipe-edge) {
+  position: absolute;
+  left: 0;
+}
+/* Both pseudo-elements are animated from script on the same frame (see clip-story), so
+   the glowing edge stays exactly on the wipe's leading line. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-new(root),
+  ::view-transition-new(wipe-edge) {
+    animation: none !important;
+  }
+}
