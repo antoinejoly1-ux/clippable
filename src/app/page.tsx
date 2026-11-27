@@ -32,9 +32,9 @@ export default function Home() {
         <span id="top" aria-hidden="true" />
         <ClipStory />
         <StreamerSection />
-        <LiveSection />
         <StepsSection />
         <AgentsSection />
+        <LiveSection />
         <AudienceSection />
         <FaqSection />
         <FinalCta />

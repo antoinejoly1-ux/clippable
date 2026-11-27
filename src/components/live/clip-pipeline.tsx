@@ -8,9 +8,9 @@ import { PlatformIcon, platforms } from "@/components/platform-icons";
 const COLS = 8;
 const ROWS = 4;
 const TOTAL = COLS * ROWS;
-const CLIP_MS = 190; // pace of each row, left to right
-const ROW_DELAY_MS = 1000; // every row runs at once, each starting 1s after the one above
-const HOLD_MS = 2600;
+const CLIP_MS = 95; // pace of each row, left to right
+const ROW_DELAY_MS = 500; // every row runs at once, each starting 0.5s after the one above
+const HOLD_MS = 1800;
 const CYCLE_MS = (ROWS - 1) * ROW_DELAY_MS + (COLS - 1) * CLIP_MS + HOLD_MS;
 
 const isFilled = (k: number, t: number) =>
@@ -124,7 +124,7 @@ export function ClipPipeline() {
         window.clearInterval(wordTimer);
         if (e.isIntersecting) {
           start = performance.now();
-          clock = window.setInterval(tick, 60);
+          clock = window.setInterval(tick, 30);
           wordTimer = window.setInterval(stepWord, 420);
         }
       },
@@ -218,19 +218,36 @@ export function ClipPipeline() {
             >
               <p
                 aria-hidden="true"
-                className="flex min-h-[4.5rem] flex-wrap content-center justify-center gap-x-1 gap-y-1 text-center text-[1.35rem] leading-tight font-extrabold tracking-[-0.02em] text-fg"
+                className="flex min-h-[4.5rem] flex-wrap content-center justify-center gap-x-0.5 gap-y-1 text-center text-[1.35rem] leading-tight font-extrabold tracking-[-0.035em] text-fg"
               >
                 {captions[line].map((w, i) => (
                   <span
                     key={`${line}-${i}`}
-                    className={`rounded-[4px] px-1.5 transition-colors duration-150 ${
-                      i === word ? "bg-electric text-white" : ""
-                    }`}
+                    className="caption-word rounded-[4px] px-[3px]"
+                    data-on={i === word ? "true" : "false"}
+                    style={{ animationDelay: `${i * 45}ms` }}
                   >
                     {w}
                   </span>
                 ))}
               </p>
+              {/* The brand kit the template applies: colours and typeface */}
+              <div
+                aria-hidden="true"
+                className="mt-5 flex items-center justify-between border-t border-border pt-4"
+              >
+                <span className="flex gap-1.5">
+                  <span className="size-6 rounded-[5px] bg-electric" />
+                  <span className="size-6 rounded-[5px] border border-border bg-white" />
+                  <span className="size-6 rounded-[5px] bg-ink" />
+                </span>
+                <span className="flex h-6 items-center rounded-[5px] border border-border px-1.5 text-[13px] font-bold tracking-[-0.02em] text-fg">
+                  Aa
+                </span>
+              </div>
+              <span className="sr-only">
+                Brand colours blue, white and black, with a caption font.
+              </span>
             </div>
           </Node>
 
@@ -251,7 +268,7 @@ export function ClipPipeline() {
                 {Array.from({ length: TOTAL }, (_, k) => (
                   <li key={k} className="relative aspect-[9/16] overflow-hidden rounded-[4px]">
                     {isFilled(k, elapsed) && (
-                      <div className="absolute inset-0 animate-[clip-pop_360ms_var(--ease-out-expo)_both]">
+                      <div className="absolute inset-0 animate-[clip-pop_260ms_var(--ease-out-expo)_both]">
                         <Image
                           src={`/media/pipeline/clip-${k + 1}.webp`}
                           alt=""

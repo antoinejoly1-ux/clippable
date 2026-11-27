@@ -51,7 +51,7 @@ export function AudienceSection() {
               <h3 className="mt-4 text-[clamp(1.6rem,2.6vw,2.25rem)] leading-[1.05] font-medium tracking-[-0.04em] text-fg">
                 {p.title}
               </h3>
-              <p className="mt-3 max-w-[42ch] text-base text-pretty text-fg-muted">{p.body}</p>
+              <p className="mt-3 max-w-[52ch] text-base text-pretty text-fg-muted">{p.body}</p>
               <div className="mt-8 flex items-center gap-3 border-t border-border pt-6">
                 {p.id === "streamers" && (
                   <span aria-hidden="true" className="flex -space-x-2">

@@ -159,17 +159,16 @@ export function AgentsSection() {
             </ul>
           </div>
 
-          <p className="mt-14 max-w-[16ch] px-2 text-[clamp(2.25rem,5.6vw,5rem)] leading-[0.98] font-medium tracking-[-0.045em] text-balance text-fg sm:mt-16">
-            Clip from the AI you already use.
-          </p>
-
-          <div className="mt-14 flex max-w-md flex-col items-center sm:mt-16">
-            <h2 id="agents-title" className="text-lg font-semibold tracking-[-0.02em] text-fg">
-              Connect your agents
+          <div className="mt-14 flex max-w-[48rem] flex-col items-center sm:mt-16">
+            <h2
+              id="agents-title"
+              className="text-[clamp(2.25rem,5vw,4.5rem)] leading-[0.98] font-medium tracking-[-0.045em] text-balance text-fg"
+            >
+              Connect your agents.
             </h2>
-            <p className="mt-2 text-base text-pretty text-fg-muted">
-              Link Claude, ChatGPT, Gemini and more to Clippable. Ask them to find the best moments,
-              review the clips and post them for you.
+            <p className="mt-5 max-w-[36rem] text-lg text-pretty text-fg-muted">
+              Link Claude, ChatGPT, Gemini and more. Ask them to find the best moments, review the
+              clips and post them for you.
             </p>
             <ul className="sr-only">
               {AGENTS.map((a) => (

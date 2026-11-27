@@ -503,7 +503,7 @@ export function ClipStory() {
               </span>
             </h1>
 
-            <p className="hero-rise mt-6 max-w-[34ch] text-[clamp(1rem,1.3vw,1.2rem)] leading-snug text-pretty text-fg-muted [animation-delay:1350ms] [@media(max-height:520px)]:hidden">
+            <p className="hero-rise mt-6 max-w-[46ch] text-[clamp(1rem,1.3vw,1.2rem)] leading-snug text-pretty text-fg-muted [animation-delay:1350ms] [@media(max-height:520px)]:hidden">
               Clippable turns Kick and Twitch streams into vertical clips while they&apos;re live.
               Clippers earn on every 1,000 views.
             </p>

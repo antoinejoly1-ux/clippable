@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { PlatformIcon, platforms, type Platform } from "@/components/platform-icons";
+import { LazyVideo } from "@/components/lazy-video";
+import { PlatformIcon, platforms } from "@/components/platform-icons";
 import { streamers } from "@/lib/streamers";
 
 /*
@@ -121,7 +122,7 @@ const Kbd = ({ children }: { children: React.ReactNode }) => (
 /* ─────────────────────────────────────────────────────────────────── */
 
 const MENU = [streamers[0], streamers[2], streamers[5], streamers[1]]; // N3on, Lacy, Clavicular, PlaqueBoyMax
-const STYLE_ROW = MENU.length; // index of the "Brand captions" row
+const STYLE_ROW = MENU.length; // index of the "My branding" row
 const PICKS = [0, 2, 1, STYLE_ROW]; // the cursor's route
 
 export function SetupVisual() {
@@ -177,12 +178,18 @@ export function SetupVisual() {
     return tl.clear;
   });
 
-  const row = (i: number, avatar: React.ReactNode, title: string, sub: string, key: string) => {
+  const row = (
+    i: number,
+    avatar: React.ReactNode,
+    title: React.ReactNode,
+    sub: React.ReactNode,
+    key: string,
+  ) => {
     const open = hover === i;
     const on = picked.includes(i);
     return (
       <li
-        key={title}
+        key={i}
         ref={(el) => {
           rowRefs.current[i] = el;
         }}
@@ -192,7 +199,9 @@ export function SetupVisual() {
       >
         {avatar}
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-[13px] font-medium text-fg">{title}</span>
+          <span className="flex items-center gap-1.5 truncate text-[13px] font-medium text-fg">
+            {title}
+          </span>
           {/* The subtitle opens smoothly on hover (0fr → 1fr). */}
           <span
             className={`grid transition-[grid-template-rows,opacity] duration-500 ease-out-expo ${
@@ -200,7 +209,9 @@ export function SetupVisual() {
             }`}
           >
             <span className="overflow-hidden">
-              <span className="block truncate pt-0.5 text-[11px] text-fg-muted">{sub}</span>
+              <span className="flex items-center gap-1.5 truncate pt-0.5 text-[11px] text-fg-muted">
+                {sub}
+              </span>
             </span>
           </span>
         </span>
@@ -230,7 +241,18 @@ export function SetupVisual() {
                 height={28}
                 className="size-7 shrink-0 rounded-[8px] object-cover"
               />,
-              s.name,
+              <>
+                {s.name}
+                <span
+                  className="flex size-3.5 shrink-0 items-center justify-center rounded-[3px]"
+                  style={{ backgroundColor: platforms[s.platform].color }}
+                >
+                  <PlatformIcon
+                    platform={s.platform}
+                    className={`size-2.5 ${s.platform === "kick" ? "text-black" : "text-white"}`}
+                  />
+                </span>
+              </>,
               `${platforms[s.platform].title} · ${s.rate}`,
               s.name[0].toUpperCase(),
             ),
@@ -240,12 +262,19 @@ export function SetupVisual() {
         <ul className="px-1.5 pb-1.5">
           {row(
             STYLE_ROW,
-            <span className="flex size-7 shrink-0 items-center justify-center rounded-[8px] border border-border bg-bg-subtle text-[11px] font-extrabold text-fg">
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-[8px] bg-electric text-[12px] font-extrabold tracking-[-0.02em] text-white">
               Aa
             </span>,
-            "Brand captions",
-            "Geist Bold · blue highlight",
-            "B",
+            "My branding",
+            <>
+              <span className="flex gap-0.5">
+                <span className="size-2.5 rounded-[2px] bg-electric" />
+                <span className="size-2.5 rounded-[2px] border border-border bg-white" />
+                <span className="size-2.5 rounded-[2px] bg-ink" />
+              </span>
+              Geist Bold captions
+            </>,
+            "M",
           )}
         </ul>
         <div className="flex items-center gap-4 border-t border-border px-3.5 py-2 text-[10.5px] text-fg-muted">
@@ -266,8 +295,8 @@ export function SetupVisual() {
 /* 02 · Clip it: clips are made one by one into a grid                  */
 /* ─────────────────────────────────────────────────────────────────── */
 
-const GRID = 12;
-const GRID_MS = 260;
+const GRID = 15; // clips shown; a 16th "+" tile says there are more
+const GRID_MS = 180;
 
 export function ClipVisual() {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -300,49 +329,76 @@ export function ClipVisual() {
   return (
     <div
       ref={rootRef}
-      className="w-[min(17rem,100%)] rounded-[12px] border border-border bg-bg p-2.5 shadow-[0_24px_48px_-28px_rgb(1_8_43/0.45)]"
+      className="flex w-[min(17rem,100%)] flex-col items-center"
       aria-hidden="true"
     >
-      <div className="mb-2 flex items-center justify-between px-0.5 text-[11px]">
-        <span className="flex items-center gap-1.5 font-medium text-fg">
-          <span className="size-1.5 animate-live rounded-full bg-live" />
-          Making clips
-        </span>
-        <span className="font-mono text-fg-muted tabular-nums">
-          {made}/{GRID}
-        </span>
+      {/* The stream being watched */}
+      <div className="relative aspect-video w-[62%] overflow-hidden rounded-[10px] bg-midnight shadow-[0_18px_36px_-22px_rgb(1_8_43/0.55)]">
+        <LazyVideo
+          poster="/media/pipeline/stream.webp"
+          sources={[
+            { src: "/media/pipeline/stream.av1.mp4", type: 'video/mp4; codecs="av01.0.04M.08"' },
+            { src: "/media/pipeline/stream.h264.mp4", type: "video/mp4" },
+          ]}
+          className="absolute inset-0 size-full object-cover"
+        />
+        <p className="absolute top-1.5 left-1.5 flex items-center gap-1 rounded-[3px] bg-midnight/70 px-1.5 py-0.5 font-mono text-[8px] tracking-[0.08em] text-white uppercase backdrop-blur">
+          <span className="size-1 animate-live rounded-full bg-live" />
+          Live
+        </p>
       </div>
-      <ul className="grid grid-cols-6 gap-1.5">
-        {Array.from({ length: GRID }, (_, k) => (
+
+      {/* Content flowing from the stream into the clipper */}
+      <div className="relative flex h-10 w-4 flex-col items-center">
+        <span className="feed-line w-[2px] flex-1 rounded-full" />
+        <svg viewBox="0 0 10 6" className="-mt-px h-1.5 w-2.5 text-electric">
+          <path d="M0 0h10L5 6Z" fill="currentColor" />
+        </svg>
+      </div>
+
+      <div className="w-full rounded-[12px] border border-border bg-bg p-2.5 shadow-[0_24px_48px_-28px_rgb(1_8_43/0.45)]">
+        <div className="mb-2 flex items-center justify-between px-0.5 text-[11px]">
+          <span className="font-medium text-fg">Making clips</span>
+          <span className="font-mono text-fg-muted tabular-nums">{made}</span>
+        </div>
+        <ul className="grid grid-cols-8 gap-1">
+          {Array.from({ length: GRID }, (_, k) => (
+            <li
+              key={k}
+              className="relative aspect-[9/16] overflow-hidden rounded-[3px] border border-dashed border-border"
+            >
+              {k < made && (
+                <span className="absolute inset-0 animate-[clip-pop_300ms_var(--ease-out-expo)_both]">
+                  <Image
+                    src={`/media/pipeline/clip-${((k * 3) % 32) + 1}.webp`}
+                    alt=""
+                    fill
+                    sizes="32px"
+                    className="object-cover"
+                  />
+                </span>
+              )}
+            </li>
+          ))}
           <li
-            key={k}
-            className="relative aspect-[9/16] overflow-hidden rounded-[4px] border border-dashed border-border"
+            className={`flex aspect-[9/16] items-center justify-center rounded-[3px] bg-bg-subtle text-[13px] font-semibold text-fg-muted transition-opacity duration-300 ${
+              made >= GRID ? "opacity-100" : "opacity-40"
+            }`}
           >
-            {k < made && (
-              <span className="absolute inset-0 animate-[clip-pop_360ms_var(--ease-out-expo)_both]">
-                <Image
-                  src={`/media/pipeline/clip-${((k * 3) % 32) + 1}.webp`}
-                  alt=""
-                  fill
-                  sizes="44px"
-                  className="object-cover"
-                />
-              </span>
-            )}
+            +
           </li>
-        ))}
-      </ul>
+        </ul>
+      </div>
     </div>
   );
 }
 
 /* ─────────────────────────────────────────────────────────────────── */
-/* 03 · Post: zoom out, select every clip, confirm, green check          */
+/* 03 · Post: zoom out, select every clip, download, green check        */
 /* ─────────────────────────────────────────────────────────────────── */
 
 const POST_CLIPS = [5, 12, 19, 23, 28, 9];
-const POST_TO: Platform[] = ["tiktok", "youtubeShorts", "instagram", "x"];
-type PostPhase = "zoom" | "select" | "ask" | "yes" | "posted";
+type PostPhase = "zoom" | "select" | "ask" | "yes" | "posted"; // "posted" = downloaded
 
 export function PostVisual() {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -427,16 +483,9 @@ export function PostVisual() {
   return (
     <div
       ref={rootRef}
-      className="relative w-[min(18.5rem,100%)] overflow-hidden rounded-[12px] border border-border bg-bg shadow-[0_24px_48px_-28px_rgb(1_8_43/0.45)]"
+      className="relative w-[min(18.5rem,100%)] overflow-hidden"
       aria-hidden="true"
     >
-      <div className="flex items-center justify-between border-b border-border px-3 py-2 text-[11px]">
-        <span className="font-medium text-fg">Today&apos;s clips</span>
-        <span className="font-mono text-fg-muted tabular-nums">
-          {selectedCount > 0 ? `${selectedCount} selected` : `${POST_CLIPS.length} ready`}
-        </span>
-      </div>
-
       {/* The "camera": starts zoomed in on the first clip, then pulls back. */}
       <div className="relative p-3">
         <ul
@@ -450,7 +499,9 @@ export function PostVisual() {
               <li
                 key={c}
                 className={`relative aspect-[9/16] overflow-hidden rounded-[6px] transition-shadow duration-200 ${
-                  on ? "shadow-[0_0_0_2px_var(--bg),0_0_0_4px_var(--color-electric)]" : ""
+                  on
+                    ? "shadow-[0_0_0_2px_var(--bg),0_0_0_4px_var(--color-electric)]"
+                    : "shadow-[0_12px_24px_-14px_rgb(1_8_43/0.5)]"
                 }`}
               >
                 <Image
@@ -486,7 +537,7 @@ export function PostVisual() {
 
         {/* The prompt: ready to post? → green check */}
         <div
-          className={`absolute inset-0 grid place-items-center bg-bg/55 backdrop-blur-[2px] transition-opacity duration-300 ${
+          className={`absolute inset-0 grid place-items-center bg-bg/40 backdrop-blur-[2px] transition-opacity duration-300 ${
             asking ? "opacity-100" : "opacity-0"
           }`}
         >
@@ -497,7 +548,7 @@ export function PostVisual() {
           >
             {phase === "posted" ? (
               <div className="flex flex-col items-center py-1">
-                <span data-done="true" className="ok-check block size-11">
+                <span className="ok-check block size-11">
                   <svg viewBox="0 0 64 64" className="size-full overflow-visible">
                     <circle className="halo" cx="32" cy="32" r="30" />
                     <circle className="fill" cx="32" cy="32" r="30" />
@@ -505,26 +556,12 @@ export function PostVisual() {
                     <path className="tick" d="M20 33.5 28 41.5 45 24" pathLength={1} />
                   </svg>
                 </span>
-                <p className="mt-2 text-[13px] font-semibold text-fg">Posted</p>
-                <p className="text-[11px] text-fg-muted">6 clips · 4 platforms</p>
+                <p className="mt-2 text-[13px] font-semibold text-fg">Downloaded</p>
+                <p className="text-[11px] text-fg-muted">6 clips · 1080×1920</p>
               </div>
             ) : (
               <>
-                <p className="text-[13px] font-semibold text-fg">Ready to post 6 clips?</p>
-                <div className="mt-2 flex justify-center gap-1.5">
-                  {POST_TO.map((pf) => (
-                    <span
-                      key={pf}
-                      className="flex size-5 items-center justify-center rounded-[5px] text-white"
-                      style={{
-                        backgroundColor:
-                          pf === "tiktok" || pf === "x" ? "var(--color-ink)" : platforms[pf].color,
-                      }}
-                    >
-                      <PlatformIcon platform={pf} className="size-3" />
-                    </span>
-                  ))}
-                </div>
+                <p className="text-[13px] font-semibold text-fg">Ready to download 6 clips?</p>
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   <span className="flex h-8 items-center justify-center rounded-full border border-border text-[12px] font-medium text-fg">
                     No
@@ -535,7 +572,7 @@ export function PostVisual() {
                       phase === "yes" ? "bg-royal" : "bg-electric"
                     }`}
                   >
-                    Yes, post
+                    Download
                   </span>
                 </div>
               </>

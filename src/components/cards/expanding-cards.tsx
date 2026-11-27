@@ -48,7 +48,7 @@ export function ExpandingCards({ cards, label }: { cards: ExpandingCard[]; label
                 {c.heading}
               </h3>
               <div
-                className={`mt-2 max-w-[38ch] text-[0.95rem] leading-relaxed ${dark ? "text-white/70" : "text-fg-muted"}`}
+                className={`mt-2 max-w-[46ch] text-[0.95rem] leading-relaxed ${dark ? "text-white/70" : "text-fg-muted"}`}
               >
                 {c.body}
               </div>

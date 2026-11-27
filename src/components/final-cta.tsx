@@ -30,7 +30,7 @@ export function FinalCta() {
           >
             Start clipping before everyone else.
           </h2>
-          <p className="mt-6 max-w-[40ch] text-lg text-pretty text-white/85">
+          <p className="mt-6 max-w-[48ch] text-lg text-pretty text-white/85">
             Early access opens in waves. Tell us whether you clip or stream, and we&apos;ll get you
             in.
           </p>

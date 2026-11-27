@@ -13,7 +13,7 @@ export function LiveSection() {
           id="live-title"
           className="mx-auto text-[clamp(2.25rem,5vw,4.5rem)] leading-[0.98] font-medium tracking-[-0.045em] text-balance text-fg"
         >
-          Build your workflow. <span className="text-fg-muted">Build repeatable workflows.</span>
+          Build repeatable workflows.
         </h2>
       </div>
       <div className="mt-12 sm:mt-16">

@@ -4,9 +4,9 @@ import { MobileMenu } from "@/components/mobile-menu";
 import { site } from "@/lib/site";
 
 const links = [
-  { label: "How it works", href: "#steps" },
-  { label: "Workflow", href: "#live" },
   { label: "Streamers", href: "#streamers" },
+  { label: "How it works", href: "#steps" },
+  { label: "Workflows", href: "#live" },
   { label: "FAQ", href: "#faq" },
   { label: "Contact", href: `mailto:${site.email}` },
 ];
