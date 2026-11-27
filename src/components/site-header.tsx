@@ -5,7 +5,7 @@ export function SiteHeader() {
     <header className="pointer-events-none fixed inset-x-0 top-3 z-50 flex justify-center px-3">
       <nav
         aria-label="Main"
-        className="pointer-events-auto flex h-12 items-center gap-1 rounded-[10px] bg-midnight/95 p-1.5 pl-3.5 text-white shadow-[0_12px_32px_-12px_rgb(1_8_43/0.55)] ring-1 ring-white/10 backdrop-blur-xl"
+        className="hero-rise pointer-events-auto flex h-12 items-center gap-1 rounded-[10px] bg-midnight/95 p-1.5 pl-3.5 text-white shadow-[0_12px_32px_-12px_rgb(1_8_43/0.55)] ring-1 ring-white/10 backdrop-blur-xl [animation-delay:900ms]"
       >
         <a
           href="#top"
