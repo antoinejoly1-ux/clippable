@@ -121,30 +121,33 @@ export function StreamerShowcase() {
                 setHovering(true);
                 setActive(i);
               }}
-              className={`flex cursor-default items-center text-[clamp(2.4rem,5.4vw,4.75rem)] leading-[1.06] font-semibold tracking-[-0.045em] transition-colors duration-500 ${
+              className={`cursor-default text-[clamp(2.4rem,5.4vw,4.75rem)] leading-[1.06] font-semibold tracking-[-0.045em] transition-colors duration-500 ${
                 on ? "text-fg" : "text-fg-subtle"
               }`}
             >
-              <span
-                aria-hidden="true"
-                className={`relative block shrink-0 overflow-hidden rounded-[0.2em] transition-[width,margin,opacity] duration-500 ease-out-expo ${
-                  on ? "mr-[0.22em] w-[0.86em] opacity-100" : "mr-0 w-0 opacity-0"
-                }`}
-              >
-                <span className="relative block aspect-square w-[0.86em]">
+              {/* The name stays centred; avatar and platform badge hang outside it. */}
+              <span className="relative inline-block">
+                <span
+                  aria-hidden="true"
+                  className={`absolute top-1/2 right-full mr-[0.22em] block aspect-square w-[0.86em] -translate-y-1/2 overflow-hidden rounded-[0.2em] transition-[opacity,scale] duration-500 ease-out-expo ${
+                    on ? "scale-100 opacity-100" : "scale-75 opacity-0"
+                  }`}
+                >
                   <Image src={s.avatar} alt="" fill sizes="80px" className="object-cover" />
                 </span>
-              </span>
-              <span>{s.name}</span>
-              <span
-                aria-hidden="true"
-                className={`ml-[0.25em] flex size-[0.4em] items-center justify-center rounded-[0.08em] transition-opacity duration-500 ${on ? "opacity-100" : "opacity-0"}`}
-                style={{ backgroundColor: platforms[s.platform].color }}
-              >
-                <PlatformIcon
-                  platform={s.platform}
-                  className={`size-[62%] ${s.platform === "kick" ? "text-black" : "text-white"}`}
-                />
+                {s.name}
+                <span
+                  aria-hidden="true"
+                  className={`absolute top-1/2 left-full ml-[0.25em] flex size-[0.4em] -translate-y-1/2 items-center justify-center rounded-[0.08em] transition-[opacity,scale] duration-500 ease-out-expo ${
+                    on ? "scale-100 opacity-100" : "scale-75 opacity-0"
+                  }`}
+                  style={{ backgroundColor: platforms[s.platform].color }}
+                >
+                  <PlatformIcon
+                    platform={s.platform}
+                    className={`size-[62%] ${s.platform === "kick" ? "text-black" : "text-white"}`}
+                  />
+                </span>
               </span>
               <span className="sr-only">
                 , on {platforms[s.platform].title}, {s.rate}
@@ -152,6 +155,9 @@ export function StreamerShowcase() {
             </li>
           );
         })}
+        <li className="mt-1 text-[clamp(1.5rem,3vw,2.5rem)] leading-[1.2] font-medium tracking-[-0.035em] text-fg-subtle">
+          and much more.
+        </li>
       </ul>
       {secondSide}
       <p aria-hidden="true" className="-mt-4 text-center text-sm text-fg-muted lg:col-start-2">

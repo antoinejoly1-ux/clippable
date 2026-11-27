@@ -7,7 +7,9 @@ import type { ReactNode } from "react";
  * Sizes: sm (header), md (48px) in-page, lg (56px) final CTA, xl (64px) hero.
  */
 const variants = {
-  primary: "bg-royal text-white hover:bg-midnight",
+  /** Brand blue with depth: a top-lit gradient, an inner highlight and a soft blue glow. */
+  primary:
+    "bg-[linear-gradient(180deg,#3f80ff_0%,#1f55e0_55%,var(--color-royal)_100%)] text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.3),inset_0_-1px_0_rgb(1_8_43/0.2),0_1px_2px_rgb(1_8_43/0.3),0_12px_28px_-12px_rgb(0_97_255/0.75)] hover:brightness-110 hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.35),inset_0_-1px_0_rgb(1_8_43/0.2),0_1px_2px_rgb(1_8_43/0.3),0_18px_40px_-14px_rgb(0_97_255/0.9)]",
   inverse: "bg-white text-midnight hover:bg-sky",
   dark: "bg-midnight text-white hover:bg-royal",
 } as const;
@@ -37,7 +39,7 @@ export function Button({
   return (
     <a
       href={href}
-      className={`inline-flex items-center justify-center font-medium whitespace-nowrap transition-[scale,background-color,color,box-shadow] duration-300 ease-out-expo select-none [-webkit-tap-highlight-color:transparent] active:scale-[0.97] active:duration-100 ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`inline-flex items-center justify-center font-medium whitespace-nowrap transition-[scale,background-color,color,box-shadow,filter] duration-300 ease-out-expo select-none [-webkit-tap-highlight-color:transparent] active:scale-[0.97] active:duration-100 ${variants[variant]} ${sizes[size]} ${className}`}
     >
       {children}
     </a>

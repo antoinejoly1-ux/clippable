@@ -29,7 +29,7 @@ export function ExpandingCards({ cards, label }: { cards: ExpandingCard[]; label
             tabIndex={0}
             aria-labelledby={`xcard-${c.index}`}
             className={`xcard group/x relative isolate flex h-[34rem] flex-col overflow-hidden rounded-[var(--radius-card)] border outline-none focus-visible:ring-2 focus-visible:ring-blue lg:h-[38rem] ${
-              dark ? "border-white/10 bg-midnight text-white" : "canvas-dots border-border text-fg"
+              dark ? "border-white/10 bg-midnight text-white" : "surface-sky border-border text-fg"
             }`}
           >
             {c.background}
@@ -40,10 +40,10 @@ export function ExpandingCards({ cards, label }: { cards: ExpandingCard[]; label
             <p className="xcard-title relative px-7 pt-7 text-[clamp(2.25rem,3.3vw,3.75rem)] leading-none font-medium tracking-[-0.045em] whitespace-nowrap">
               <span className={dark ? "text-white/45" : "text-fg-subtle"}>{c.index}</span> {c.title}
             </p>
-            <div className="relative flex min-h-0 flex-1 items-center justify-center px-6 transition-transform duration-700 ease-out-expo group-hover/x:scale-[1.04]">
+            <div className="xcard-fade relative flex min-h-0 flex-1 items-center justify-center px-6 transition-[transform,opacity] duration-[800ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover/x:scale-[1.03]">
               {c.visual}
             </div>
-            <div className="relative px-7 pb-7">
+            <div className="xcard-fade relative px-7 pb-7 transition-opacity duration-[800ms] ease-[cubic-bezier(0.65,0,0.35,1)]">
               <h3 id={`xcard-${c.index}`} className="text-xl font-medium tracking-[-0.02em]">
                 {c.heading}
               </h3>

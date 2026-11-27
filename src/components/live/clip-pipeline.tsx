@@ -52,6 +52,18 @@ export function ClipPipeline() {
     const pts: number[][] = horizontal
       ? [[0, centres[0][1] + 40], ...centres, [c.width, centres[2][1] - 40]]
       : [[centres[0][0] - 30, 0], ...centres, [centres[2][0] + 30, c.height]];
+    // A gentle wave between each pair of points, alternating up and down.
+    const wavy: number[][] = [pts[0]];
+    for (let i = 1; i < pts.length; i++) {
+      const [ax, ay] = pts[i - 1];
+      const [bx, by] = pts[i];
+      const amp = (i % 2 ? 1 : -1) * 34;
+      wavy.push(
+        horizontal ? [(ax + bx) / 2, (ay + by) / 2 + amp] : [(ax + bx) / 2 + amp, (ay + by) / 2],
+        pts[i],
+      );
+    }
+    pts.splice(0, pts.length, ...wavy);
     let d = `M${pts[0][0]} ${pts[0][1]}`;
     for (let i = 0; i < pts.length - 1; i++) {
       const p0 = pts[Math.max(0, i - 1)];
@@ -144,31 +156,43 @@ export function ClipPipeline() {
     <div className="mx-auto max-w-[1360px] px-3 sm:px-6">
       <div
         ref={canvasRef}
-        className="canvas-dots relative overflow-hidden rounded-[var(--radius-card)] border border-border px-5 py-14 sm:px-10 lg:px-12 lg:pt-20 lg:pb-14"
+        className="surface-sky relative overflow-hidden rounded-[var(--radius-card)] border border-border px-5 py-14 sm:px-10 lg:px-12 lg:pt-20 lg:pb-14"
       >
-        {/* The flow line, behind the nodes */}
+        {/* The flow line, behind the nodes: the hero's colours flowing left to right */}
         <svg aria-hidden="true" className="pointer-events-none absolute inset-0 size-full">
+          <defs>
+            <linearGradient id="flow-grad" x1="0" y1="0" x2="1" y2="0" spreadMethod="reflect">
+              <stop offset="0" stopColor="#000000" />
+              <stop offset="0.25" stopColor="#1326b8" />
+              <stop offset="0.5" stopColor="#0b5cff" />
+              <stop offset="0.75" stopColor="#6dafff" />
+              <stop offset="1" stopColor="#1326b8" />
+              <animateTransform
+                attributeName="gradientTransform"
+                type="translate"
+                from="-1 0"
+                to="1 0"
+                dur="6s"
+                repeatCount="indefinite"
+              />
+            </linearGradient>
+          </defs>
           {paths.map((d, i) => (
             <g key={i} fill="none" strokeLinecap="round">
               <path
                 d={d}
-                stroke="color-mix(in oklab, var(--fg) 16%, transparent)"
+                stroke="url(#flow-grad)"
+                strokeWidth="16"
+                className="opacity-25 blur-[8px]"
+              />
+              <path d={d} stroke="url(#flow-grad)" strokeWidth="5" />
+              {/* A bright pulse travelling the line */}
+              <path
+                d={d}
+                stroke="white"
                 strokeWidth="3"
-              />
-              {/* A soft glow travelling with the pulse */}
-              <path
-                d={d}
-                stroke="var(--color-sky)"
-                strokeWidth="12"
                 pathLength={1}
-                className="flow-pulse opacity-40 blur-[6px]"
-              />
-              <path
-                d={d}
-                stroke="var(--color-electric)"
-                strokeWidth="3.5"
-                pathLength={1}
-                className="flow-pulse"
+                className="flow-pulse opacity-80"
               />
             </g>
           ))}

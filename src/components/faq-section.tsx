@@ -5,7 +5,7 @@ import { faq } from "@/lib/faq";
 export function FaqSection() {
   return (
     <section id="faq" aria-labelledby="faq-title" className="scroll-mt-20 bg-bg py-20 sm:py-28">
-      <div className="mx-auto max-w-3xl px-4 sm:px-6">
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
         <h2
           id="faq-title"
           className="text-center text-[clamp(2rem,4vw,3.25rem)] leading-[1] font-medium tracking-[-0.045em] text-fg"
