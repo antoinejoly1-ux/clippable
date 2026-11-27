@@ -125,7 +125,7 @@ export function AgentsSection() {
           <div aria-hidden="true" className="flex h-[6.5rem] items-end sm:h-[9rem]">
             <ul
               ref={dockRef}
-              className="flex h-[calc(2.125rem+1rem)] items-end gap-1 rounded-[14px] border border-white/70 bg-white/60 px-2 pt-2 pb-2 shadow-[0_24px_48px_-24px_rgb(1_8_43/0.35),inset_0_1px_0_rgb(255_255_255/0.9)] backdrop-blur-xl min-[400px]:h-[calc(2.375rem+1rem)] sm:h-[5rem] sm:gap-2 sm:rounded-[22px] sm:px-2.5 sm:pb-2.5"
+              className="dock flex h-[calc(var(--base)+1rem)] items-end gap-1 rounded-[14px] border border-white/70 bg-white/60 px-2 pt-2 pb-2 shadow-[0_24px_48px_-24px_rgb(1_8_43/0.35),inset_0_1px_0_rgb(255_255_255/0.9)] backdrop-blur-xl sm:h-[calc(var(--base)+1.25rem)] sm:gap-2 sm:rounded-[22px] sm:px-2.5 sm:pb-2.5"
             >
               {AGENTS.map((a, i) => (
                 <li

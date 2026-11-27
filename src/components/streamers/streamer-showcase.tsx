@@ -21,7 +21,9 @@ export function StreamerShowcase() {
     const io = new IntersectionObserver(([e]) => {
       window.clearInterval(timer);
       if (e.isIntersecting) {
-        timer = window.setInterval(() => setActive((i) => (i + 1) % streamers.length), CYCLE_MS);
+        timer = window.setInterval(() => {
+          if (!document.hidden) setActive((i) => (i + 1) % streamers.length);
+        }, CYCLE_MS);
       }
     });
     io.observe(root);
@@ -147,6 +149,8 @@ export function StreamerShowcase() {
       <ul
         className="flex flex-col items-center py-4 text-center"
         onPointerLeave={() => setHovering(false)}
+        onFocus={() => setHovering(true)}
+        onBlur={() => setHovering(false)}
       >
         {streamers.map((s, i) => {
           const on = i === active;

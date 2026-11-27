@@ -27,6 +27,7 @@ export function ExpandingCards({ cards, label }: { cards: ExpandingCard[]; label
           <li
             key={c.index}
             tabIndex={0}
+            aria-labelledby={`xcard-${c.index}`}
             className={`xcard group/x relative isolate flex h-[34rem] flex-col overflow-hidden rounded-[var(--radius-card)] border outline-none focus-visible:ring-2 focus-visible:ring-blue lg:h-[38rem] ${
               dark ? "border-white/10 bg-midnight text-white" : "canvas-dots border-border text-fg"
             }`}
@@ -43,7 +44,9 @@ export function ExpandingCards({ cards, label }: { cards: ExpandingCard[]; label
               {c.visual}
             </div>
             <div className="relative px-7 pb-7">
-              <h3 className="text-xl font-medium tracking-[-0.02em]">{c.heading}</h3>
+              <h3 id={`xcard-${c.index}`} className="text-xl font-medium tracking-[-0.02em]">
+                {c.heading}
+              </h3>
               <div
                 className={`mt-2 max-w-[38ch] text-[0.95rem] leading-relaxed ${dark ? "text-white/70" : "text-fg-muted"}`}
               >

@@ -94,6 +94,7 @@ export function ClipStory() {
     let H = 0;
     let mobile = false;
     let short = false;
+    let headerH = 64;
     let disposed = false;
     let slotRect = { x: 0, y: 0, w: 0, h: 0, r: 0 };
     let lastP = -1;
@@ -155,6 +156,8 @@ export function ClipStory() {
       // Grid shape follows the screen's shape, so landscape phones get the wide layout.
       mobile = W < 768 && H >= W;
       short = H < 520;
+      // The fixed header is 64px, or 80px from sm up. Read it so the full-screen player clears it.
+      headerH = document.querySelector<HTMLElement>("header > div")?.offsetHeight ?? 64;
       overlay.setAttribute("viewBox", `0 0 ${W} ${H}`);
       measureSlot();
       lastP = -1;
@@ -166,11 +169,15 @@ export function ClipStory() {
       copy.style.opacity = String(1 - out);
       copy.style.transform = `translate3d(0, ${-24 * out}px, 0) scale(${lerp(1, 0.97, out)})`;
       copy.style.visibility = out >= 1 ? "hidden" : "visible";
-      if (cueRef.current) cueRef.current.style.opacity = String(1 - seg(p, [0, 0.03]));
+      if (cueRef.current) {
+        cueRef.current.style.opacity = String(1 - seg(p, [0, 0.03]));
+        // display:none stops the looping cue animation; opacity 0 alone does not.
+        cueRef.current.style.display = p > 0.03 ? "none" : "";
+      }
 
       const g = easeInOut(seg(p, T.grow));
       const pad = mobile ? 12 : 24;
-      const top = short ? 60 : mobile ? 76 : 96;
+      const top = headerH + (short ? 8 : mobile ? 12 : 16);
       // "Full screen": the whole viewport below the nav, minus a small margin.
       const full = { x: pad, y: top, w: W - 2 * pad, h: H - top - pad };
       const bx = lerp(slotRect.x, full.x, g);
@@ -425,6 +432,17 @@ export function ClipStory() {
                   data-poster={`/media/clips/clip-${clip.id}.webp`}
                   className="size-full object-cover"
                 >
+                  {/* Phones get a 270×480 set: tiles render ~100px wide there. */}
+                  <source
+                    media="(max-width: 767px)"
+                    src={`/media/clips/clip-${clip.id}.m.av1.mp4`}
+                    type='video/mp4; codecs="av01.0.04M.08"'
+                  />
+                  <source
+                    media="(max-width: 767px)"
+                    src={`/media/clips/clip-${clip.id}.m.h264.mp4`}
+                    type="video/mp4"
+                  />
                   <source
                     src={`/media/clips/clip-${clip.id}.av1.mp4`}
                     type='video/mp4; codecs="av01.0.05M.08"'
@@ -456,22 +474,22 @@ export function ClipStory() {
             className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center px-4 pt-20 text-center [@media(max-height:520px)]:pt-14"
           >
             <p className="hero-rise text-[clamp(1.05rem,1.6vw,1.5rem)] leading-tight font-medium tracking-[-0.02em] text-fg [animation-delay:120ms]">
-              Watch less.
-              <br />
+              Watch less. <br />
               Clip every live stream.
             </p>
             <h1
               id="hero-title"
-              aria-label="Make clips instantly."
               className="mt-6 text-[clamp(2.5rem,min(8.4vw,15svh),9.5rem)] leading-[0.9] font-semibold tracking-[-0.055em] text-fg [@media(max-height:520px)]:mt-3"
             >
+              {/* Real text for crawlers and screen readers; the animated letters are aria-hidden. */}
+              <span className="sr-only">Make clips instantly.</span>
               {/* A dot leads the reveal left to right, then becomes the full stop (desktop). */}
               <span className="hero-reveal relative inline-flex flex-wrap items-center justify-center">
                 <Letters text="Make clips" delay={260} />
                 <span
                   ref={slotRef}
                   aria-hidden="true"
-                  className="hero-slot inline-block h-[0.8em] overflow-hidden rounded-[0.12em] bg-midnight bg-[url(/media/hero-poster.webp)] bg-cover bg-center"
+                  className="hero-slot inline-block h-[0.8em] overflow-hidden rounded-[0.12em] bg-midnight"
                 />
                 <span className="inline-flex items-baseline">
                   <Letters text="instantly" delay={700} />
@@ -512,8 +530,7 @@ export function ClipStory() {
                 ))}
               </span>
               <p className="text-left text-sm leading-snug text-fg-muted">
-                <span className="font-medium text-fg">100+ streamer campaigns</span>
-                <br />
+                <span className="font-medium text-fg">100+ streamer campaigns</span> <br />
                 on Kick and Twitch
               </p>
             </div>

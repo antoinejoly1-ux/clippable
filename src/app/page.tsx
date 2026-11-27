@@ -14,7 +14,9 @@ import { site } from "@/lib/site";
 const appLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
+  "@id": `${site.url}/#software`,
   name: site.name,
+  image: `${site.url}/brand/clippable-app-icon-512.png`,
   url: site.url,
   description: site.description,
   applicationCategory: "MultimediaApplication",

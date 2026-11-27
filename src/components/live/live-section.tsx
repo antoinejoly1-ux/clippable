@@ -3,6 +3,7 @@ import { ClipPipeline } from "@/components/live/clip-pipeline";
 export function LiveSection() {
   return (
     <section
+      data-pause-offscreen
       id="live"
       aria-labelledby="live-title"
       className="relative scroll-mt-16 bg-bg py-24 sm:py-32"

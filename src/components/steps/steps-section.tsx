@@ -3,14 +3,18 @@ import { ClipVisual, PostVisual, SetupVisual } from "@/components/steps/step-vis
 
 export function StepsSection() {
   return (
-    <section id="steps" aria-labelledby="steps-title" className="scroll-mt-16 bg-bg py-24 sm:py-32">
+    <section
+      id="steps"
+      data-pause-offscreen
+      aria-labelledby="steps-title"
+      className="scroll-mt-16 bg-bg py-24 sm:py-32"
+    >
       <div className="mx-auto max-w-[1360px] px-3 sm:px-6">
         <h2
           id="steps-title"
           className="text-center text-[clamp(2.25rem,5vw,4.5rem)] leading-[0.98] font-medium tracking-[-0.045em] text-balance text-fg"
         >
-          Set it up once.
-          <br />
+          Set it up once. <br />
           <span className="text-fg-muted">Clippable does the rest.</span>
         </h2>
         <div className="mt-12 sm:mt-16">

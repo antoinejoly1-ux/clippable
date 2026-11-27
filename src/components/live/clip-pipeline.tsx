@@ -246,10 +246,8 @@ export function ClipPipeline() {
               }}
               className="rounded-[10px] border border-border bg-bg p-2.5 shadow-[0_18px_40px_-24px_rgb(1_8_43/0.5)]"
             >
-              <ul
-                className="grid grid-cols-8 gap-1.5"
-                aria-label={`${made} of ${TOTAL} clips made`}
-              >
+              <span className="sr-only">Finished vertical clips, made automatically.</span>
+              <ul aria-hidden="true" className="grid grid-cols-8 gap-1.5">
                 {Array.from({ length: TOTAL }, (_, k) => (
                   <li key={k} className="relative aspect-[9/16] overflow-hidden rounded-[4px]">
                     {isFilled(k, elapsed) && (
@@ -301,7 +299,10 @@ function Node({
     <figure className={`relative ${className ?? ""}`}>
       <figcaption className="mb-2 flex items-baseline justify-between px-0.5 text-[12px]">
         <span className="font-medium text-fg">{label}</span>
-        <span className="font-mono text-fg-muted tabular-nums">{meta}</span>
+        {/* Live counters would chatter in a screen reader; the label carries the meaning. */}
+        <span aria-hidden="true" className="font-mono text-fg-muted tabular-nums">
+          {meta}
+        </span>
       </figcaption>
       {children}
     </figure>

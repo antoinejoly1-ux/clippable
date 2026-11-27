@@ -1,7 +1,0 @@
-# Clippable
-
-> Clippable — official website. (TODO: replace with the approved one-paragraph description of what Clippable is, who it's for, and what makes it different.)
-
-## Key pages
-
-- [Home](/): Overview of Clippable.

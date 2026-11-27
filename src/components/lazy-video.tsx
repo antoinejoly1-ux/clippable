@@ -15,15 +15,19 @@ export function LazyVideo({
   const ref = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     const v = ref.current;
-    if (!v || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!v) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const io = new IntersectionObserver(
       ([e]) => {
         if (e.isIntersecting) {
+          // The poster is set here, not in the HTML: browsers fetch a poster eagerly otherwise.
+          if (!v.poster && v.dataset.poster) v.poster = v.dataset.poster;
+          if (reduced) return;
           v.preload = "auto";
           v.play().catch(() => {});
         } else v.pause();
       },
-      { rootMargin: "200px 0px" },
+      { rootMargin: "100% 0px" },
     );
     io.observe(v);
     return () => io.disconnect();
@@ -35,7 +39,7 @@ export function LazyVideo({
       loop
       playsInline
       preload="none"
-      poster={poster}
+      data-poster={poster}
       aria-hidden="true"
       className={className}
     >

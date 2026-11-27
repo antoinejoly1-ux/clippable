@@ -6,10 +6,12 @@ import { site } from "@/lib/site";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"], display: "swap" });
+// Mono only appears in small labels below the fold, so don't preload it.
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -31,7 +33,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#FFFFFF",
+  themeColor: site.themeColor,
   colorScheme: "light",
 };
 
@@ -44,6 +46,9 @@ const organizationLd = {
       name: site.name,
       url: site.url,
       logo: `${site.url}/brand/clippable-app-icon-512.png`,
+      description: site.description,
+      email: site.email,
+      contactPoint: { "@type": "ContactPoint", email: site.email, contactType: "customer support" },
       ...(site.sameAs.length ? { sameAs: site.sameAs } : {}),
     },
     {

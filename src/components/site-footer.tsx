@@ -34,8 +34,7 @@ export function SiteFooter() {
         <div className="mx-auto flex max-w-[2120px] flex-col gap-16 px-5 pt-16 pb-8 sm:px-8 md:min-h-[480px] md:flex-row md:justify-between md:pt-24">
           <div>
             <p className="text-[clamp(2rem,3.6vw,3.25rem)] leading-[1] font-medium tracking-[-0.045em] text-fg">
-              Every stream,
-              <br />
+              Every stream, <br />
               <span className="text-fg-muted">clipped live.</span>
             </p>
             <div className="mt-8">
@@ -44,28 +43,32 @@ export function SiteFooter() {
           </div>
 
           <div className="flex flex-col justify-between gap-16 md:pr-[4vw]">
-            <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:flex sm:gap-[min(10rem,10vw)]">
+            <nav
+              aria-label="Footer"
+              className="grid grid-cols-2 gap-x-6 gap-y-10 sm:flex sm:gap-[min(10rem,10vw)]"
+            >
               {columns.map((col) => (
-                <dl key={col.title}>
-                  <dt className="mb-3 text-sm text-fg-muted">{col.title}</dt>
-                  {col.links.map((l) => (
-                    <dd key={l.label} className="mb-2">
-                      <a
-                        href={l.href}
-                        className="text-sm text-fg underline decoration-transparent underline-offset-4 transition-[text-decoration-color] hover:decoration-current"
-                      >
-                        {l.label}
-                      </a>
-                    </dd>
-                  ))}
-                </dl>
+                <div key={col.title}>
+                  <p className="mb-3 text-sm text-fg-muted">{col.title}</p>
+                  <ul>
+                    {col.links.map((l) => (
+                      <li key={l.label} className="mb-2">
+                        <a
+                          href={l.href}
+                          className="relative inline-block text-sm text-fg underline decoration-transparent underline-offset-4 transition-[text-decoration-color] after:absolute after:-inset-x-2 after:-inset-y-[5px] after:content-[''] hover:decoration-current"
+                        >
+                          {l.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ))}
-            </div>
+            </nav>
             <div className="flex flex-col gap-3">
               <LogoMark className="h-5 w-auto self-start text-fg" />
               <p className="font-mono text-[11px] leading-relaxed text-fg-muted">
-                © <CopyrightYear /> Clippable. All rights reserved.
-                <br />
+                © <CopyrightYear /> Clippable. All rights reserved. <br />
                 Built for clippers and streamers.
               </p>
             </div>

@@ -7,12 +7,12 @@
  * Electric #0061FF is the deep stop of the official logo gradient.
  *
  * The site is light-only by design (client direction, Nov 2026).
- * Corners are tight: 6px controls, 10–12px cards. No pills (client direction).
+ * Corners are tight: 6px controls, 10–12px cards. CTAs are full pills via <Button> (client direction).
  *
  * Contrast notes (WCAG 2.2 AA):
  *   white on Royal    6.84:1  body text OK. Primary buttons.
  *   white on Blue     4.29:1  large/bold text only.
- *   Royal on white    6.84:1  links, gradient text end.
+ *   Royal on white    6.84:1  links.
  *   Blue on white     4.29:1  large/bold text only.
  *   Muted #5B5F6E on white 6.4:1, on #F4F6FB 5.9:1
  */
@@ -27,44 +27,19 @@
   --color-white: #ffffff;
   --color-success: #12a150;
   --color-live: #e5484d;
-  --color-live-ink: #b3261e;
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
-  /* Radius scale: tight and premium. Never pill-shaped except dots. */
+  /* Radius scale: tight. CTAs are the one pill exception (see <Button>). */
   --radius-control: 6px;
   --radius-card: 12px;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  --animate-marquee: marquee var(--marquee-duration, 60s) linear infinite;
-  --animate-marquee-reverse: marquee var(--marquee-duration, 60s) linear infinite reverse;
   --animate-live: live 1.6s ease-in-out infinite;
 
-  @keyframes marquee {
-    from {
-      transform: translate3d(0, 0, 0);
-    }
-    to {
-      transform: translate3d(-50%, 0, 0);
-    }
-  }
-  @keyframes card-in {
-    from {
-      opacity: 0;
-      transform: translate3d(0, 12px, 0) scale(0.96);
-    }
-  }
-  @keyframes wave {
-    from {
-      transform: scaleY(0.35);
-    }
-    to {
-      transform: scaleY(1);
-    }
-  }
   @keyframes live {
     0%,
     100% {
@@ -81,15 +56,12 @@
   --bg-subtle: #f4f6fb;
   --fg: var(--color-ink);
   --fg-muted: #5b5f6e;
-  --fg-faint: #d6d9e1;
   --fg-subtle: #8b91a0;
   --border: #e4e8f2;
   --accent: var(--color-royal);
   --accent-fg: var(--color-white);
   --link: var(--color-royal);
   --focus: var(--color-blue);
-  --gradient-brand: linear-gradient(180deg, #61b8fc 0%, #0061ff 100%);
-  --gradient-text: linear-gradient(100deg, #3574ef 0%, #204fce 100%);
   color-scheme: light;
 }
 
@@ -98,7 +70,6 @@
   --color-bg-subtle: var(--bg-subtle);
   --color-fg: var(--fg);
   --color-fg-muted: var(--fg-muted);
-  --color-fg-faint: var(--fg-faint);
   --color-fg-subtle: var(--fg-subtle);
   --color-border: var(--border);
   --color-accent: var(--accent);
@@ -128,57 +99,12 @@
   }
 }
 
-@utility text-gradient {
-  background-image: var(--gradient-text);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
 @utility eyebrow {
   font-family: var(--font-mono);
   font-size: 0.75rem;
   line-height: 1rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-}
-
-/* Buttons: tight radius, mono label. No pills. */
-@layer components {
-  .btn {
-    display: inline-flex;
-    height: 2.875rem;
-    align-items: center;
-    gap: 0.5rem;
-    border-radius: var(--radius-control);
-    padding-inline: 1.25rem;
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    transition:
-      background-color 200ms ease,
-      transform 300ms var(--ease-out-expo);
-  }
-  .btn:active {
-    transform: translateY(1px);
-  }
-  .btn-primary {
-    background: var(--color-royal);
-    color: var(--color-white);
-  }
-  .btn-primary:hover {
-    background: var(--color-electric);
-  }
-  .btn-secondary {
-    background: var(--bg-subtle);
-    color: var(--fg);
-    box-shadow: inset 0 0 0 1px var(--border);
-  }
-  .btn-secondary:hover {
-    background: #eaeef7;
-  }
 }
 
 /*
@@ -260,17 +186,6 @@
     transform: scale(0.82);
   }
 }
-@keyframes cursor-ripple {
-  from {
-    transform: scale(0.3);
-    opacity: 0.9;
-  }
-  to {
-    transform: scale(1.6);
-    opacity: 0;
-  }
-}
-
 @keyframes clip-pop {
   from {
     scale: 0.6;
@@ -384,16 +299,6 @@
     transform: translate3d(-6%, 18%, 0) scale(0.95);
   }
 }
-@keyframes float-y {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
 /*
  * Hero load sequence (after ctrl.xyz): the period lands, letters reveal, the copy and
  * CTA rise, then a gap opens in the headline and the 4:3 player springs in.
@@ -501,12 +406,6 @@
 }
 
 /* Clips floating at the hero's sides. */
-.hero-float {
-  animation:
-    rise-in 900ms var(--ease-out-expo) both,
-    float-y 6s ease-in-out 900ms infinite;
-}
-
 /* Demo cursor in the step cards: eased glide, faint motion blur while travelling. */
 .demo-cursor {
   transition:
@@ -576,8 +475,11 @@
 }
 
 /* Agents dock: icons magnify toward the pointer (JS sets --m), rise in on reveal, bounce on click. */
+/* Icon size lives on the dock so its frame height can follow it. Fluid on very narrow phones. */
+.dock {
+  --base: clamp(1.5rem, calc((100vw - 6.5rem) / 8), 2.125rem);
+}
 .dock-item {
-  --base: 2.125rem;
   width: calc(var(--base) * var(--m, 1));
   height: calc(var(--base) * var(--m, 1));
   transition:
@@ -585,12 +487,12 @@
     height 180ms var(--ease-out-expo);
 }
 @media (min-width: 400px) {
-  .dock-item {
+  .dock {
     --base: 2.375rem;
   }
 }
 @media (min-width: 640px) {
-  .dock-item {
+  .dock {
     --base: 3.75rem;
   }
 }
@@ -633,4 +535,10 @@
 .dock-item:hover .dock-label {
   opacity: 1;
   translate: -50% 0;
+}
+
+/* Sections marked data-pause-offscreen pause their looping animations while off screen. */
+[data-running="false"],
+[data-running="false"] * {
+  animation-play-state: paused !important;
 }

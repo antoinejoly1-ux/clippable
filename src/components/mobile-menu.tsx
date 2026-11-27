@@ -16,9 +16,15 @@ export function MobileMenu({
     const close = (e: Event) => {
       const el = ref.current;
       if (!el?.open) return;
-      if (e instanceof KeyboardEvent ? e.key === "Escape" : !el.contains(e.target as Node)) {
+      if (e instanceof KeyboardEvent) {
+        if (e.key !== "Escape") return;
+        const hadFocus = el.contains(document.activeElement);
         el.removeAttribute("open");
+        // Return focus to the toggle so keyboard users don't land on a hidden link.
+        if (hadFocus) el.querySelector("summary")?.focus();
+        return;
       }
+      if (!el.contains(e.target as Node)) el.removeAttribute("open");
     };
     document.addEventListener("pointerdown", close);
     document.addEventListener("keydown", close);
@@ -29,7 +35,7 @@ export function MobileMenu({
   }, []);
 
   return (
-    <details ref={ref} className="group relative md:hidden">
+    <details ref={ref} className="group relative lg:hidden">
       <summary
         aria-label="Menu"
         className="flex size-10 cursor-pointer list-none items-center justify-center rounded-full text-fg transition-colors hover:bg-bg-subtle [&::-webkit-details-marker]:hidden"

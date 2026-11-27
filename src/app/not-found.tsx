@@ -1,5 +1,8 @@
-import Link from "next/link";
+import type { Metadata } from "next";
+import { Button } from "@/components/button";
 import { LogoMark } from "@/components/logo";
+
+export const metadata: Metadata = { title: "Page not found" };
 
 export default function NotFound() {
   return (
@@ -12,12 +15,7 @@ export default function NotFound() {
       <p className="max-w-sm text-fg-muted">
         The page you&apos;re looking for has moved or never made the cut.
       </p>
-      <Link
-        href="/"
-        className="rounded-full bg-accent px-5 py-2.5 font-medium text-accent-fg transition-transform duration-200 ease-out-expo hover:-translate-y-0.5"
-      >
-        Back home
-      </Link>
+      <Button href="/">Back home</Button>
     </main>
   );
 }

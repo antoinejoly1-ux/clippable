@@ -3,7 +3,8 @@ import { site } from "@/lib/site";
 
 export default function robots(): MetadataRoute.Robots {
   if (!site.indexable) {
-    return { rules: [{ userAgent: "*", disallow: "/" }] };
+    // Allow crawling so bots can see the X-Robots-Tag / meta noindex; a Disallow would hide it.
+    return { rules: [{ userAgent: "*", allow: "/" }] };
   }
   return {
     rules: [
