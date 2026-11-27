@@ -1,4 +1,4 @@
-import { EarlyAccess } from "@/components/early-access";
+import { FinalCta } from "@/components/final-cta";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -21,11 +21,11 @@ export default function Home() {
   return (
     <>
       <SiteHeader />
-      <main id="main">
+      <main id="main" className="relative z-[1] bg-bg">
         <span id="top" aria-hidden="true" />
         <ClipStory />
         <StreamerSection />
-        <EarlyAccess />
+        <FinalCta />
       </main>
       <SiteFooter />
       <JsonLd data={appLd} />

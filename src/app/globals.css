@@ -81,6 +81,7 @@
   --bg-subtle: #f4f6fb;
   --fg: var(--color-ink);
   --fg-muted: #5b5f6e;
+  --fg-faint: #d6d9e1;
   --border: #e4e8f2;
   --accent: var(--color-royal);
   --accent-fg: var(--color-white);
@@ -96,6 +97,7 @@
   --color-bg-subtle: var(--bg-subtle);
   --color-fg: var(--fg);
   --color-fg-muted: var(--fg-muted);
+  --color-fg-faint: var(--fg-faint);
   --color-border: var(--border);
   --color-accent: var(--accent);
   --color-accent-fg: var(--accent-fg);

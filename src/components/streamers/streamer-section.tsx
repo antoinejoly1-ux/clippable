@@ -1,26 +1,31 @@
-import { StreamerSelect } from "@/components/streamers/streamer-select";
+import { CtaButton } from "@/components/cta-button";
+import { StreamerShowcase } from "@/components/streamers/streamer-showcase";
 
 export function StreamerSection() {
   return (
     <section
       id="streamers"
       aria-labelledby="streamers-title"
-      className="relative scroll-mt-16 border-t border-border bg-bg py-28 sm:py-40"
+      className="relative scroll-mt-16 border-t border-border bg-bg py-24 sm:py-32"
     >
       <div className="mx-auto max-w-4xl px-5 text-center sm:px-10">
-        <p className="eyebrow text-royal">Pick your streamers</p>
         <h2
           id="streamers-title"
-          className="mx-auto mt-5 max-w-[14ch] text-[clamp(2.5rem,6vw,5.5rem)] leading-[0.95] font-medium tracking-[-0.045em] text-balance text-fg"
+          className="text-[clamp(1.75rem,3vw,2.75rem)] leading-tight font-medium tracking-[-0.035em] text-fg"
         >
-          Choose who you clip.
+          Clip streamers like
         </h2>
-        <p className="mx-auto mt-6 max-w-[46ch] text-lg leading-relaxed text-pretty text-fg-muted">
-          Follow streamers on Kick and Twitch. The moment they go live, Clippable clips them and
-          sends every clip straight to you.
-        </p>
       </div>
-      <StreamerSelect />
+      <div className="mt-8 sm:mt-10">
+        <StreamerShowcase />
+      </div>
+      <div className="mx-auto mt-12 flex max-w-xl flex-col items-center gap-6 px-5 text-center">
+        <p className="text-lg text-pretty text-fg-muted">
+          Follow the streamers you want. The moment they go live, Clippable clips them and sends
+          every clip straight to you.
+        </p>
+        <CtaButton href="#early-access">Start clipping</CtaButton>
+      </div>
     </section>
   );
 }

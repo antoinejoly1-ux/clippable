@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef } from "react";
+import { CtaButton } from "@/components/cta-button";
 import { PlatformIcon, platforms } from "@/components/platform-icons";
 import { formatViews, storyClips } from "@/lib/story";
 
@@ -320,9 +321,7 @@ export function ClipStory() {
               moments as they happen and hands you vertical clips, ready to post.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-2">
-              <a href="#early-access" className="btn btn-primary">
-                Get early access
-              </a>
+              <CtaButton href="#early-access">Get early access</CtaButton>
               <a href="#how" className="btn btn-secondary">
                 See how it works
               </a>
