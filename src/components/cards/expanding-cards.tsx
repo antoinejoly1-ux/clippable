@@ -36,7 +36,7 @@ export function ExpandingCards({ cards, label }: { cards: ExpandingCard[]; label
               aria-hidden="true"
               className="xcard-glow pointer-events-none absolute -inset-[20%] -z-10 opacity-70"
             />
-            <p className="relative px-7 pt-7 text-[clamp(2.25rem,3.3vw,3.75rem)] leading-none font-medium tracking-[-0.045em] whitespace-nowrap">
+            <p className="xcard-title relative px-7 pt-7 text-[clamp(2.25rem,3.3vw,3.75rem)] leading-none font-medium tracking-[-0.045em] whitespace-nowrap">
               <span className={dark ? "text-white/35" : "text-fg-faint"}>{c.index}</span> {c.title}
             </p>
             <div className="relative flex min-h-0 flex-1 items-center justify-center px-6 transition-transform duration-700 ease-out-expo group-hover/x:scale-[1.04]">

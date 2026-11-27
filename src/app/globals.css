@@ -362,6 +362,17 @@
   .xcards:has(.xcard:is(:hover, :focus-within)) .xcard {
     flex-basis: calc((100% - 2 * var(--gap)) * 0.25);
   }
+  /* Titles: the open card's title grows, the others shrink (Flora's 02 / 03 do this). */
+  .xcard-title {
+    transform-origin: 0 0;
+    transition: transform 720ms var(--spring);
+  }
+  .xcards:has(.xcard:is(:hover, :focus-within)) .xcard .xcard-title {
+    transform: scale(0.74);
+  }
+  .xcards:has(.xcard:is(:hover, :focus-within)) .xcard:is(:hover, :focus-within) .xcard-title {
+    transform: scale(1.12);
+  }
   /* Same :has() prefix so it outranks the rule above. */
   .xcards:has(.xcard:is(:hover, :focus-within)) .xcard:is(:hover, :focus-within) {
     flex-basis: calc((100% - 2 * var(--gap)) * 0.5);

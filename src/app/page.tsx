@@ -3,7 +3,6 @@ import { JsonLd } from "@/components/json-ld";
 import { LiveSection } from "@/components/live/live-section";
 import { SiteFooter } from "@/components/site-footer";
 import { StepsSection } from "@/components/steps/steps-section";
-import { TestimonialsSection } from "@/components/testimonials/testimonials-section";
 import { SiteHeader } from "@/components/site-header";
 import { ClipStory } from "@/components/story/clip-story";
 import { StreamerSection } from "@/components/streamers/streamer-section";
@@ -30,7 +29,6 @@ export default function Home() {
         <StreamerSection />
         <LiveSection />
         <StepsSection />
-        <TestimonialsSection />
         <FinalCta />
       </main>
       <SiteFooter />
