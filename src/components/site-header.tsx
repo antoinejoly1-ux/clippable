@@ -18,7 +18,7 @@ export function SiteHeader() {
         <ul className="hidden items-center font-mono text-[11px] tracking-[0.08em] text-white/65 uppercase sm:flex">
           <li>
             <a
-              href="#how"
+              href="#steps"
               className="rounded-[6px] px-3 py-2 transition-colors hover:bg-white/10 hover:text-white"
             >
               How it works

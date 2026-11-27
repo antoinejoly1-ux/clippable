@@ -323,3 +323,77 @@
   );
   background-size: 18px 18px;
 }
+
+/*
+ * Expanding cards (Flora-style): three cards at a third each; the hovered or focused
+ * card grows to half and the others share the rest. Width animates on flex-basis with
+ * a soft spring.
+ */
+.xcards {
+  --gap: 12px;
+  --spring: linear(
+    0,
+    0.03 1.7%,
+    0.17 5%,
+    0.33 8.3%,
+    0.52 13.3%,
+    0.7 18.3%,
+    0.84 23.3%,
+    0.94 28.3%,
+    1.01 35%,
+    1.03 41.7%,
+    1.02 50%,
+    1 63%,
+    1
+  );
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+@media (min-width: 1024px) {
+  .xcards {
+    flex-direction: row;
+  }
+  .xcard {
+    flex: 0 0 calc((100% - 2 * var(--gap)) / 3);
+    min-width: 0;
+    transition: flex-basis 720ms var(--spring);
+  }
+  .xcards:has(.xcard:is(:hover, :focus-within)) .xcard {
+    flex-basis: calc((100% - 2 * var(--gap)) * 0.25);
+  }
+  /* Same :has() prefix so it outranks the rule above. */
+  .xcards:has(.xcard:is(:hover, :focus-within)) .xcard:is(:hover, :focus-within) {
+    flex-basis: calc((100% - 2 * var(--gap)) * 0.5);
+  }
+}
+
+/* Slow drifting light over the dot grid: the "alive" background of each card. */
+.xcard-glow {
+  background: radial-gradient(
+    40% 50% at 50% 50%,
+    color-mix(in oklab, var(--color-sky) 38%, transparent),
+    transparent 70%
+  );
+  animation: glow-drift 14s ease-in-out infinite alternate;
+}
+@keyframes glow-drift {
+  0% {
+    transform: translate3d(-22%, -10%, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(18%, 8%, 0) scale(1.15);
+  }
+  100% {
+    transform: translate3d(-6%, 18%, 0) scale(0.95);
+  }
+}
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
