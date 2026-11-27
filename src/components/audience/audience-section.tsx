@@ -46,6 +46,7 @@ export function AudienceSection() {
 
         <div className="campaign-card relative isolate mt-12 overflow-hidden rounded-[20px] text-white sm:mt-16 sm:rounded-[28px]">
           <div aria-hidden="true" className="grain pointer-events-none absolute inset-0 -z-10" />
+          <div aria-hidden="true" className="night-lift -z-10" />
 
           {/* Pitch */}
           <div className="relative z-10 flex flex-col p-8 sm:p-12 lg:max-w-[50%] lg:py-16 lg:pl-16">

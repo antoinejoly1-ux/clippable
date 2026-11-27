@@ -181,12 +181,20 @@ export function ClipStory() {
         setSwapped(true);
         setAudience(next);
       });
-      // The new headline draws itself in from the same side, a beat behind the page.
-      const reveal = root.querySelector<HTMLElement>(".hero-reveal");
-      if (reveal) {
-        delete reveal.dataset.reveal;
-        void reveal.offsetWidth;
-        reveal.dataset.reveal = toRight ? "right" : "left";
+      // The headline replays its opening reveal (the dot runs across and becomes the period).
+      const wrap = root.querySelector<HTMLElement>(".hero-title-wrap");
+      if (wrap) {
+        wrap.classList.add("hero-replay");
+        // Same keyframes as the first reveal, so restart them explicitly (a class change
+        // alone doesn't replay an animation whose name hasn't changed).
+        wrap
+          .querySelectorAll(".hero-reveal, .hero-cover, .hero-cover-dot, .hero-dot, .hero-letter")
+          .forEach((el) =>
+            el.getAnimations().forEach((a) => {
+              a.cancel();
+              a.play();
+            }),
+          );
       }
     };
     const doc = document as Document & {
@@ -720,7 +728,7 @@ export function ClipStory() {
               {/* Real text for crawlers and screen readers; the animated letters are aria-hidden. */}
               <span className="sr-only">{copy.title}</span>
               {/* A dot leads the reveal left to right, then becomes the full stop (desktop). */}
-              <span className="relative inline-block">
+              <span className="hero-title-wrap relative inline-block">
                 <span
                   className={`hero-reveal relative inline-flex flex-wrap items-center justify-center ${
                     swapped ? "hero-swap" : ""

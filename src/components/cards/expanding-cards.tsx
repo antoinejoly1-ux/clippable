@@ -49,6 +49,7 @@ export function ExpandingCards({
             }`}
           >
             {c.background}
+            <div aria-hidden="true" className="night-lift -z-10" />
             {sky && (
               <>
                 <div

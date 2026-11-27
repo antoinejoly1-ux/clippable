@@ -166,6 +166,7 @@ export function ClipPipeline() {
           <div className="steps-sky absolute inset-0" />
           <FlowGradient className="absolute inset-0 size-full" />
           <div className="grain absolute inset-0" />
+          <div className="night-lift" />
           {/* The flow line, over the gradient and behind the nodes */}
           {path && (
             <svg className="absolute inset-0 size-full" fill="none" strokeLinecap="round">

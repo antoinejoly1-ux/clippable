@@ -913,30 +913,53 @@ html[data-audience="streamer"] .ui-light {
   animation: none;
   mix-blend-mode: normal;
 }
-/* After a switch, the new headline is revealed from the same side, a beat behind the page. */
-.hero-reveal[data-reveal="right"] {
-  animation: reveal-from-left 620ms cubic-bezier(0.7, 0, 0.25, 1) 110ms both !important;
-}
-.hero-reveal[data-reveal="left"] {
-  animation: reveal-from-right 620ms cubic-bezier(0.7, 0, 0.25, 1) 110ms both !important;
-}
-.hero-reveal[data-reveal] .hero-letter,
-.hero-reveal[data-reveal] .hero-dot {
-  animation: none !important;
-}
-@keyframes reveal-from-left {
-  from {
-    clip-path: inset(-30% 100% -30% -10%);
+/*
+ * After a switch, the headline replays its opening reveal: the dot appears, runs across on
+ * the leading edge uncovering the new words, and lands as the full stop.
+ */
+@media (min-width: 768px) {
+  .hero-replay .hero-reveal {
+    animation: reveal-clip 760ms cubic-bezier(0.7, 0, 0.25, 1) 90ms both !important;
   }
-  to {
-    clip-path: inset(-30% -10% -30% -10%);
+  .hero-replay .hero-reveal .hero-letter {
+    animation: none !important;
+  }
+  .hero-replay .hero-reveal .hero-dot {
+    animation: period-in 1ms linear 850ms both !important;
+  }
+  .hero-replay .hero-cover {
+    animation: cover-run 760ms cubic-bezier(0.7, 0, 0.25, 1) 90ms both !important;
+  }
+  .hero-replay .hero-cover-dot {
+    animation: dot-in 260ms var(--ease-spring) both !important;
   }
 }
-@keyframes reveal-from-right {
-  from {
-    clip-path: inset(-30% -10% -30% 100%);
-  }
-  to {
-    clip-path: inset(-30% -10% -30% -10%);
-  }
+
+/* Everything clickable shows the hand. */
+button:not(:disabled),
+summary,
+[role="radio"] {
+  cursor: pointer;
+}
+
+/*
+ * Night side: cards and canvases get a faint white lift so they read as surfaces on the
+ * black page, with the brightest light at the top edge.
+ */
+.night-lift {
+  display: none;
+}
+html[data-audience="streamer"] .night-lift {
+  display: block;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    to bottom,
+    rgb(255 255 255 / 0.1),
+    rgb(255 255 255 / 0.04) 40%,
+    rgb(255 255 255 / 0) 70%
+  );
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14);
 }
