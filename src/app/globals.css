@@ -293,20 +293,33 @@
   }
 }
 
-/* A clip in flight from a live stream to its slot (live-clipping section). */
-.live-flyer {
-  position: absolute;
-  z-index: 20;
-  border-radius: 6px;
-  background-size: cover;
-  background-position: center;
-  box-shadow: 0 18px 40px -16px rgb(1 8 43 / 0.55);
-  transform-origin: top left;
-  pointer-events: none;
-  will-change: transform;
-}
-@keyframes slot-check {
+@keyframes clip-pop {
   from {
-    transform: scale(0);
+    transform: scale(0.6);
+    opacity: 0;
   }
+}
+
+/* Light pulse travelling along a workflow connector. */
+.flow-pulse {
+  stroke-dasharray: 0.08 0.92;
+  animation: flow 2.6s linear infinite;
+}
+@keyframes flow {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Dot-grid canvas, like a node editor. */
+.canvas-dots {
+  background-color: var(--bg-subtle);
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--fg) 16%, transparent) 1px,
+    transparent 1.2px
+  );
+  background-size: 18px 18px;
 }
