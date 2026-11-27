@@ -563,12 +563,12 @@ export function PostVisual() {
               <>
                 <p className="text-[13px] font-semibold text-fg">Ready to download 6 clips?</p>
                 <div className="mt-3 grid grid-cols-2 gap-2">
-                  <span className="flex h-8 items-center justify-center rounded-full border border-border text-[12px] font-medium text-fg">
+                  <span className="flex h-8 items-center justify-center rounded-[8px] border border-border text-[12px] font-medium text-fg">
                     No
                   </span>
                   <span
                     ref={yesRef}
-                    className={`flex h-8 items-center justify-center rounded-full text-[12px] font-semibold text-white transition-colors duration-150 ${
+                    className={`flex h-8 items-center justify-center rounded-[8px] text-[12px] font-semibold text-white transition-colors duration-150 ${
                       phase === "yes" ? "bg-royal" : "bg-electric"
                     }`}
                   >

@@ -7,7 +7,7 @@
  * Electric #0061FF is the deep stop of the official logo gradient.
  *
  * The site is light-only by design (client direction, Nov 2026).
- * Corners are tight: 6px controls, 10–12px cards. CTAs are full pills via <Button> (client direction).
+ * Corners are tight: 6px controls, 10–12px cards. CTAs are rounded rectangles via <Button> (client direction).
  *
  * Contrast notes (WCAG 2.2 AA):
  *   white on Royal    6.84:1  body text OK. Primary buttons.
@@ -31,7 +31,7 @@
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
-  /* Radius scale: tight. CTAs are the one pill exception (see <Button>). */
+  /* Radius scale: tight. CTAs use 10–16px by size (see <Button>). */
   --radius-control: 6px;
   --radius-card: 12px;
 
@@ -608,17 +608,26 @@
   }
 }
 
-/* Hero sky: a wide, squeezed ellipse of blue pressing down from the top edge, fading to white. */
+/*
+ * Hero sky: a near-black core at the top edge bleeding into electric blue, then sky,
+ * then white just above the headline. Indigo pools at the upper corners.
+ */
 .hero-sky {
   background:
-    radial-gradient(
-      130% 74% at 50% -8%,
-      color-mix(in oklab, var(--color-blue) 62%, var(--color-sky)) 0%,
-      color-mix(in oklab, var(--color-sky) 70%, white) 34%,
-      color-mix(in oklab, var(--color-sky) 22%, white) 62%,
-      rgb(255 255 255 / 0) 86%
-    ),
-    radial-gradient(60% 40% at 50% 0%, rgb(255 255 255 / 0.35), transparent 70%);
+    radial-gradient(60% 26% at 50% 0%, rgb(0 2 20 / 0.92) 0%, rgb(0 2 20 / 0) 100%),
+    radial-gradient(90% 34% at 0% 0%, rgb(46 26 190 / 0.55) 0%, rgb(46 26 190 / 0) 100%),
+    radial-gradient(90% 34% at 100% 0%, rgb(46 26 190 / 0.55) 0%, rgb(46 26 190 / 0) 100%),
+    linear-gradient(
+      to bottom,
+      #06104a 0%,
+      #1236c9 9%,
+      var(--color-electric) 17%,
+      #3d8bff 25%,
+      #8fc0ff 32%,
+      #d6e8ff 38%,
+      #f3f8ff 43%,
+      #ffffff 48%
+    );
 }
 
 /* Clipper / streamer switch thumb: a soft spring so it settles rather than snaps. */

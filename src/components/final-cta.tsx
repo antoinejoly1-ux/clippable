@@ -29,7 +29,14 @@ export function FinalCta() {
           >
             Make clips before everyone else.
           </h2>
-          <Button href={site.signupUrl} variant="inverse" size="lg" className="mt-10">
+          {/* TODO(client): point at the signup flow. Until it exists, this opens an email to the team
+              (the page's other "Create account" buttons scroll here). */}
+          <Button
+            href={`mailto:${site.email}?subject=${encodeURIComponent("Create my Clippable account")}`}
+            variant="inverse"
+            size="lg"
+            className="mt-10"
+          >
             Create account
           </Button>
         </div>

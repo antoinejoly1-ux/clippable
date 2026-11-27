@@ -24,7 +24,7 @@ export function LogoMark({ title, ...props }: SVGProps<SVGSVGElement> & { title?
 export function Logo({ className }: { className?: string }) {
   return (
     <span className={`inline-flex items-center gap-2 ${className ?? ""}`}>
-      <LogoMark className="h-[0.78em] w-auto text-electric" />
+      <LogoMark className="h-[0.78em] w-auto text-[var(--logo-mark,var(--color-electric))] transition-colors duration-300" />
       <span className="font-semibold tracking-[-0.02em]">Clippable</span>
     </span>
   );

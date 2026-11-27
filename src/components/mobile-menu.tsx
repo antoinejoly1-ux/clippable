@@ -38,7 +38,7 @@ export function MobileMenu({
     <details ref={ref} className="group relative lg:hidden">
       <summary
         aria-label="Menu"
-        className="flex size-10 cursor-pointer list-none items-center justify-center rounded-full text-fg transition-colors hover:bg-bg-subtle [&::-webkit-details-marker]:hidden"
+        className="flex size-10 cursor-pointer list-none items-center justify-center rounded-[10px] text-fg transition-[background-color,color,scale] duration-200 select-none hover:bg-bg-subtle active:scale-[0.94] in-data-[scrolled=false]:text-white in-data-[scrolled=false]:hover:bg-white/10 [&::-webkit-details-marker]:hidden"
       >
         <svg viewBox="0 0 20 20" className="size-5" fill="none" aria-hidden="true">
           <path d="M3 7h14M3 13h14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
@@ -56,7 +56,7 @@ export function MobileMenu({
             <li key={l.label}>
               <a
                 href={l.href}
-                className="block rounded-[var(--radius-control)] px-3 py-2.5 hover:bg-bg-subtle"
+                className="block rounded-[var(--radius-control)] px-3 py-2.5 transition-colors hover:bg-bg-subtle active:bg-border/60"
               >
                 {l.label}
               </a>
@@ -65,7 +65,7 @@ export function MobileMenu({
           <li className="mt-1 border-t border-border pt-1 sm:hidden">
             <a
               href={loginUrl}
-              className="block rounded-[var(--radius-control)] px-3 py-2.5 hover:bg-bg-subtle"
+              className="block rounded-[var(--radius-control)] px-3 py-2.5 transition-colors hover:bg-bg-subtle active:bg-border/60"
             >
               Log in
             </a>

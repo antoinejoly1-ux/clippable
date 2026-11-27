@@ -77,7 +77,7 @@ function AudienceSwitch({ value, onChange }: { value: Audience; onChange: (a: Au
     <div
       role="radiogroup"
       aria-label="Show Clippable for"
-      className="hero-rise pointer-events-auto relative grid grid-cols-2 rounded-full border border-white/80 bg-white/55 p-1 shadow-[0_10px_30px_-18px_rgb(1_8_43/0.4)] backdrop-blur-md [animation-delay:60ms]"
+      className="hero-rise pointer-events-auto relative grid grid-cols-2 rounded-[14px] border border-white/80 bg-white/55 p-1 shadow-[0_10px_30px_-18px_rgb(1_8_43/0.4)] backdrop-blur-md [animation-delay:60ms]"
       onKeyDown={(e) => {
         if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) {
           e.preventDefault();
@@ -90,7 +90,7 @@ function AudienceSwitch({ value, onChange }: { value: Audience; onChange: (a: Au
       {/* The thumb slides under the chosen option. */}
       <span
         aria-hidden="true"
-        className="switch-thumb absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-full bg-midnight shadow-[0_6px_16px_-6px_rgb(1_8_43/0.6)]"
+        className="switch-thumb absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-[10px] bg-midnight shadow-[0_6px_16px_-6px_rgb(1_8_43/0.6)]"
         style={{ transform: value === "streamer" ? "translateX(100%)" : "translateX(0)" }}
       />
       {options.map((o) => {
@@ -104,7 +104,7 @@ function AudienceSwitch({ value, onChange }: { value: Audience; onChange: (a: Au
             tabIndex={on ? 0 : -1}
             data-id={o.id}
             onClick={() => onChange(o.id)}
-            className={`relative z-[1] h-10 rounded-full px-5 text-[15px] font-medium whitespace-nowrap transition-colors duration-300 sm:px-6 ${
+            className={`relative z-[1] h-10 rounded-[10px] px-5 text-[15px] font-medium whitespace-nowrap transition-[color,scale] duration-300 select-none [-webkit-tap-highlight-color:transparent] active:scale-[0.96] sm:px-6 ${
               on ? "text-white" : "text-fg hover:text-fg-muted"
             }`}
           >
