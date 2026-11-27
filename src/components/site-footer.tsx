@@ -34,7 +34,7 @@ const container = "mx-auto w-full max-w-[1360px] px-4 sm:px-6";
 export function SiteFooter() {
   return (
     <>
-      <footer className="relative z-[1] mb-[min(27vw,380px)] rounded-b-[24px] bg-bg shadow-[0_24px_48px_-32px_rgb(1_8_43/0.25)] sm:rounded-b-[40px]">
+      <footer className="page-lift relative z-[1] mb-[min(27vw,380px)] rounded-b-[24px] bg-bg shadow-[0_24px_48px_-32px_rgb(1_8_43/0.25)] sm:rounded-b-[40px]">
         <div className={`${container} pt-16 pb-8 md:pt-24`}>
           <div className="flex flex-col gap-14 md:flex-row md:justify-between">
             <div>
@@ -88,7 +88,7 @@ export function SiteFooter() {
         className="footer-sky fixed inset-x-0 bottom-0 z-0 h-[min(900px,100svh)]"
       >
         <div className="grain absolute inset-0" />
-        <div className={`${container} absolute inset-x-0 bottom-[min(1.5vw,20px)]`}>
+        <div className={`${container} footer-mark absolute inset-x-0 bottom-[min(1.5vw,20px)]`}>
           <svg viewBox="0 0 1000 232" className="block w-full fill-white">
             <text
               x="500"

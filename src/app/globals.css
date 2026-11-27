@@ -736,3 +736,34 @@
     var(--color-sky)
   ) !important;
 }
+
+/* Workflow flow line: a bright pulse travels the line from start (left) to end (right). */
+.flow-pulse {
+  stroke-dasharray: 0.18 1.3;
+  animation: flow 3s cubic-bezier(0.45, 0, 0.35, 1) infinite;
+}
+@keyframes flow {
+  from {
+    stroke-dashoffset: 0.18;
+  }
+  to {
+    stroke-dashoffset: -1.12;
+  }
+}
+
+/* Elastic end of page (see bottom-spring.tsx): content lifts by --pull, the footer sky
+   brightens a touch and the wordmark rises and swells. Only applied while pulling, so the
+   page has no transform (and no new containing block) the rest of the time. */
+:root {
+  --pull: 0;
+}
+html[data-pulling="true"] .page-lift {
+  transform: translate3d(0, calc(var(--pull) * -1px), 0);
+}
+html[data-pulling="true"] .footer-mark {
+  transform: translate3d(0, calc(var(--pull) * -0.35px), 0) scale(calc(1 + var(--pull) / 2400));
+  transform-origin: 50% 100%;
+}
+html[data-pulling="true"] .footer-sky {
+  filter: saturate(calc(1 + var(--pull) / 500)) brightness(calc(1 + var(--pull) / 1500));
+}

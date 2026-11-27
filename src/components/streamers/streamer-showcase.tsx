@@ -139,7 +139,7 @@ export function StreamerShowcase() {
                 {s.platform && (
                   <span
                     aria-hidden="true"
-                    className={`absolute top-1/2 left-full ml-[0.25em] flex size-[0.4em] -translate-y-1/2 items-center justify-center rounded-[0.08em] transition-[opacity,scale] duration-500 ease-out-expo ${
+                    className={`absolute top-[0.08em] left-full ml-[0.06em] flex size-[0.36em] items-center justify-center rounded-[0.08em] transition-[opacity,scale] duration-500 ease-out-expo ${
                       on ? "scale-100 opacity-100" : "scale-75 opacity-0"
                     }`}
                     style={{ backgroundColor: platforms[s.platform!].color }}

@@ -9,7 +9,7 @@ export type Streamer = {
   id: string;
   name: string;
   /** Where they stream. Left out where it isn't confirmed; the badge is then hidden. */
-  platform?: Extract<Platform, "kick" | "twitch">;
+  platform?: Extract<Platform, "kick" | "twitch" | "youtube">;
   avatar: string;
   /** Portrait photo, shown on the left of the showcase. */
   photo: string;
@@ -24,7 +24,8 @@ export type Streamer = {
 
 const m = (id: string) => `/media/streamers/${id}`;
 
-// TODO(client): confirm platform for IShowSpeed, Rakai, DDG and BenDaDonnn, and rates for the new names.
+// Avatars are each streamer's own channel picture (Kick, Twitch, or YouTube for IShowSpeed), fetched Nov 2026.
+// TODO(client): confirm Rakai's main platform and channel (no verified Kick/Twitch/YouTube match), and rates for the new names.
 export const streamers: Streamer[] = [
   {
     id: "n3on",
@@ -99,6 +100,7 @@ export const streamers: Streamer[] = [
   {
     id: "ishowspeed",
     name: "IShowSpeed",
+    platform: "youtube",
     avatar: m("ishowspeed.webp"),
     photo: m("ishowspeed-photo.webp"),
     photo2: m("ishowspeed-photo-2.webp"),
@@ -120,10 +122,18 @@ export const streamers: Streamer[] = [
     photo2: m("stableronaldo-photo-2.webp"),
     handle: "stableronaldo",
   },
-  { id: "ddg", name: "DDG", avatar: m("ddg.webp"), photo: m("ddg-photo.webp"), handle: "ddg" },
+  {
+    id: "ddg",
+    name: "DDG",
+    platform: "kick",
+    avatar: m("ddg.webp"),
+    photo: m("ddg-photo.webp"),
+    handle: "ddg",
+  },
   {
     id: "bendadonnn",
     name: "BenDaDonnn",
+    platform: "kick",
     avatar: m("bendadonnn.webp"),
     photo: m("bendadonnn-photo.webp"),
     photo2: m("bendadonnn-photo-2.webp"),

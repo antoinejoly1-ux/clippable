@@ -32,6 +32,59 @@ const captions = [
 export function ClipPipeline() {
   const canvasRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [path, setPath] = useState("");
+
+  /*
+   * The flow line: enters at the left edge, threads through each node's centre and leaves
+   * at the right (top to bottom on phones). Catmull-Rom smoothing plus a gentle wave
+   * between nodes keeps it fluid.
+   */
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const measure = () => {
+      const nodes = nodeRefs.current;
+      if (nodes.some((n) => !n)) return;
+      const c = canvas.getBoundingClientRect();
+      const r = nodes.map((n) => n!.getBoundingClientRect());
+      const horizontal = r[1].left > r[0].right;
+      const ctr = r.map((b) => [b.left + b.width / 2 - c.left, b.top + b.height / 2 - c.top]);
+      const ends = horizontal
+        ? [
+            [0, ctr[0][1] + 50],
+            [c.width, ctr[2][1] - 50],
+          ]
+        : [
+            [ctr[0][0] - 40, 0],
+            [ctr[2][0] + 40, c.height],
+          ];
+      const base = [ends[0], ...ctr, ends[1]];
+      const pts: number[][] = [base[0]];
+      for (let i = 1; i < base.length; i++) {
+        const [ax, ay] = base[i - 1];
+        const [bx, by] = base[i];
+        const amp = (i % 2 ? 1 : -1) * 30;
+        pts.push(
+          horizontal ? [(ax + bx) / 2, (ay + by) / 2 + amp] : [(ax + bx) / 2 + amp, (ay + by) / 2],
+          base[i],
+        );
+      }
+      let d = `M${pts[0][0]} ${pts[0][1]}`;
+      for (let i = 0; i < pts.length - 1; i++) {
+        const p0 = pts[Math.max(0, i - 1)];
+        const p1 = pts[i];
+        const p2 = pts[i + 1];
+        const p3 = pts[Math.min(pts.length - 1, i + 2)];
+        const k = 1 / 5;
+        d += `C${p1[0] + (p2[0] - p0[0]) * k} ${p1[1] + (p2[1] - p0[1]) * k} ${p2[0] - (p3[0] - p1[0]) * k} ${p2[1] - (p3[1] - p1[1]) * k} ${p2[0]} ${p2[1]}`;
+      }
+      setPath(d);
+    };
+    const ro = new ResizeObserver(measure);
+    ro.observe(canvas);
+    nodeRefs.current.forEach((n) => n && ro.observe(n));
+    return () => ro.disconnect();
+  }, []);
   const [elapsed, setElapsed] = useState(0);
   const [line, setLine] = useState(0);
   const [word, setWord] = useState(0);
@@ -113,6 +166,26 @@ export function ClipPipeline() {
           <div className="steps-sky absolute inset-0" />
           <FlowGradient className="absolute inset-0 size-full" />
           <div className="grain absolute inset-0" />
+          {/* The flow line, over the gradient and behind the nodes */}
+          {path && (
+            <svg className="absolute inset-0 size-full" fill="none" strokeLinecap="round">
+              <path d={path} stroke="rgb(255 255 255 / 0.55)" strokeWidth="2.5" />
+              <path
+                d={path}
+                stroke="var(--color-sky)"
+                strokeWidth="10"
+                pathLength={1}
+                className="flow-pulse opacity-60 blur-[5px]"
+              />
+              <path
+                d={path}
+                stroke="white"
+                strokeWidth="3.5"
+                pathLength={1}
+                className="flow-pulse"
+              />
+            </svg>
+          )}
         </div>
 
         <div className="relative flex flex-col items-center gap-20 lg:flex-row lg:items-center lg:justify-between lg:gap-10">

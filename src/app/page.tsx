@@ -28,7 +28,7 @@ export default function Home() {
   return (
     <>
       <SiteHeader />
-      <main id="main" className="relative z-[1] bg-bg">
+      <main id="main" className="page-lift relative z-[1] bg-bg">
         <span id="top" aria-hidden="true" />
         <ClipStory />
         <StreamerSection />

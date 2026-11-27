@@ -1,3 +1,4 @@
+import { platforms } from "@/components/platform-icons";
 import { faq } from "@/lib/faq";
 import { site } from "@/lib/site";
 import { streamers } from "@/lib/streamers";
@@ -18,7 +19,7 @@ export function GET() {
     "## Streamers",
     ...streamers.map(
       (s) =>
-        `- ${s.name}${s.platform ? ` (${s.platform === "kick" ? "Kick" : "Twitch"})` : ""}${s.rate ? `: ${s.rate}` : ""}`,
+        `- ${s.name}${s.platform ? ` (${platforms[s.platform].title})` : ""}${s.rate ? `: ${s.rate}` : ""}`,
     ),
     "",
     "## FAQ",
