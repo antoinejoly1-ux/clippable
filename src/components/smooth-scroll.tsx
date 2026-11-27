@@ -94,6 +94,9 @@ export function SmoothScroll() {
       get isScrolling() {
         return lenis.isScrolling;
       },
+      get direction() {
+        return lenis.direction;
+      },
       get scroll() {
         return lenis.scroll;
       },

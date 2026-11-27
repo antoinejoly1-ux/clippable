@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Button } from "@/components/button";
 import { site } from "@/lib/site";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { storyClips, storyTiles } from "@/lib/story";
 import { streamers } from "@/lib/streamers";
@@ -43,6 +43,7 @@ const roundedRect = (x: number, y: number, w: number, h: number, r: number) => {
   return `M${x + rr} ${y}H${x + w - rr}A${rr} ${rr} 0 0 1 ${x + w} ${y + rr}V${y + h - rr}A${rr} ${rr} 0 0 1 ${x + w - rr} ${y + h}H${x + rr}A${rr} ${rr} 0 0 1 ${x} ${y + h - rr}V${y + rr}A${rr} ${rr} 0 0 1 ${x + rr} ${y}Z`;
 };
 
+const SIDES = ["clipper", "streamer"] as const;
 const N = storyTiles.length; // tiles in the DOM; how many show depends on the screen
 
 type Audience = "clipper" | "streamer";
@@ -92,7 +93,6 @@ function AudienceSwitch({ value, onChange }: { value: Audience; onChange: (a: Au
       <span
         aria-hidden="true"
         className="switch-thumb absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-[10px] bg-midnight shadow-[0_6px_16px_-6px_rgb(1_8_43/0.6)]"
-        style={{ transform: value === "streamer" ? "translateX(100%)" : "translateX(0)" }}
       />
       {options.map((o) => {
         const on = value === o.id;
@@ -105,9 +105,7 @@ function AudienceSwitch({ value, onChange }: { value: Audience; onChange: (a: Au
             tabIndex={on ? 0 : -1}
             data-id={o.id}
             onClick={() => onChange(o.id)}
-            className={`relative z-[1] h-10 rounded-[10px] px-5 text-[15px] font-medium whitespace-nowrap transition-[color,scale] duration-300 select-none [-webkit-tap-highlight-color:transparent] active:scale-[0.96] sm:px-6 ${
-              on ? "text-white" : "text-fg-muted hover:text-fg"
-            }`}
+            className={`relative z-[1] h-11 rounded-[10px] px-5 text-[15px] font-medium whitespace-nowrap transition-[color,scale] duration-300 select-none [-webkit-tap-highlight-color:transparent] active:scale-[0.96] sm:px-6 ${"switch-label"}`}
           >
             {o.label}
           </button>
@@ -151,16 +149,13 @@ export function ClipStory() {
   const followRef = useRef<() => void>(() => {});
   const [audience, setAudience] = useState<Audience>("clipper");
   const [swapped, setSwapped] = useState(false);
-  const copy = HERO[audience];
 
-  // The inline script in layout.tsx already set the theme before paint; sync React to it
-  // before the browser paints the hydrated tree, then reveal the (hidden) streamer copy.
-  useLayoutEffect(() => {
-    const root = document.documentElement;
-    if (root.dataset.audience === "streamer") {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- must sync before paint
+  // The inline script in layout.tsx sets the theme before first paint and CSS shows the
+  // right copy, so React only needs to catch its state up (no visual change).
+  useEffect(() => {
+    if (document.documentElement.dataset.audience === "streamer") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- sync with pre-paint theme
       setAudience("streamer");
-      requestAnimationFrame(() => delete root.dataset.pending);
     }
   }, []);
   useEffect(() => {
@@ -336,7 +331,7 @@ export function ClipStory() {
       const out = seg(p, T.copyOut);
       copy.style.opacity = String(1 - out);
       copy.style.transform = `translate3d(0, ${-24 * out}px, 0) scale(${lerp(1, 0.97, out)})`;
-      copy.style.visibility = out >= 1 ? "hidden" : "visible";
+      // Faded, not hidden: the H1, switch and CTA stay in the accessibility tree.
       if (glowRef.current) glowRef.current.style.opacity = String(1 - seg(p, [0, 0.12]));
       if (cueRef.current) {
         cueRef.current.style.opacity = String(1 - seg(p, [0, 0.03]));
@@ -372,8 +367,8 @@ export function ClipStory() {
 
       /* ── 2 · Cut into a grid (2 rows × 4 across; 4 × 2 on phones) ─────── */
       // Big screens (16" laptops and up) get a 5 × 2 grid; everything else 4 × 2, phones 2 × 4.
-      const cols = mobile ? 2 : W >= 1600 ? 5 : 4;
-      const n = mobile ? 8 : cols * 2;
+      const cols = mobile ? 3 : W >= 1600 ? 5 : 4;
+      const n = cols * 2;
       const rows = Math.ceil(n / cols);
       const c = easeInOut(seg(p, T.cut));
       const m = easeInOut(seg(p, T.morph));
@@ -567,7 +562,11 @@ export function ClipStory() {
     const settle = () => {
       const lenis = (
         window as unknown as {
-          __lenis?: { scrollTo: (y: number, o: object) => void; isScrolling: unknown };
+          __lenis?: {
+            scrollTo: (y: number, o: object) => void;
+            isScrolling: unknown;
+            direction: number;
+          };
         }
       ).__lenis;
       if (!lenis || reduced || !inView || touching) return;
@@ -579,7 +578,11 @@ export function ClipStory() {
       const distance = section.offsetHeight - H;
       const p = progress();
       if (p <= 0 || p >= 1) return;
-      const k = STOPS.reduce((a, b) => (Math.abs(b - p) < Math.abs(a - p) ? b : a));
+      // Only snap forward in the direction the visitor was scrolling, never back.
+      const dir = lenis.direction || 1;
+      const ahead = STOPS.filter((st) => (dir > 0 ? st >= p : st <= p));
+      if (!ahead.length) return;
+      const k = dir > 0 ? ahead[0] : ahead[ahead.length - 1];
       if (Math.abs(k - p) > 0.045 || Math.abs(k - p) < 0.003) return;
       // Eases from rest and lands softly; short hops are quick.
       lenis.scrollTo(section.offsetTop + k * distance, {
@@ -739,6 +742,13 @@ export function ClipStory() {
           <div
             ref={copyRef}
             data-hero-copy
+            onFocus={() => {
+              // Keyboard users tabbing into the faded hero copy get scrolled back to it.
+              if (window.scrollY > 0)
+                (
+                  window as unknown as { __lenis?: { scrollTo: (y: number, o: object) => void } }
+                ).__lenis?.scrollTo(0, { duration: 0.6 });
+            }}
             className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center px-4 pt-20 text-center [@media(max-height:520px)]:pt-14"
           >
             <AudienceSwitch value={audience} onChange={switchAudience} />
@@ -747,7 +757,11 @@ export function ClipStory() {
               className="mt-7 text-[clamp(2.5rem,min(8.4vw,15svh),9.5rem)] leading-[0.9] font-semibold tracking-[-0.055em] text-fg [@media(max-height:520px)]:mt-3"
             >
               {/* Real text for crawlers and screen readers; the animated letters are aria-hidden. */}
-              <span className="sr-only">{copy.title}</span>
+              {SIDES.map((k) => (
+                <span key={k} data-side={k} className="sr-only">
+                  {HERO[k].title}
+                </span>
+              ))}
               {/* A dot leads the reveal left to right, then becomes the full stop (desktop). */}
               <span className="hero-title-wrap relative inline-block">
                 <span
@@ -755,7 +769,12 @@ export function ClipStory() {
                     swapped ? "hero-swap" : ""
                   }`}
                 >
-                  <Letters key={`a-${audience}`} text={copy.lead} delay={swapped ? 0 : 150} />
+                  {/* Both sides are in the HTML; CSS shows the visitor's from the first frame. */}
+                  {SIDES.map((k) => (
+                    <span key={k} data-side={k} className="contents">
+                      <Letters text={HERO[k].lead} delay={swapped ? 0 : 150} />
+                    </span>
+                  ))}
                   <span
                     ref={slotRef}
                     aria-hidden="true"
@@ -774,12 +793,15 @@ export function ClipStory() {
               </span>
             </h1>
 
-            <p
-              key={`s-${audience}`}
-              className={`${swapped ? "swap-in" : "hero-rise [animation-delay:950ms]"} mt-6 max-w-[50ch] text-[clamp(1rem,1.3vw,1.2rem)] leading-snug text-pretty text-fg-muted [@media(max-height:520px)]:hidden`}
-            >
-              {copy.sub}
-            </p>
+            {SIDES.map((k) => (
+              <p
+                key={k}
+                data-side={k}
+                className={`${swapped ? "swap-in" : "hero-rise [animation-delay:950ms]"} mt-6 max-w-[50ch] text-[clamp(1rem,1.3vw,1.2rem)] leading-snug text-pretty text-fg-muted [@media(max-height:520px)]:hidden`}
+              >
+                {HERO[k].sub}
+              </p>
+            ))}
 
             {/* The CTA spans the proof row below it, so the two read as one block. */}
             <div className="mt-8 inline-flex flex-col items-stretch [@media(max-height:520px)]:mt-5">
@@ -788,9 +810,11 @@ export function ClipStory() {
                 size="xl"
                 className="hero-rise pointer-events-auto [animation-delay:1050ms]"
               >
-                <span key={`c-${audience}`} className={swapped ? "swap-in" : ""}>
-                  {copy.cta}
-                </span>
+                {SIDES.map((k) => (
+                  <span key={k} data-side={k} className={swapped ? "swap-in" : ""}>
+                    {HERO[k].cta}
+                  </span>
+                ))}
               </Button>
 
               <div className="hero-rise mt-5 flex items-center gap-3 [animation-delay:1150ms] [@media(max-height:520px)]:hidden">
@@ -806,13 +830,16 @@ export function ClipStory() {
                     />
                   ))}
                 </span>
-                <p
-                  key={`t-${audience}`}
-                  className={`text-left text-sm leading-snug text-fg-muted ${swapped ? "swap-in" : ""}`}
-                >
-                  <span className="font-medium text-fg">{copy.proof[0]}</span> <br />
-                  {copy.proof[1]}
-                </p>
+                {SIDES.map((k) => (
+                  <p
+                    key={k}
+                    data-side={k}
+                    className={`text-left text-sm leading-snug text-fg-muted ${swapped ? "swap-in" : ""}`}
+                  >
+                    <span className="font-medium text-fg">{HERO[k].proof[0]}</span> <br />
+                    {HERO[k].proof[1]}
+                  </p>
+                ))}
               </div>
             </div>
           </div>

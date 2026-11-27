@@ -19,11 +19,18 @@ export function StreamerShowcase() {
       return n;
     });
   const [hovering, setHovering] = useState(false);
+  const [paused, setPaused] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const root = rootRef.current;
-    if (!root || hovering || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (
+      !root ||
+      hovering ||
+      paused ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
     let timer: number | undefined;
     const io = new IntersectionObserver(([e]) => {
       window.clearInterval(timer);
@@ -38,7 +45,7 @@ export function StreamerShowcase() {
       io.disconnect();
       window.clearInterval(timer);
     };
-  }, [hovering]);
+  }, [hovering, paused]);
 
   /* Incoming photo fades and settles in on top; the outgoing one holds still beneath it. */
   const n = streamers.length;
@@ -124,8 +131,6 @@ export function StreamerShowcase() {
       <ul
         className="flex flex-col items-center py-4 text-center"
         onPointerLeave={() => setHovering(false)}
-        onFocus={() => setHovering(true)}
-        onBlur={() => setHovering(false)}
       >
         {streamers.map((s, i) => {
           const on = i === active;
@@ -175,6 +180,15 @@ export function StreamerShowcase() {
         })}
         <li className="mt-6 text-[clamp(1.5rem,3vw,2.5rem)] leading-[1.2] font-medium tracking-[-0.035em] text-fg-subtle">
           and much more.
+          {/* Keyboard/screen-reader control for the auto-rotation (shown on focus). */}
+          <button
+            type="button"
+            aria-pressed={paused}
+            onClick={() => setPaused((v) => !v)}
+            className="sr-only text-sm font-medium text-fg-muted focus:not-sr-only focus:mt-3 focus:block focus:underline"
+          >
+            {paused ? "Resume rotation" : "Pause rotation"}
+          </button>
         </li>
       </ul>
       {secondSide}

@@ -75,7 +75,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {/* Set the visitor's side before first paint, so streamers never see a white flash. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var a=new URLSearchParams(location.search).get("for")||localStorage.getItem("audience");if(a==="streamer"||a==="streamers"){document.documentElement.dataset.audience="streamer";document.documentElement.dataset.pending="true"}}catch(e){}`,
+            __html: `try{var a=new URLSearchParams(location.search).get("for")||localStorage.getItem("audience");if(a==="streamer"||a==="streamers"){document.documentElement.dataset.audience="streamer"}}catch(e){}`,
           }}
         />
       </head>

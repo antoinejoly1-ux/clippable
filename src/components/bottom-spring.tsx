@@ -73,7 +73,9 @@ export function BottomSpring() {
         pull += (target - pull) * (1 - Math.pow(1 - FOLLOW, dt * 60));
         vel = (pull - prev) / dt;
         // The gesture has ended when input stops for a moment.
-        if (now - lastInput > 70) release(now);
+        // Mouse-wheel notches arrive further apart than trackpad events.
+        const idleMs = Math.abs(lastDelta) >= 50 ? 140 : 70;
+        if (now - lastInput > idleMs) release(now);
       } else if (mode === "spring") {
         const c = 2 * ZETA * Math.sqrt(K);
         vel += (-K * pull - c * vel) * dt;
@@ -105,7 +107,7 @@ export function BottomSpring() {
       // arrives while that stream is still flowing extends the lockout (in every state,
       // including after the spring has settled), so momentum can never grab the page
       // again; only a fresh swipe after a pause can.
-      if (now < lockout && Math.abs(delta) <= Math.abs(lockDelta) * 1.05) {
+      if (now < lockout && Math.abs(delta) < 50 && Math.abs(delta) <= Math.abs(lockDelta) * 1.05) {
         lockout = now + 140;
         lockDelta = delta; // momentum only ever shrinks; a bigger event is a new gesture
         return;

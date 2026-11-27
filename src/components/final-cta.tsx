@@ -7,7 +7,7 @@ export function FinalCta() {
     <section
       id="early-access"
       aria-labelledby="early-title"
-      className="mx-auto max-w-[1360px] scroll-mt-4 bg-bg px-3 pb-16 sm:px-6 sm:pb-24"
+      className="mx-auto max-w-[1360px] scroll-mt-4 bg-bg px-4 pt-12 pb-16 sm:px-6 sm:pt-16 sm:pb-24"
     >
       <div className="relative isolate flex h-[max(56svh,440px)] items-center justify-center overflow-hidden rounded-[20px] bg-midnight px-6 text-center text-white sm:rounded-[28px]">
         <LazyVideo

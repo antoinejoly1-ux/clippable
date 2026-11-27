@@ -108,6 +108,9 @@ export function FlowGradient({ className }: { className?: string }) {
     };
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
+    // Redraw when the visitor switches sides (needed when the loop is paused).
+    const mo = new MutationObserver(() => draw(performance.now()));
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-audience"] });
     const io = new IntersectionObserver(([e]) => {
       visible = e.isIntersecting;
       if (visible && !raf && !still) raf = requestAnimationFrame(loop);
@@ -117,6 +120,7 @@ export function FlowGradient({ className }: { className?: string }) {
     return () => {
       ro.disconnect();
       io.disconnect();
+      mo.disconnect();
       cancelAnimationFrame(raf);
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };

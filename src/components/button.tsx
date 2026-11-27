@@ -16,7 +16,7 @@ const variants = {
 
 const sizes = {
   /** Header: compact on phones so logo, CTA and menu fit at 320px. */
-  sm: "h-10 rounded-[10px] px-4 text-sm min-[360px]:px-5 min-[360px]:text-[15px] sm:h-11",
+  sm: "h-11 rounded-[10px] px-4 text-sm min-[360px]:px-5 min-[360px]:text-[15px] sm:h-11",
   md: "h-[3.25rem] rounded-[13px] px-7 text-[17px]",
   lg: "h-[3.75rem] rounded-[15px] px-9 text-lg",
   /** The hero CTA. */

@@ -79,7 +79,7 @@ export function ExpandingCards({
                 {c.heading}
               </h3>
               <div
-                className={`mt-2 max-w-[46ch] text-[0.95rem] leading-relaxed ${copyLight ? "text-white/90" : "text-fg-muted"}`}
+                className={`mt-2 max-w-[46ch] text-[0.95rem] leading-relaxed ${copyLight ? "text-white" : "text-fg-muted"}`}
               >
                 {c.body}
               </div>

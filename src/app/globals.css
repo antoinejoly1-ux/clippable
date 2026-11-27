@@ -282,7 +282,7 @@
   /* The cards on the side step back: their title and content fade a little. */
   .xcards:has(.xcard:is(:hover, :focus-visible))
     .xcard:not(:is(:hover, :focus-visible))
-    :is(.xcard-title, .xcard-fade) {
+    :is(.xcard-title, .xcard-fade.ui-light) {
     opacity: 0.45;
   }
   .xcards:has(.xcard:is(:hover, :focus-visible)) .xcard .xcard-title {
@@ -968,9 +968,27 @@ html[data-audience="streamer"] .night-lift {
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14);
 }
 
-/* Until React syncs to a returning streamer, keep the clipper words off screen. */
-html[data-pending] [data-hero-copy] {
-  visibility: hidden;
+/* Hero copy for both sides is in the HTML; the theme attribute (set before first paint)
+   picks which one shows, so the right words render from the first frame. */
+html:not([data-audience="streamer"]) [data-side="streamer"],
+html[data-audience="streamer"] [data-side="clipper"] {
+  display: none !important;
+}
+html[data-audience="streamer"] .switch-thumb {
+  transform: translateX(100%);
+}
+.switch-label {
+  color: var(--fg-muted);
+  transition: color 300ms;
+}
+.switch-label:hover {
+  color: var(--fg);
+}
+html:not([data-audience="streamer"]) .switch-label[data-id="clipper"] {
+  color: white;
+}
+html[data-audience="streamer"] .switch-label[data-id="streamer"] {
+  color: var(--color-midnight);
 }
 
 /* Night header: the nav, Log in and logo sit on dark glass so they read over the bright crown. */
@@ -980,7 +998,7 @@ html[data-audience="streamer"] .hdr-pill {
   -webkit-backdrop-filter: blur(12px);
 }
 html[data-audience="streamer"] .hdr-logo {
-  --logo-mark: var(--color-electric);
+  --logo-mark: color-mix(in oklab, var(--color-electric) calc(var(--hdr) * 100%), white);
 }
 html[data-audience="streamer"] .hdr-cta:hover {
   background: var(--color-sky) !important;
@@ -993,9 +1011,6 @@ html[data-audience="streamer"] .audience-switch {
 }
 html[data-audience="streamer"] .switch-thumb {
   background: #fff;
-}
-html[data-audience="streamer"] .audience-switch [aria-checked="true"] {
-  color: var(--color-midnight);
 }
 
 /* Night surfaces: every card keeps an edge; light product windows get a hairline + depth. */
@@ -1054,5 +1069,15 @@ html[data-audience="streamer"] .node-chip {
   .campaign-tile {
     left: calc(50% - 6.25rem + (var(--i) - 1) * 30%);
     rotate: calc((var(--i) - 1) * 5deg + var(--dr));
+  }
+}
+
+@media (min-width: 1024px) {
+  html[data-audience="streamer"]
+    .xcards:has(.xcard:is(:hover, :focus-visible))
+    .xcard:not(:is(:hover, :focus-visible))
+    .xcard-fade.ui-light {
+    opacity: 1;
+    filter: brightness(0.45) saturate(0.8);
   }
 }

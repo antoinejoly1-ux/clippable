@@ -190,7 +190,9 @@ export function AgentsSection() {
               ))}
             </ul>
             <div className="mt-7">
-              <Button href={site.signupUrl}>Create account</Button>
+              <Button href={site.signupUrl} size="lg">
+                Create account
+              </Button>
             </div>
             {/* TODO(client): confirm the integration count. */}
             <p className="mt-6 flex items-center gap-3 text-sm text-fg-muted">

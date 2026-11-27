@@ -8,7 +8,7 @@ export function FaqSection() {
       <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
         <h2
           id="faq-title"
-          className="text-center text-[clamp(2rem,4vw,3.25rem)] leading-[1] font-medium tracking-[-0.045em] text-fg"
+          className="text-center text-[clamp(2.25rem,5vw,4.5rem)] leading-[0.98] font-medium tracking-[-0.045em] text-fg"
         >
           Questions, answered.
         </h2>
