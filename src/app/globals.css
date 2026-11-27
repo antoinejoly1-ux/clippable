@@ -759,30 +759,41 @@ html[data-pulling="true"] .page-lift {
   transform: translate3d(0, calc(var(--pull) * -1px), 0);
 }
 
-/* Campaigns card: deep brand blue with the hero's dark core low on the right. */
+/* Campaigns card: the hero sky from a corner. A black core behind the text at top-left,
+   ringed by indigo and electric blue, opening to sky behind the posters. */
 .campaign-card {
   background:
-    radial-gradient(60% 70% at 80% 110%, #000000 0%, #02031a 30%, rgb(10 13 94 / 0) 70%),
-    radial-gradient(50% 60% at 0% 0%, rgb(109 175 248 / 0.45), transparent 70%),
-    linear-gradient(135deg, #3d8bff 0%, var(--color-electric) 35%, #1630c8 65%, #0a0d5e 100%);
+    radial-gradient(45% 55% at 100% 100%, rgb(58 28 196 / 0.4), transparent 70%),
+    radial-gradient(
+      110% 130% at 0% 0%,
+      #000000 0%,
+      #01020f 14%,
+      #070a4a 28%,
+      #1630c8 42%,
+      #0b5cff 55%,
+      #4a93ff 70%,
+      #a3ccff 88%,
+      #d6e8ff 100%
+    );
 }
 /* A fan of posters pivoting from below, the front one hanging off the banner's right edge.
    --i is 0, 1, 2 (back to front). Hover spreads the fan. */
 .campaign-tile {
-  left: calc(14% + var(--i) * 25%);
-  top: 50%;
+  left: calc(16% + var(--i) * 19%);
+  top: 22%;
   z-index: var(--i);
-  transform-origin: 50% 140%;
-  translate: 0 calc(-50% + (var(--i) - 1) * (var(--i) - 1) * 6%);
-  rotate: calc((var(--i) - 1) * 9deg);
+  transform-origin: 50% 160%;
+  translate: 0 calc((var(--i) - 1) * (var(--i) - 1) * 5%);
+  rotate: calc((var(--i) - 1) * 7deg);
   transition:
-    translate 700ms var(--ease-out-expo),
-    rotate 700ms var(--ease-out-expo),
-    left 700ms var(--ease-out-expo);
+    translate 900ms var(--ease-out-expo),
+    rotate 900ms var(--ease-out-expo),
+    left 900ms var(--ease-out-expo);
 }
 .campaign-card:hover .campaign-tile {
-  left: calc(10% + var(--i) * 30%);
-  rotate: calc((var(--i) - 1) * 13deg);
+  left: calc(12% + var(--i) * 24%);
+  rotate: calc((var(--i) - 1) * 10deg);
+  translate: 0 calc(-4% + (var(--i) - 1) * (var(--i) - 1) * 5%);
 }
 .gta-poster {
   background:
@@ -791,6 +802,7 @@ html[data-pulling="true"] .page-lift {
 }
 @media (max-width: 1023px) {
   .campaign-tile {
-    left: calc(8% + var(--i) * 30%);
+    left: calc(10% + var(--i) * 24%);
+    top: 14%;
   }
 }

@@ -47,18 +47,20 @@ export function AudienceSection() {
           <div aria-hidden="true" className="grain pointer-events-none absolute inset-0 -z-10" />
 
           {/* Pitch */}
-          <div className="relative z-10 flex flex-col p-8 sm:p-12 lg:max-w-[54%] lg:py-14 lg:pl-16">
-            <p className="inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-sm font-medium ring-1 ring-white/20 backdrop-blur-md">
-              <span className="relative flex size-2">
-                <span className="absolute inset-0 animate-ping rounded-full bg-success opacity-70" />
-                <span className="relative size-2 rounded-full bg-success" />
+          <div className="relative z-10 flex flex-col p-8 sm:p-12 lg:max-w-[50%] lg:py-16 lg:pl-16">
+            <p className="inline-flex w-fit items-center gap-2.5 rounded-full bg-white/12 py-2 pr-4 pl-3 text-base font-semibold ring-1 ring-white/25 backdrop-blur-md">
+              <span className="relative flex size-2.5">
+                <span className="absolute inset-0 animate-ping rounded-full bg-success opacity-75" />
+                <span className="relative size-2.5 rounded-full bg-success shadow-[0_0_12px_rgb(18_161_80/0.9)]" />
               </span>
-              {AVAILABLE} campaigns open now
+              <span>
+                <span className="tabular-nums">{AVAILABLE}</span> campaigns live
+              </span>
             </p>
-            <h3 className="mt-6 max-w-[15ch] text-[clamp(2rem,3.4vw,3.1rem)] leading-[1.02] font-medium tracking-[-0.04em]">
+            <h3 className="mt-7 max-w-[14ch] text-[clamp(2.4rem,4.4vw,4rem)] leading-[1] font-medium tracking-[-0.045em]">
               Get paid for every 1,000 views.
             </h3>
-            <p className="mt-4 max-w-[40ch] text-lg text-pretty text-white/70">
+            <p className="mt-5 max-w-[38ch] text-xl text-pretty text-white/75">
               Pick a campaign, post the clips Clippable makes for you, earn on every view.
             </p>
             <div className="mt-8">
@@ -71,25 +73,25 @@ export function AudienceSection() {
           {/* Fan of posters, hanging off the right edge */}
           <div
             aria-hidden="true"
-            className="campaign-fan relative h-[19rem] sm:h-[22rem] lg:absolute lg:inset-y-0 lg:right-0 lg:h-auto lg:w-[52%]"
+            className="campaign-fan relative h-[20rem] sm:h-[24rem] lg:absolute lg:inset-y-0 lg:right-0 lg:h-auto lg:w-[54%]"
           >
             {campaigns.map((c, i) => (
               <div
                 key={c.id}
-                className="campaign-tile absolute aspect-[3/4] w-[11rem] overflow-hidden rounded-[18px] bg-midnight shadow-[0_40px_80px_-30px_rgb(0_0_0/0.7)] ring-1 ring-white/15 sm:w-[13rem] lg:w-[15.5rem]"
+                className="campaign-tile absolute aspect-[3/4] w-[12.5rem] overflow-hidden rounded-[20px] bg-midnight shadow-[0_40px_80px_-30px_rgb(0_0_0/0.75)] ring-1 ring-white/15 sm:w-[15rem] lg:w-[19rem]"
                 style={{ "--i": i } as React.CSSProperties}
               >
                 {c.image ? (
                   <Image src={c.image} alt="" fill sizes="250px" className="object-cover" />
                 ) : (
                   <div className="gta-poster absolute inset-0">
-                    <span className="absolute inset-x-0 top-[34%] text-center text-[4.5rem] leading-none font-black tracking-[-0.06em] text-white/95 italic">
+                    <span className="absolute inset-x-0 top-[38%] text-center text-[5.5rem] leading-none font-black tracking-[-0.06em] text-white/95 italic">
                       VI
                     </span>
                   </div>
                 )}
-                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgb(0_0_0/0.75),transparent_50%)]" />
-                <div className="absolute inset-x-4 bottom-4 flex items-end justify-between">
+                <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgb(0_0_0/0.7),transparent_40%)]" />
+                <div className="absolute inset-x-4 top-4 flex items-start justify-between">
                   <div>
                     <p className="text-[11px] font-medium tracking-[0.06em] text-white/70 uppercase">
                       {c.tag}
