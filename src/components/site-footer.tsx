@@ -85,8 +85,9 @@ export function SiteFooter() {
       {/* Revealed behind the footer as the page ends */}
       <div
         aria-hidden="true"
-        className="fixed inset-x-0 bottom-0 z-0 h-[min(900px,100svh)] bg-[linear-gradient(to_bottom,var(--bg-subtle),var(--color-sky))]"
+        className="footer-sky fixed inset-x-0 bottom-0 z-0 h-[min(900px,100svh)]"
       >
+        <div className="grain absolute inset-0" />
         <div className={`${container} absolute inset-x-0 bottom-[min(1.5vw,20px)]`}>
           <svg viewBox="0 0 1000 232" className="block w-full fill-white">
             <text

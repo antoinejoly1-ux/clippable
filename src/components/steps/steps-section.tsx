@@ -19,12 +19,12 @@ export function StepsSection() {
         </h2>
         <div className="mt-12 sm:mt-16">
           <ExpandingCards
+            sky
             label="How Clippable works, in three steps"
             cards={[
               {
                 index: "01",
                 title: "Set up",
-                sky: "bl",
                 visual: <SetupVisual />,
                 heading: "Pick your streamers, set your style",
                 body: "Follow the streamers you want to clip and set your brand template once: captions, colors and clip length.",
@@ -32,7 +32,6 @@ export function StepsSection() {
               {
                 index: "02",
                 title: "Clip it",
-                sky: "tl",
                 visual: <ClipVisual />,
                 heading: "Clipped the second it happens",
                 body: "Clippable watches every stream live, then cuts, captions and scores the best moments for you.",
@@ -40,7 +39,6 @@ export function StepsSection() {
               {
                 index: "03",
                 title: "Post",
-                sky: "br",
                 visual: <PostVisual />,
                 heading: "Post everywhere, get paid",
                 body: "Download vertical clips for TikTok, Shorts, Reels and X, and earn per 1,000 views on streamer campaigns.",

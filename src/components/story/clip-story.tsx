@@ -18,13 +18,13 @@ import { streamers } from "@/lib/streamers";
  */
 const T = {
   copyOut: [0, 0.1],
-  grow: [0, 0.24],
-  cut: [0.26, 0.35],
-  morph: [0.34, 0.52],
-  clipsIn: [0.4, 0.54],
-  send: [0.54, 0.74],
-  split: [0.76, 0.88],
-  text: [0.82, 0.92],
+  grow: [0, 0.26],
+  cut: [0.27, 0.33],
+  morph: [0.32, 0.46],
+  clipsIn: [0.36, 0.48],
+  send: [0.5, 0.72],
+  split: [0.74, 0.88],
+  text: [0.8, 0.92],
 } as const;
 
 const INTRO_MS = 2400; // how long the load animation keeps the player glued to its slot
@@ -480,7 +480,7 @@ export function ClipStory() {
       <section
         ref={sectionRef}
         aria-labelledby="hero-title"
-        className="relative h-[520svh] motion-reduce:h-svh"
+        className="relative h-[420svh] motion-reduce:h-svh"
       >
         <span id="how" aria-hidden="true" className="absolute top-[120svh]" />
         <div ref={stageRef} className="sticky top-0 h-svh overflow-hidden bg-bg">
@@ -670,8 +670,7 @@ export function ClipStory() {
               ref={textRef}
               className="invisible text-[clamp(1.6rem,4vw,3.5rem)] leading-tight font-medium tracking-[-0.04em] text-balance text-fg opacity-0"
             >
-              While you blinked. <br />
-              <span className="text-fg-muted">While you doomscrolled.</span>
+              While you watched live.
             </p>
           </div>
 
@@ -703,7 +702,7 @@ function StaticStory() {
       className="hidden px-5 py-16 motion-reduce:block sm:px-10"
     >
       <p className="mx-auto mb-10 max-w-[18ch] text-center text-3xl font-medium tracking-[-0.04em] text-balance sm:text-5xl">
-        While you blinked. <span className="text-fg-muted">While you doomscrolled.</span>
+        While you watched live.
       </p>
       <div className="mx-auto grid max-w-5xl grid-cols-2 gap-3 sm:grid-cols-4">
         {storyClips.map((clip) => (

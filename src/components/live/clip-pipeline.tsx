@@ -106,11 +106,10 @@ export function ClipPipeline() {
         ref={canvasRef}
         className="relative isolate overflow-hidden rounded-[var(--radius-card)] border border-border bg-bg-subtle px-5 py-14 sm:px-10 lg:px-12 lg:pt-20 lg:pb-14"
       >
-        {/* Waves of the hero's colours rise from the bottom and roll left to right */}
+        {/* The hero's sky, drifting slowly left to right behind the nodes */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="wave wave-1" />
-          <div className="wave wave-2" />
-          <div className="wave wave-3" />
+          <div className="flow-sky" />
+          <div className="flow-glow" />
           <div className="grain absolute inset-0" />
         </div>
 

@@ -197,46 +197,17 @@
 
 /* Dot-grid canvas, like a node editor. */
 /*
- * Step card skies: the hero's black → indigo → electric → sky → pale ramp, grown from one
- * corner per card (bottom-left, top-left, bottom-right) so the three read as one abstract
- * sweep. Text sitting on the dark part is set in white.
+ * The hero's sky, reused: a black dome pressing down from the top centre, ringed by
+ * indigo, electric blue and sky, fading to the page tint. Indigo touches the top corners.
+ * .steps-sky spans the three step cards; .flow-sky drifts left to right on the workflow
+ * canvas; .footer-sky is the same ramp flipped (black at the bottom).
  */
-.sky-bl {
+.steps-sky {
   background:
+    radial-gradient(40% 40% at 0% 0%, rgb(58 28 196 / 0.35), transparent 70%),
+    radial-gradient(40% 40% at 100% 0%, rgb(58 28 196 / 0.35), transparent 70%),
     radial-gradient(
-      150% 85% at 0% 100%,
-      #000000 0%,
-      #01020f 14%,
-      #070a4a 27%,
-      #1630c8 40%,
-      #0b5cff 50%,
-      #4a93ff 60%,
-      #a3ccff 72%,
-      #e3efff 84%,
-      var(--bg-subtle) 96%
-    ),
-    var(--bg-subtle);
-}
-.sky-tl {
-  background:
-    radial-gradient(
-      150% 80% at 0% 0%,
-      #000000 0%,
-      #01020f 14%,
-      #070a4a 27%,
-      #1630c8 40%,
-      #0b5cff 50%,
-      #4a93ff 60%,
-      #a3ccff 72%,
-      #e3efff 84%,
-      var(--bg-subtle) 96%
-    ),
-    var(--bg-subtle);
-}
-.sky-br {
-  background:
-    radial-gradient(
-      160% 85% at 100% 100%,
+      100% 78% at 50% -16%,
       #000000 0%,
       #01020f 14%,
       #070a4a 27%,
@@ -695,103 +666,87 @@
 }
 
 /*
- * Workflow canvas: waves in the hero's colours. One fixed left-to-right ramp (black, pale,
- * blue, white) is shown through three wave-shaped masks of different heights and speeds.
- * The masks scroll to the right, so the swell rolls left to right; on first view each
- * wave rises from the bottom. Paused while the section is off screen.
+ * Workflow canvas: the same sky, moving. The layer is twice the canvas width and holds two
+ * identical domes; sliding it by half its width loops seamlessly, so the gradient drifts
+ * steadily left to right. A blurred second layer of light moves against it for depth.
  */
-.wave {
+.flow-sky {
   position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  background: linear-gradient(
-    90deg,
-    #000000 0%,
-    #050836 14%,
-    #1630c8 30%,
-    #0b5cff 44%,
-    #8fc0ff 58%,
-    #e6f0ff 68%,
-    #4a93ff 82%,
-    #f2f7ff 100%
-  );
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 100C100 20 200 20 300 100S500 180 600 100S800 20 900 100S1100 180 1200 100V400H0Z'/%3E%3C/svg%3E");
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 400' preserveAspectRatio='none'%3E%3Cpath d='M0 100C100 20 200 20 300 100S500 180 600 100S800 20 900 100S1100 180 1200 100V400H0Z'/%3E%3C/svg%3E");
-  mask-repeat: repeat-x;
-  -webkit-mask-repeat: repeat-x;
-  transform-origin: 50% 100%;
+  inset-block: 0;
+  left: -100%;
+  width: 200%;
+  background:
+    radial-gradient(
+      28% 80% at 25% -14%,
+      #000000 0%,
+      #01020f 14%,
+      #070a4a 27%,
+      #1630c8 40%,
+      #0b5cff 50%,
+      #4a93ff 60%,
+      #a3ccff 72%,
+      #e3efff 84%,
+      rgb(244 246 251 / 0) 100%
+    ),
+    radial-gradient(
+      28% 80% at 75% -14%,
+      #000000 0%,
+      #01020f 14%,
+      #070a4a 27%,
+      #1630c8 40%,
+      #0b5cff 50%,
+      #4a93ff 60%,
+      #a3ccff 72%,
+      #e3efff 84%,
+      rgb(244 246 251 / 0) 100%
+    ),
+    var(--bg-subtle);
+  animation: flow-drift 22s linear infinite;
 }
-.wave-1 {
-  height: 72%;
-  opacity: 0.45;
-  background: linear-gradient(
-    90deg,
-    #070a4a 0%,
-    #1630c8 24%,
-    #4a93ff 48%,
-    #cfe3ff 68%,
-    #8fc0ff 84%,
-    #f2f7ff 100%
-  );
-  mask-size: 1400px 100%;
-  -webkit-mask-size: 1400px 100%;
-  animation:
-    wave-rise 1600ms cubic-bezier(0.22, 1, 0.36, 1) both,
-    wave-roll-1 18s linear infinite;
+.footer-sky {
+  background:
+    radial-gradient(40% 40% at 0% 100%, rgb(58 28 196 / 0.4), transparent 70%),
+    radial-gradient(40% 40% at 100% 100%, rgb(58 28 196 / 0.4), transparent 70%),
+    radial-gradient(
+      110% 80% at 50% 118%,
+      #000000 0%,
+      #01020f 16%,
+      #070a4a 29%,
+      #1630c8 42%,
+      #0b5cff 52%,
+      #4a93ff 62%,
+      #a3ccff 74%,
+      #e3efff 86%,
+      var(--bg-subtle) 98%
+    ),
+    var(--bg-subtle);
 }
-.wave-2 {
-  height: 58%;
-  opacity: 0.7;
-  background: linear-gradient(
-    90deg,
-    #02031a 0%,
-    #0a0d5e 18%,
-    #0b5cff 40%,
-    #a3ccff 60%,
-    #eaf2ff 70%,
-    #4a93ff 84%,
-    #f2f7ff 100%
-  );
-  mask-size: 1100px 100%;
-  -webkit-mask-size: 1100px 100%;
-  animation:
-    wave-rise 1600ms cubic-bezier(0.22, 1, 0.36, 1) 150ms both,
-    wave-roll-2 12s linear infinite;
+@keyframes flow-drift {
+  to {
+    transform: translateX(50%);
+  }
 }
-.wave-3 {
-  height: 44%;
-  mask-size: 900px 100%;
-  -webkit-mask-size: 900px 100%;
-  animation:
-    wave-rise 1600ms cubic-bezier(0.22, 1, 0.36, 1) 300ms both,
-    wave-roll-3 8s linear infinite;
+.flow-glow {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(30% 35% at 30% 40%, rgb(11 92 255 / 0.35), transparent 70%),
+    radial-gradient(26% 30% at 70% 30%, rgb(88 52 230 / 0.3), transparent 70%);
+  filter: blur(40px);
+  animation: glow-sway 14s ease-in-out infinite alternate;
 }
-@keyframes wave-rise {
+@keyframes glow-sway {
   from {
-    transform: translateY(100%);
+    transform: translateX(-8%);
   }
-}
-@keyframes wave-roll-1 {
   to {
-    mask-position: 1400px 0;
-    -webkit-mask-position: 1400px 0;
-  }
-}
-@keyframes wave-roll-2 {
-  to {
-    mask-position: 1100px 0;
-    -webkit-mask-position: 1100px 0;
-  }
-}
-@keyframes wave-roll-3 {
-  to {
-    mask-position: 900px 0;
-    -webkit-mask-position: 900px 0;
+    transform: translateX(8%);
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .wave {
-    animation: none !important;
+  .flow-sky,
+  .flow-glow {
+    animation: none;
   }
 }
 

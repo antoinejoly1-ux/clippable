@@ -12,41 +12,54 @@ export type ExpandingCard = {
   /** Optional full-bleed background behind the dot grid (image or video). */
   background?: ReactNode;
   tone?: "light" | "dark";
-  /** Corner the dark sky grows from. Text over the dark part turns white. */
-  sky?: "bl" | "tl" | "br";
 };
-
-const SKY = {
-  bl: { surface: "sky-bl", titleLight: false, copyLight: true },
-  tl: { surface: "sky-tl", titleLight: true, copyLight: false },
-  br: { surface: "sky-br", titleLight: false, copyLight: true },
-} as const;
 
 /**
  * Three cards at a third each. Hover or focus one and it takes half the row while the
  * others share the rest. Stacks on small screens.
  */
-export function ExpandingCards({ cards, label }: { cards: ExpandingCard[]; label: string }) {
+export function ExpandingCards({
+  cards,
+  label,
+  sky = false,
+}: {
+  cards: ExpandingCard[];
+  label: string;
+  /**
+   * One hero-style sky across the whole row. Each card is a window onto it (the layer is
+   * sized to the row, and clip-path trims it to the card), so the gradient reads as one
+   * piece even while the cards resize. Phones stack the cards, so each gets the full sky.
+   */
+  sky?: boolean;
+}) {
   return (
-    <ul className="xcards" aria-label={label}>
+    <ul className="xcards relative" aria-label={label}>
       {cards.map((c) => {
         const dark = c.tone === "dark";
-        const sky = c.sky ? SKY[c.sky] : null;
-        const titleLight = dark || !!sky?.titleLight;
-        const copyLight = dark || !!sky?.copyLight;
+        const titleLight = dark || sky;
+        const copyLight = dark;
         return (
           <li
             key={c.index}
             tabIndex={0}
             aria-labelledby={`xcard-${c.index}`}
-            className={`xcard group/x relative isolate flex h-[34rem] flex-col overflow-hidden rounded-[var(--radius-card)] border outline-none focus-visible:ring-2 focus-visible:ring-blue lg:h-[38rem] ${
-              dark
-                ? "border-white/10 bg-midnight text-white"
-                : `${sky?.surface ?? "bg-bg-subtle"} border-border text-fg`
+            className={`xcard group/x isolate flex h-[34rem] flex-col rounded-[var(--radius-card)] border outline-none [clip-path:inset(0_round_var(--radius-card))] focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white max-lg:relative lg:h-[38rem] ${
+              dark ? "border-white/10 bg-midnight text-white" : "border-border bg-bg-subtle text-fg"
             }`}
           >
             {c.background}
-            <div aria-hidden="true" className="grain pointer-events-none absolute inset-0 -z-10" />
+            {sky && (
+              <>
+                <div
+                  aria-hidden="true"
+                  className="steps-sky pointer-events-none absolute inset-0 -z-10"
+                />
+                <div
+                  aria-hidden="true"
+                  className="grain pointer-events-none absolute inset-0 -z-10"
+                />
+              </>
+            )}
             <p
               className={`xcard-title relative px-7 pt-7 text-[clamp(2.25rem,3.3vw,3.75rem)] leading-none font-medium tracking-[-0.045em] whitespace-nowrap ${titleLight ? "text-white" : "text-fg"}`}
             >
