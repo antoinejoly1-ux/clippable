@@ -758,3 +758,29 @@
 html[data-pulling="true"] .page-lift {
   transform: translate3d(0, calc(var(--pull) * -1px), 0);
 }
+
+/* Campaigns card: deep brand blue with the hero's dark core low on the right. */
+.campaign-card {
+  background:
+    radial-gradient(60% 70% at 80% 110%, #000000 0%, #02031a 30%, rgb(10 13 94 / 0) 70%),
+    radial-gradient(50% 60% at 0% 0%, rgb(109 175 248 / 0.45), transparent 70%),
+    linear-gradient(135deg, #3d8bff 0%, var(--color-electric) 35%, #1630c8 65%, #0a0d5e 100%);
+}
+/* The stack fans out a little on hover. --i is -1, 0, 1. */
+.campaign-tile {
+  translate: calc(-50% + var(--i) * 34%) calc(-50% + (1 - var(--i) * var(--i)) * -4%);
+  rotate: calc(var(--i) * 8deg);
+  z-index: calc(2 - var(--i) * var(--i));
+  transition:
+    translate 600ms var(--ease-out-expo),
+    rotate 600ms var(--ease-out-expo);
+}
+.campaign-card:hover .campaign-tile {
+  translate: calc(-50% + var(--i) * 56%) calc(-50% + (1 - var(--i) * var(--i)) * -8%);
+  rotate: calc(var(--i) * 11deg);
+}
+@media (max-width: 639px) {
+  .campaign-tile {
+    translate: calc(-50% + var(--i) * 26%) -50%;
+  }
+}

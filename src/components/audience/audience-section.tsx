@@ -1,87 +1,126 @@
 import Image from "next/image";
 import { Button } from "@/components/button";
 import { site } from "@/lib/site";
-import { streamers } from "@/lib/streamers";
 
-const mail = (subject: string) => `mailto:${site.email}?subject=${encodeURIComponent(subject)}`;
+/*
+ * Clipping campaigns: one premium blue card. Left, the pitch and a live count; right, a
+ * fanned stack of campaign cards that spreads out on hover, hinting at what's inside.
+ * TODO(client): real campaign names, counts and rates from the platform.
+ */
+const AVAILABLE = 12;
 
-/* Interim: both paths email us until the signup form ships. TODO(client): point at signup. */
-const paths = [
+const campaigns = [
   {
-    id: "clippers",
-    eyebrow: "For clippers",
-    title: "Get paid for every view.",
-    body: "Pick a streamer campaign, post the clips Clippable makes, and earn on every 1,000 views.",
-    stat: "$0.10–$0.75",
-    statLabel: "per 1,000 views on current campaigns",
-    cta: "Start clipping",
-    href: mail("Clippable early access: I clip"),
-    variant: "primary" as const,
+    id: "gta",
+    title: "GTA VI reactions",
+    brand: "Gaming campaign",
+    rate: "$0.60 / 1K views",
+    image: "/media/pipeline/clip-14.webp",
+    avatar: null,
   },
   {
-    id: "streamers",
-    eyebrow: "For streamers",
-    title: "Get clipped everywhere.",
-    body: "Set your rate. Clippers post your best moments to TikTok, Shorts, Reels and X while you stream.",
-    stat: "Kick + Twitch",
-    statLabel: "streams supported at launch",
-    cta: "Get clipped",
-    href: mail("Clippable early access: I stream"),
-    variant: "dark" as const,
+    id: "kaicenat",
+    title: "Kai Cenat",
+    brand: "Streamer campaign",
+    rate: "$0.50 / 1K views",
+    image: "/media/streamers/kaicenat-photo.webp",
+    avatar: "/media/streamers/kaicenat.webp",
+  },
+  {
+    id: "n3on",
+    title: "N3on",
+    brand: "Streamer campaign",
+    rate: "up to $0.40 / 1K views",
+    image: "/media/streamers/n3on-photo.webp",
+    avatar: "/media/streamers/n3on.webp",
   },
 ];
 
 export function AudienceSection() {
   return (
-    <section id="paths" aria-labelledby="paths-title" className="scroll-mt-20 bg-bg py-20 sm:py-28">
+    <section
+      id="campaigns"
+      aria-labelledby="campaigns-title"
+      className="scroll-mt-20 bg-bg py-20 sm:py-28"
+    >
       <div className="mx-auto max-w-[1360px] px-4 sm:px-6">
         <h2
-          id="paths-title"
-          className="text-center text-[clamp(2rem,4vw,3.25rem)] leading-[1] font-medium tracking-[-0.045em] text-fg"
+          id="campaigns-title"
+          className="text-center text-[clamp(2.25rem,5vw,4.5rem)] leading-[0.98] font-medium tracking-[-0.045em] text-balance text-fg"
         >
-          Two ways in.
+          <span className="block text-fg-muted">Get paid.</span>
+          Join clipping campaigns.
         </h2>
-        <ul className="mt-12 grid gap-3 sm:mt-14 md:grid-cols-2">
-          {paths.map((p) => (
-            <li
-              key={p.id}
-              className="flex flex-col rounded-[var(--radius-card)] border border-border bg-bg-subtle p-6 sm:p-10"
-            >
-              <p className="eyebrow text-fg-muted">{p.eyebrow}</p>
-              <h3 className="mt-4 text-[clamp(1.6rem,2.6vw,2.25rem)] leading-[1.05] font-medium tracking-[-0.04em] text-fg">
-                {p.title}
-              </h3>
-              <p className="mt-3 max-w-[52ch] text-base text-pretty text-fg-muted">{p.body}</p>
-              <div className="mt-8 flex items-center gap-3 border-t border-border pt-6">
-                {p.id === "streamers" && (
-                  <span aria-hidden="true" className="flex -space-x-2">
-                    {streamers.slice(0, 4).map((st) => (
-                      <Image
-                        key={st.id}
-                        src={st.avatar}
-                        alt=""
-                        width={28}
-                        height={28}
-                        className="size-7 rounded-full object-cover ring-2 ring-bg-subtle"
-                      />
-                    ))}
+
+        <div className="campaign-card relative isolate mt-12 grid overflow-hidden rounded-[20px] text-white sm:mt-16 sm:rounded-[28px] lg:grid-cols-[1fr_1.1fr]">
+          <div aria-hidden="true" className="grain pointer-events-none absolute inset-0 -z-10" />
+
+          {/* Pitch */}
+          <div className="flex flex-col justify-center p-8 sm:p-12 lg:p-16">
+            <p className="inline-flex w-fit items-center gap-2 rounded-full bg-white/12 px-3 py-1.5 text-sm font-medium ring-1 ring-white/20 backdrop-blur-md">
+              <span className="relative flex size-2">
+                <span className="absolute inset-0 animate-ping rounded-full bg-success opacity-70" />
+                <span className="relative size-2 rounded-full bg-success" />
+              </span>
+              {AVAILABLE} campaigns available
+            </p>
+            <h3 className="mt-6 max-w-[16ch] text-[clamp(2rem,3.6vw,3.25rem)] leading-[1.02] font-medium tracking-[-0.04em]">
+              Get paid for every 1,000 views.
+            </h3>
+            <p className="mt-4 max-w-[42ch] text-lg text-pretty text-white/75">
+              Pick a campaign, post the clips Clippable makes for you, and earn on every view. New
+              campaigns open every week.
+            </p>
+            <div className="mt-9">
+              <Button href={site.signupUrl} variant="inverse" size="lg">
+                Browse campaigns
+              </Button>
+            </div>
+          </div>
+
+          {/* Fanned campaign cards */}
+          <div
+            aria-hidden="true"
+            className="campaign-stack relative h-[24rem] sm:h-[28rem] lg:h-auto lg:min-h-[34rem]"
+          >
+            {campaigns.map((c, i) => (
+              <div
+                key={c.id}
+                className="campaign-tile absolute top-1/2 left-1/2 w-[13.5rem] overflow-hidden rounded-[16px] bg-white text-fg shadow-[0_30px_60px_-24px_rgb(0_0_0/0.6)] sm:w-[15rem]"
+                style={{ "--i": i - 1 } as React.CSSProperties}
+              >
+                <div className="relative aspect-[4/5] bg-midnight">
+                  <Image src={c.image} alt="" fill sizes="240px" className="object-cover" />
+                  <span className="absolute top-3 left-3 rounded-[6px] bg-black/55 px-2 py-1 text-[11px] font-medium text-white backdrop-blur-md">
+                    {c.brand}
                   </span>
-                )}
-                <p className="text-sm leading-snug text-fg-muted">
-                  <span className="block text-lg font-semibold tracking-[-0.02em] text-fg">
-                    {p.stat}
+                </div>
+                <div className="flex items-center gap-2.5 p-3.5">
+                  {c.avatar ? (
+                    <Image
+                      src={c.avatar}
+                      alt=""
+                      width={32}
+                      height={32}
+                      className="size-8 rounded-full object-cover"
+                    />
+                  ) : (
+                    <span className="flex size-8 items-center justify-center rounded-full bg-midnight text-[11px] font-bold text-white">
+                      VI
+                    </span>
+                  )}
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold">{c.title}</span>
+                    <span className="block text-xs text-fg-muted">{c.rate}</span>
                   </span>
-                  {p.statLabel}
-                </p>
+                  <span className="rounded-[6px] bg-electric px-2 py-1 text-[11px] font-semibold text-white">
+                    Join
+                  </span>
+                </div>
               </div>
-              <div className="mt-8">
-                <Button href={p.href} variant={p.variant}>
-                  {p.cta}
-                </Button>
-              </div>
-            </li>
-          ))}
-        </ul>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
