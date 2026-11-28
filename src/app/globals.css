@@ -1088,6 +1088,20 @@ html[data-audience="streamer"] .night-lift {
   z-index: -5;
 }
 
+/* A side's first appearance reopens the player's slot between the words, as on load. */
+.hero-replay .hero-slot {
+  animation: slot-open 800ms cubic-bezier(0.34, 1.4, 0.64, 1) 760ms both !important;
+}
+/* Later switches: the theme and the words change, nothing replays. */
+.hero-quiet .hero-reveal,
+.hero-quiet .hero-letter,
+.hero-quiet .hero-dot,
+.hero-quiet .hero-cover,
+.hero-quiet .hero-cover-dot,
+.hero-quiet .hero-slot {
+  animation: none !important;
+}
+
 /* Between the click and the end of the page wipe, the new headline waits off screen. */
 .hero-hold .hero-reveal {
   clip-path: inset(-30% 100% -30% -10%);
@@ -1095,6 +1109,9 @@ html[data-audience="streamer"] .night-lift {
 .hero-hold .hero-dot,
 .hero-hold .hero-cover {
   opacity: 0;
+}
+.hero-hold .hero-slot {
+  width: 0;
 }
 @media (max-width: 767px) {
   .hero-hold .hero-letter {

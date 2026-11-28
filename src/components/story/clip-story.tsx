@@ -51,18 +51,27 @@ type Audience = "clipper" | "streamer";
 /** Hero copy for each side of the marketplace. The switch flips between them. */
 const HERO: Record<
   Audience,
-  { title: string; lead: string; sub: string; cta: string; proof: [string, string] }
+  {
+    title: string;
+    lead: string;
+    tail: string;
+    sub: string;
+    cta: string;
+    proof: [string, string];
+  }
 > = {
   clipper: {
     title: "Make clips instantly.",
     lead: "Make clips",
+    tail: "instantly",
     sub: "Clippable turns Kick and Twitch streams into vertical clips while they're live. Post them and earn on every 1,000 views.",
     cta: "Start clipping now",
     proof: ["100+ streamer campaigns", "on Kick and Twitch"],
   },
   streamer: {
-    title: "Get clipped instantly.",
-    lead: "Get clipped",
+    title: "Clipped for virality.",
+    lead: "Clipped for",
+    tail: "virality",
     sub: "Go live as usual. Clippers post your best moments to TikTok, Shorts, Reels and X, and you only pay per 1,000 views.",
     cta: "Start a campaign",
     proof: ["Join 100+ streamers", "already getting clipped"],
@@ -146,7 +155,8 @@ export function ClipStory() {
   const tileVideoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const textRef = useRef<HTMLParagraphElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
-  const followRef = useRef<() => void>(() => {});
+  const followRef = useRef<(ms?: number) => void>(() => {});
+  const seen = useRef(new Set<Audience>()); // sides whose headline has already played its intro
   const heldAnims = useRef<Animation[]>([]);
   const [audience, setAudience] = useState<Audience>("clipper");
   const [swapped, setSwapped] = useState(false);
@@ -154,6 +164,9 @@ export function ClipStory() {
   // The inline script in layout.tsx sets the theme before first paint and CSS shows the
   // right copy, so React only needs to catch its state up (no visual change).
   useEffect(() => {
+    seen.current.add(
+      document.documentElement.dataset.audience === "streamer" ? "streamer" : "clipper",
+    );
     if (document.documentElement.dataset.audience === "streamer") {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- sync with pre-paint theme
       setAudience("streamer");
@@ -170,19 +183,27 @@ export function ClipStory() {
     } catch {}
     const root = document.documentElement;
     const toRight = next === "streamer";
+    // A side's first appearance plays the full intro (reveal, then the player's slot opening
+    // up between the words). After that, switching only changes the theme and the words.
+    const first = !seen.current.has(next);
+    seen.current.add(next);
     const apply = () => {
       root.dataset.audience = next;
       flushSync(() => {
         setSwapped(true);
         setAudience(next);
       });
-      // Hold the new headline hidden until the page wipe has finished.
       const held = root.querySelector<HTMLElement>(".hero-title-wrap");
+      held?.classList.toggle("hero-quiet", !first);
+      if (!first) return;
+      // Hold the new headline hidden until the page wipe has finished.
       if (held) {
         held.classList.add("hero-hold");
         // Drop the finished reveal's fill so the hold can actually hide the words.
         held
-          .querySelectorAll(".hero-reveal, .hero-cover, .hero-cover-dot, .hero-dot, .hero-letter")
+          .querySelectorAll(
+            ".hero-reveal, .hero-cover, .hero-cover-dot, .hero-dot, .hero-letter, .hero-slot",
+          )
           .forEach((el) =>
             el.getAnimations().forEach((an) => {
               an.cancel();
@@ -193,6 +214,7 @@ export function ClipStory() {
     };
     // The headline replays its opening reveal (the dot runs across and becomes the period).
     const replay = () => {
+      if (!first) return;
       const wrap = root.querySelector<HTMLElement>(".hero-title-wrap");
       if (!wrap) return;
       wrap.classList.add("hero-replay");
@@ -203,7 +225,9 @@ export function ClipStory() {
       const anims = new Set(heldAnims.current);
       heldAnims.current = [];
       wrap
-        .querySelectorAll(".hero-reveal, .hero-cover, .hero-cover-dot, .hero-dot, .hero-letter")
+        .querySelectorAll(
+          ".hero-reveal, .hero-cover, .hero-cover-dot, .hero-dot, .hero-letter, .hero-slot",
+        )
         .forEach((el) => el.getAnimations().forEach((a) => anims.add(a)));
       anims.forEach((a) => {
         a.cancel();
@@ -241,8 +265,9 @@ export function ClipStory() {
         delete root.dataset.wipe;
       });
     }
-    // The headline's first word changes width, so the player follows its slot for a moment.
-    requestAnimationFrame(() => followRef.current());
+    // The words change width (and on a first appearance the slot reopens), so the player
+    // follows its slot until that settles.
+    requestAnimationFrame(() => followRef.current(first ? 2400 : 900));
   };
   const checkRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -531,8 +556,8 @@ export function ClipStory() {
       render(progress());
       introRaf = performance.now() < followUntil ? requestAnimationFrame(intro) : 0;
     };
-    followRef.current = () => {
-      followUntil = performance.now() + 900;
+    followRef.current = (ms = 900) => {
+      followUntil = performance.now() + ms;
       if (!introRaf) introRaf = requestAnimationFrame(intro);
     };
 
@@ -695,16 +720,16 @@ export function ClipStory() {
                     file finishes downloading. */}
                 <source
                   media="(max-width: 767px)"
-                  src="/media/hero-n3on.m.av1.mp4"
+                  src="/media/hero-n3on2.m.av1.mp4"
                   type='video/mp4; codecs="av01.0.05M.10"'
                 />
                 <source
                   media="(max-width: 767px)"
-                  src="/media/hero-n3on.m.h264.mp4"
+                  src="/media/hero-n3on2.m.h264.mp4"
                   type="video/mp4"
                 />
-                <source src="/media/hero-n3on.av1.mp4" type='video/mp4; codecs="av01.0.08M.10"' />
-                <source src="/media/hero-n3on.h264.mp4" type="video/mp4" />
+                <source src="/media/hero-n3on2.av1.mp4" type='video/mp4; codecs="av01.0.08M.10"' />
+                <source src="/media/hero-n3on2.h264.mp4" type="video/mp4" />
               </video>
             </div>
 
@@ -816,7 +841,11 @@ export function ClipStory() {
                     className="hero-slot inline-block h-[0.8em] shrink-0 overflow-hidden rounded-[0.12em] bg-midnight"
                   />
                   <span className="inline-flex items-baseline">
-                    <Letters text="instantly" delay={420} />
+                    {SIDES.map((k) => (
+                      <span key={k} data-side={k} className="contents">
+                        <Letters text={HERO[k].tail} delay={420} />
+                      </span>
+                    ))}
                     <span aria-hidden="true" className="hero-dot inline-block">
                       .
                     </span>
