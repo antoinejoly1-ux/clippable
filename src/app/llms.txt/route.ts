@@ -15,6 +15,8 @@ export function GET() {
     `- [Streamer campaigns](${site.url}/#streamers): streamers you can clip and what they pay.`,
     `- [FAQ](${site.url}/#faq)`,
     `- [Sign up for the beta](${site.url}/signup): create an account for early access.`,
+    `- [Terms of Service](${site.url}/terms)`,
+    `- [Privacy Policy](${site.url}/privacy)`,
     "",
     "## Streamers",
     ...streamers.map(

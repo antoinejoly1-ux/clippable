@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import {
@@ -116,7 +117,15 @@ export function SignupForm() {
       </div>
 
       <p className="mt-6 text-center text-[13px] text-pretty text-fg-subtle">
-        Clippable is in private beta. We&rsquo;ll email you when your access is ready.
+        By continuing, you agree to our{" "}
+        <Link href="/terms" className="underline underline-offset-2 hover:text-fg">
+          Terms
+        </Link>{" "}
+        and{" "}
+        <Link href="/privacy" className="underline underline-offset-2 hover:text-fg">
+          Privacy Policy
+        </Link>
+        . Clippable is in private beta; we&rsquo;ll email you when your access is ready.
       </p>
     </div>
   );

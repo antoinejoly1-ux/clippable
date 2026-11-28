@@ -13,6 +13,13 @@ const columns = [
     ],
   },
   {
+    title: "Legal",
+    links: [
+      { label: "Terms", href: "/terms" },
+      { label: "Privacy", href: "/privacy" },
+    ],
+  },
+  {
     title: "Contact",
     links: [
       { label: "Email us", href: `mailto:${site.email}` },

@@ -27,6 +27,20 @@ export const site = {
   signupUrl: "/signup",
   loginUrl: "/signup",
   locale: "en_US",
+  /**
+   * Facts the Terms and Privacy Policy rely on. Kept here so both documents always agree.
+   * TODO(client): confirm entity, address, governing law and payout processor before launch.
+   */
+  legal: {
+    entity: "Clippable",
+    address: "", // registered address; shown in the legal pages once set
+    updated: "November 28, 2026",
+    governingLaw: "the State of Delaware",
+    minAge: 18,
+    payoutProcessor: "Stripe",
+    privacyEmail: "business@clippable.net",
+    copyrightEmail: "business@clippable.net",
+  },
   // Only index when explicitly enabled on the production deployment.
   indexable: process.env.SITE_INDEXABLE === "true",
   // TODO(client): official profiles for Organization.sameAs (Instagram, X, TikTok, YouTube).
