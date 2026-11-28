@@ -85,6 +85,7 @@ export const streamers: Streamer[] = [
     platform: "kick",
     avatar: m("blueface.webp"),
     photo: m("blueface-photo.webp"),
+    photo2: m("blueface-photo-2.webp"),
     handle: "blueface",
     rate: "$0.10 / 1K views",
   },
