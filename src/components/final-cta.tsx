@@ -11,10 +11,16 @@ export function FinalCta() {
     >
       <div className="relative isolate flex h-[max(56svh,440px)] items-center justify-center overflow-hidden rounded-[20px] bg-midnight px-6 text-center text-white sm:rounded-[28px]">
         <LazyVideo
-          poster="/media/cta-poster.webp"
+          poster="/media/cta-kai-poster.webp"
           sources={[
-            { src: "/media/cta.av1.mp4", type: 'video/mp4; codecs="av01.0.05M.08"' },
-            { src: "/media/cta.h264.mp4", type: "video/mp4" },
+            {
+              src: "/media/cta-kai.m.av1.mp4",
+              type: 'video/mp4; codecs="av01.0.04M.10"',
+              media: "(max-width: 767px)",
+            },
+            { src: "/media/cta-kai.m.h264.mp4", type: "video/mp4", media: "(max-width: 767px)" },
+            { src: "/media/cta-kai.av1.mp4", type: 'video/mp4; codecs="av01.0.05M.10"' },
+            { src: "/media/cta-kai.h264.mp4", type: "video/mp4" },
           ]}
           className="absolute inset-0 -z-10 size-full object-cover"
         />

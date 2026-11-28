@@ -1101,6 +1101,10 @@ html[data-audience="streamer"] .night-lift {
 .hero-quiet .hero-slot {
   animation: none !important;
 }
+/* With no run to play, the reveal's leading dot would sit at the headline's left edge. */
+.hero-quiet .hero-cover {
+  visibility: hidden;
+}
 
 /* Between the click and the end of the page wipe, the new headline waits off screen. */
 .hero-hold .hero-reveal {

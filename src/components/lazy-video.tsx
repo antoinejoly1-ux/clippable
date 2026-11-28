@@ -8,7 +8,8 @@ export function LazyVideo({
   poster,
   className,
 }: {
-  sources: { src: string; type: string }[];
+  /** In order of preference; `media` limits a source to matching screens (e.g. phones). */
+  sources: { src: string; type: string; media?: string }[];
   poster: string;
   className?: string;
 }) {
@@ -44,7 +45,7 @@ export function LazyVideo({
       className={className}
     >
       {sources.map((s) => (
-        <source key={s.src} src={s.src} type={s.type} />
+        <source key={s.src} src={s.src} type={s.type} media={s.media} />
       ))}
     </video>
   );
