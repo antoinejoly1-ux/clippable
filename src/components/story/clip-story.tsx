@@ -673,7 +673,7 @@ export function ClipStory() {
               className="absolute top-0 left-0 overflow-hidden bg-midnight opacity-0 will-change-transform"
             >
               <Image
-                src="/media/hero-poster.webp"
+                src="/media/hero-n3on-poster.webp"
                 alt=""
                 fill
                 preload
@@ -695,12 +695,16 @@ export function ClipStory() {
                     file finishes downloading. */}
                 <source
                   media="(max-width: 767px)"
-                  src="/media/hero.m.av1.mp4"
+                  src="/media/hero-n3on.m.av1.mp4"
                   type='video/mp4; codecs="av01.0.05M.10"'
                 />
-                <source media="(max-width: 767px)" src="/media/hero.m.h264.mp4" type="video/mp4" />
-                <source src="/media/hero.av1.mp4" type='video/mp4; codecs="av01.0.08M.10"' />
-                <source src="/media/hero.h264.mp4" type="video/mp4" />
+                <source
+                  media="(max-width: 767px)"
+                  src="/media/hero-n3on.m.h264.mp4"
+                  type="video/mp4"
+                />
+                <source src="/media/hero-n3on.av1.mp4" type='video/mp4; codecs="av01.0.08M.10"' />
+                <source src="/media/hero-n3on.h264.mp4" type="video/mp4" />
               </video>
             </div>
 
@@ -730,25 +734,25 @@ export function ClipStory() {
                   loop
                   playsInline
                   preload="none"
-                  data-poster={`/media/clips/clip-${clip.id}.webp`}
+                  data-poster={`/media/clips/n3on-${clip.id}.webp`}
                   className="size-full object-cover"
                 >
                   {/* Phones get a 270×480 set: tiles render ~100px wide there. */}
                   <source
                     media="(max-width: 767px)"
-                    src={`/media/clips/clip-${clip.id}.m.av1.mp4`}
-                    type='video/mp4; codecs="av01.0.04M.08"'
+                    src={`/media/clips/n3on-${clip.id}.m.av1.mp4`}
+                    type='video/mp4; codecs="av01.0.04M.10"'
                   />
                   <source
                     media="(max-width: 767px)"
-                    src={`/media/clips/clip-${clip.id}.m.h264.mp4`}
+                    src={`/media/clips/n3on-${clip.id}.m.h264.mp4`}
                     type="video/mp4"
                   />
                   <source
-                    src={`/media/clips/clip-${clip.id}.av1.mp4`}
-                    type='video/mp4; codecs="av01.0.05M.08"'
+                    src={`/media/clips/n3on-${clip.id}.av1.mp4`}
+                    type='video/mp4; codecs="av01.0.05M.10"'
                   />
-                  <source src={`/media/clips/clip-${clip.id}.h264.mp4`} type="video/mp4" />
+                  <source src={`/media/clips/n3on-${clip.id}.h264.mp4`} type="video/mp4" />
                 </video>
                 <div
                   ref={(el) => {
@@ -919,7 +923,7 @@ function StaticStory() {
             className="relative aspect-[9/16] overflow-hidden rounded-xl bg-midnight"
           >
             <Image
-              src={`/media/clips/clip-${clip.id}.webp`}
+              src={`/media/clips/n3on-${clip.id}.webp`}
               alt=""
               fill
               sizes="(min-width: 640px) 25vw, 50vw"

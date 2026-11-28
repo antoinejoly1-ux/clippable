@@ -15,21 +15,21 @@ const campaigns = [
     id: "gta",
     title: "GTA VI",
     tag: "Game launch",
-    rate: "$0.60",
+
     image: "/media/campaigns-gta6.webp",
   },
   {
     id: "kaicenat",
     title: "Kai Cenat",
     tag: "Streamer",
-    rate: "$0.50",
+
     image: "/media/streamers/kaicenat-photo.webp",
   },
   {
     id: "n3on",
     title: "N3on",
     tag: "Streamer",
-    rate: "$0.40",
+
     image: "/media/streamers/n3on-photo.webp",
   },
 ] as const;
@@ -83,7 +83,7 @@ export function AudienceSection() {
             {campaigns.map((c, i) => (
               <div
                 key={c.id}
-                className="campaign-tile absolute aspect-[5/7] w-[12.5rem] overflow-hidden rounded-[20px] bg-midnight shadow-[0_40px_80px_-30px_rgb(0_0_0/0.75)] ring-1 ring-white/15 sm:w-[15rem] lg:w-[19rem]"
+                className="campaign-tile absolute h-full w-[12.5rem] overflow-hidden rounded-[20px] bg-midnight shadow-[0_40px_80px_-30px_rgb(0_0_0/0.75)] ring-1 ring-white/15 sm:w-[15rem] lg:w-[19rem]"
                 style={{ "--i": i } as React.CSSProperties}
               >
                 <Image
@@ -93,28 +93,13 @@ export function AudienceSection() {
                   sizes="(min-width: 1024px) 304px, (min-width: 640px) 240px, 200px"
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgb(0_0_0/0.7),transparent_40%)]" />
-                <div className="absolute inset-x-4 top-4 flex items-start justify-between">
-                  <div>
-                    <p className="text-[11px] font-medium tracking-[0.06em] text-white/70 uppercase">
-                      {c.tag}
-                    </p>
-                    <p className="mt-0.5 text-lg leading-tight font-semibold tracking-[-0.02em]">
-                      {c.title}
-                    </p>
-                  </div>
-                  <p className="ui-light rounded-[8px] bg-white px-2 py-1 text-xs font-semibold text-midnight">
-                    {c.rate}
-                    <span className="font-medium text-fg-muted">/1K</span>
-                  </p>
-                </div>
               </div>
             ))}
           </CampaignFan>
           <ul className="sr-only">
             {campaigns.map((c) => (
               <li key={c.id}>
-                {c.title}, {c.tag}: {c.rate} per 1,000 views
+                {c.title} ({c.tag})
               </li>
             ))}
           </ul>

@@ -772,8 +772,8 @@
   --dy: 0px;
   --dr: 0deg;
   --lift: 0px;
-  left: calc(14% + var(--i) * 19%);
-  top: 12%;
+  left: calc(17% + var(--i) * 16%);
+  top: 10%; /* height: 100%, so every card runs off the banner's bottom edge */
   /* First in the list sits in front: GTA VI, then Kai Cenat, then N3on. */
   z-index: calc(3 - var(--i));
   transform-origin: 50% 160%;
@@ -798,7 +798,7 @@
 }
 @media (max-width: 1023px) {
   .campaign-tile {
-    left: calc(8% + var(--i) * 24%);
+    left: calc(11% + var(--i) * 21%);
     top: 8%;
   }
 }
@@ -1068,7 +1068,7 @@ html[data-audience="streamer"] .node-chip {
 }
 @media (max-width: 639px) {
   .campaign-tile {
-    left: calc(50% - 6.25rem + (var(--i) - 1) * 30%);
+    left: calc(50% - 6.25rem + (var(--i) - 1) * 26%);
     rotate: calc((var(--i) - 1) * 5deg + var(--dr));
   }
 }

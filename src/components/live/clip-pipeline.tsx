@@ -196,13 +196,13 @@ export function ClipPipeline() {
               className="relative aspect-video overflow-hidden rounded-[10px] bg-midnight shadow-[0_18px_40px_-24px_rgb(1_8_43/0.5)]"
             >
               <LazyVideo
-                poster="/media/pipeline/stream.webp"
+                poster="/media/pipeline/pbm-stream.webp"
                 sources={[
                   {
-                    src: "/media/pipeline/stream.av1.mp4",
+                    src: "/media/pipeline/pbm-stream.av1.mp4",
                     type: 'video/mp4; codecs="av01.0.04M.10"',
                   },
-                  { src: "/media/pipeline/stream.h264.mp4", type: "video/mp4" },
+                  { src: "/media/pipeline/pbm-stream.h264.mp4", type: "video/mp4" },
                 ]}
                 className="absolute inset-0 size-full object-cover"
               />
@@ -281,7 +281,7 @@ export function ClipPipeline() {
                     {isFilled(k, elapsed) && (
                       <div className="absolute inset-0 animate-[clip-pop_260ms_var(--ease-out-expo)_both]">
                         <Image
-                          src={`/media/pipeline/clip-${k + 1}.webp`}
+                          src={`/media/pipeline/pbm-clip-${k + 1}.webp`}
                           alt=""
                           fill
                           sizes="60px"
