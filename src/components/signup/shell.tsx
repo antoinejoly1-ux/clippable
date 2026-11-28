@@ -7,25 +7,26 @@ import { Showcase } from "@/components/signup/showcase";
 /** Split layout shared by sign-up and its confirmation: feature slides left, the form right. */
 export function SignupShell({ children }: { children: ReactNode }) {
   return (
-    <main
-      id="main"
-      className="relative isolate flex min-h-svh flex-col bg-bg lg:flex-row lg:gap-3 lg:p-3"
-    >
+    <main id="main" className="flex min-h-svh flex-col bg-bg lg:flex-row lg:gap-3 lg:p-3">
       <LightOnly />
-      {/* The password page's sky, behind the whole page. */}
-      <div aria-hidden="true" className="fixed inset-0 -z-10">
-        <div className="hero-sky gate-sky absolute inset-0" />
-        <div className="hero-grain absolute inset-0" />
-      </div>
+
       <div className="lg:sticky lg:top-3 lg:flex lg:h-[calc(100svh-1.5rem)] lg:w-[55%] lg:flex-col lg:[&>section]:flex-1">
         <Showcase />
       </div>
-      <div className="flex flex-1 flex-col px-6 py-8 sm:px-10 lg:py-8">
+      <div className="relative isolate flex flex-1 flex-col overflow-hidden px-6 py-8 sm:px-10 lg:rounded-[24px] lg:py-8">
+        {/* The password page's sky, held to the top so the form sits on white. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-x-0 top-0 -z-10 h-[420px] [mask-image:linear-gradient(black_70%,transparent)]"
+        >
+          <div className="hero-sky gate-sky absolute inset-0" />
+          <div className="hero-grain absolute inset-0" />
+        </div>
         <div className="flex items-center justify-between">
           <Link
             href="/"
             aria-label="Clippable home"
-            className="text-[1.35rem] text-fg [--logo-mark:var(--color-electric)] lg:text-white lg:[--logo-mark:var(--color-sky)]"
+            className="text-[1.35rem] text-white [--logo-mark:var(--color-sky)]"
           >
             <Logo />
           </Link>

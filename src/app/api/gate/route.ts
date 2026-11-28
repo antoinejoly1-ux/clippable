@@ -14,7 +14,9 @@ export async function POST(request: NextRequest) {
   const next = safeNext(body.next);
   const given = typeof body.password === "string" ? body.password.slice(0, 200) : "";
 
-  const ok = !!expected && (await gateToken(given)) === (await gateToken(expected));
+  // Phones capitalise the first letter and keyboards add spaces; neither should lock anyone out.
+  const norm = (v: string) => v.trim().toLowerCase();
+  const ok = !!expected && (await gateToken(norm(given))) === (await gateToken(norm(expected)));
   if (!ok) {
     // A short pause on every miss makes guessing slow.
     await new Promise((r) => setTimeout(r, 600));

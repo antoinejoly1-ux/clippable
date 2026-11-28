@@ -18,7 +18,7 @@ if (process.env.SITE_INDEXABLE === "true" && !process.env.NEXT_PUBLIC_SITE_URL) 
 
 export const site = {
   name: "Clippable",
-  tagline: "Make clips instantly from Kick and Twitch streams",
+  tagline: "Turn live streams into viral clips",
   description:
     "Clippable turns Kick and Twitch streams into vertical clips while they're live. Post them to TikTok, Shorts, Reels and X and earn on every 1,000 views.",
   url,

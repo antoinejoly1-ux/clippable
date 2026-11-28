@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { LogoMark } from "@/components/logo";
 
 /*
  * The sign-up page's left panel: three feature slides, each a real stream playing behind its
@@ -94,7 +93,7 @@ export function Showcase() {
   return (
     <section
       aria-label="What Clippable does"
-      className="relative isolate h-[200px] overflow-hidden bg-midnight text-white lg:h-auto lg:rounded-[24px]"
+      className="group/show relative isolate h-[200px] overflow-hidden bg-midnight text-white lg:h-auto lg:rounded-[24px]"
     >
       {SLIDES.map((s, i) => (
         <video
@@ -149,33 +148,28 @@ export function Showcase() {
           ))}
         </div>
 
-        <div className="mt-3 flex items-center justify-between max-lg:absolute max-lg:top-11 max-lg:right-5">
-          <span className="inline-flex items-center gap-2 text-xl font-semibold tracking-[-0.02em] max-lg:hidden">
-            <LogoMark className="h-[0.78em] w-auto text-sky" />
-            Clippable
-          </span>
-          <button
-            type="button"
-            onClick={() => setPaused((p) => !p)}
-            aria-label={paused ? "Play" : "Pause"}
-            className="flex size-9 items-center justify-center rounded-full bg-white/15 backdrop-blur-md transition-[background-color,scale] hover:bg-white/25 active:scale-95"
-          >
-            {paused ? (
-              <svg
-                viewBox="0 0 12 12"
-                className="ml-0.5 size-3"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path d="M2.5 1.5v9l8-4.5z" />
-              </svg>
-            ) : (
-              <svg viewBox="0 0 12 12" className="size-3" fill="currentColor" aria-hidden="true">
-                <path d="M2.5 1.5h2.5v9H2.5zM7 1.5h2.5v9H7z" />
-              </svg>
-            )}
-          </button>
-        </div>
+        {/* Pause: shown when the pointer is over the panel (or it has keyboard focus). */}
+        <button
+          type="button"
+          onClick={() => setPaused((p) => !p)}
+          aria-label={paused ? "Play" : "Pause"}
+          className="absolute top-14 right-6 flex size-9 items-center justify-center rounded-full bg-white/15 opacity-0 backdrop-blur-md transition-[opacity,background-color,scale] duration-300 group-hover/show:opacity-100 hover:bg-white/25 focus-visible:opacity-100 active:scale-95 max-lg:hidden sm:right-8 lg:top-[4.5rem] lg:right-10"
+        >
+          {paused ? (
+            <svg
+              viewBox="0 0 12 12"
+              className="ml-0.5 size-3"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path d="M2.5 1.5v9l8-4.5z" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 12 12" className="size-3" fill="currentColor" aria-hidden="true">
+              <path d="M2.5 1.5h2.5v9H2.5zM7 1.5h2.5v9H7z" />
+            </svg>
+          )}
+        </button>
 
         <div className="mt-auto" aria-live="polite">
           <h2

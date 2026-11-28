@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
 
 type State = "idle" | "checking" | "wrong" | "open";
@@ -8,7 +8,10 @@ type State = "idle" | "checking" | "wrong" | "open";
 /** Password field. Shakes on a miss; on success the page floods white and the site opens. */
 export function GateForm() {
   const params = useSearchParams();
-  const next = params.get("next") ?? "/";
+  const pathname = usePathname();
+  // The gate is shown in place of the page asked for (a rewrite), so that page is where to go next.
+  const asked = pathname && pathname !== "/gate" ? pathname : "/";
+  const next = params.get("next") ?? asked;
   const [state, setState] = useState<State>(params.get("e") ? "wrong" : "idle");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -56,6 +59,9 @@ export function GateForm() {
           required
           autoFocus
           autoComplete="current-password"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
           placeholder="Password"
           aria-invalid={state === "wrong"}
           aria-describedby="gate-status"

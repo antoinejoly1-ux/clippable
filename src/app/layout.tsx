@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: { default: `${site.name} — ${site.tagline}`, template: `%s · ${site.name}` },
+  title: { default: `${site.name} | ${site.tagline}`, template: `%s | ${site.name}` },
   description: site.description,
   applicationName: site.name,
   keywords: [
@@ -39,12 +39,12 @@ export const metadata: Metadata = {
     siteName: site.name,
     locale: site.locale,
     url: "/",
-    title: `${site.name}: make clips instantly`,
+    title: `${site.name} | ${site.tagline}`,
     description: site.description,
   },
   twitter: {
     card: "summary_large_image",
-    title: `${site.name}: make clips instantly`,
+    title: `${site.name} | ${site.tagline}`,
     description: site.description,
   },
   robots: site.indexable ? { index: true, follow: true } : { index: false, follow: false },
