@@ -27,6 +27,7 @@
   --color-white: #ffffff;
   --color-success: #12a150;
   --color-live: #e5484d;
+  --color-violet: #7c3aed; /* the sample creator's brand kit in the workflow demo */
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
@@ -549,7 +550,7 @@
     scale 260ms var(--ease-spring);
 }
 .caption-word[data-on="true"] {
-  background-color: var(--color-electric);
+  background-color: var(--caption-hl, var(--color-electric));
   color: var(--color-white);
   scale: 1.08;
 }

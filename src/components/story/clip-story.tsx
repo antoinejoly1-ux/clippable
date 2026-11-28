@@ -696,10 +696,10 @@ export function ClipStory() {
                 <source
                   media="(max-width: 767px)"
                   src="/media/hero.m.av1.mp4"
-                  type='video/mp4; codecs="av01.0.04M.10"'
+                  type='video/mp4; codecs="av01.0.05M.10"'
                 />
                 <source media="(max-width: 767px)" src="/media/hero.m.h264.mp4" type="video/mp4" />
-                <source src="/media/hero.av1.mp4" type='video/mp4; codecs="av01.0.05M.10"' />
+                <source src="/media/hero.av1.mp4" type='video/mp4; codecs="av01.0.08M.10"' />
                 <source src="/media/hero.h264.mp4" type="video/mp4" />
               </video>
             </div>

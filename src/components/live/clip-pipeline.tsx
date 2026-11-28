@@ -186,7 +186,7 @@ export function ClipPipeline() {
           {/* 1 · Live stream */}
           <Node
             label="Live stream"
-            meta="Kick · 1080p"
+            meta="Twitch · 1080p"
             className="w-full max-w-[380px] lg:-mt-28 lg:w-[30%]"
           >
             <div
@@ -200,7 +200,7 @@ export function ClipPipeline() {
                 sources={[
                   {
                     src: "/media/pipeline/stream.av1.mp4",
-                    type: 'video/mp4; codecs="av01.0.04M.08"',
+                    type: 'video/mp4; codecs="av01.0.04M.10"',
                   },
                   { src: "/media/pipeline/stream.h264.mp4", type: "video/mp4" },
                 ]}
@@ -212,9 +212,9 @@ export function ClipPipeline() {
               </p>
               <span
                 className="absolute right-2.5 bottom-2.5 flex size-5 items-center justify-center rounded-[4px]"
-                style={{ backgroundColor: platforms.kick.color }}
+                style={{ backgroundColor: platforms.twitch.color }}
               >
-                <PlatformIcon platform="kick" className="size-3 text-black" />
+                <PlatformIcon platform="twitch" className="size-3 text-white" />
               </span>
             </div>
           </Node>
@@ -225,7 +225,7 @@ export function ClipPipeline() {
               ref={(el) => {
                 nodeRefs.current[1] = el;
               }}
-              className="ui-light ui-window rounded-[10px] border border-border bg-bg px-5 py-6 shadow-[0_18px_40px_-24px_rgb(1_8_43/0.5)]"
+              className="ui-light ui-window rounded-[10px] border border-border bg-bg px-5 py-6 shadow-[0_18px_40px_-24px_rgb(1_8_43/0.5)] [--caption-hl:var(--color-violet)]"
             >
               <p
                 aria-hidden="true"
@@ -248,7 +248,7 @@ export function ClipPipeline() {
                 className="mt-5 flex items-center justify-between border-t border-border pt-4"
               >
                 <span className="flex gap-1.5">
-                  <span className="size-6 rounded-[5px] bg-electric" />
+                  <span className="size-6 rounded-[5px] bg-violet" />
                   <span className="size-6 rounded-[5px] border border-border bg-white" />
                   <span className="size-6 rounded-[5px] bg-ink" />
                 </span>
@@ -257,7 +257,7 @@ export function ClipPipeline() {
                 </span>
               </div>
               <span className="sr-only">
-                Brand colours blue, white and black, with a caption font.
+                Brand colours purple, white and black, with a caption font.
               </span>
             </div>
           </Node>
@@ -294,7 +294,7 @@ export function ClipPipeline() {
                         >
                           <span className="w-[30%] rounded-[1px] bg-white" />
                           <span
-                            className="rounded-[1px] bg-electric"
+                            className="rounded-[1px] bg-violet"
                             style={{ width: `${22 + ((k * 13) % 20)}%` }}
                           />
                           <span className="w-[24%] rounded-[1px] bg-white" />
