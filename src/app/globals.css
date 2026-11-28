@@ -1130,3 +1130,38 @@ html[data-audience="streamer"] .night-lift {
     translate: 0 0.5rem;
   }
 }
+
+/*
+ * Page-to-page transitions (entering past the password, CTAs to sign-up, back home): the
+ * browser keeps the old page on screen, then it lifts away as the new one rises into place.
+ * Typed "page" so the Clipper/Streamer wipe keeps its own animation.
+ */
+@view-transition {
+  navigation: auto;
+  types: page;
+}
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
+html:active-view-transition-type(page)::view-transition-old(root) {
+  animation: page-out 300ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+html:active-view-transition-type(page)::view-transition-new(root) {
+  animation: page-in 700ms var(--ease-out-expo) 220ms both;
+}
+@keyframes page-out {
+  to {
+    opacity: 0;
+    scale: 0.98;
+    filter: blur(6px);
+  }
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    translate: 0 24px;
+    scale: 1.01;
+  }
+}
