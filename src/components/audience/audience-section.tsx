@@ -6,12 +6,18 @@ import { site } from "@/lib/site";
 /*
  * Clipping campaigns: one premium blue banner. Left, the pitch and a live count; right, a
  * fan of campaign posters hanging off the banner's edge, spreading on hover.
- * TODO(client): real campaign names, counts and rates; licensed GTA VI key art.
+ * TODO(client): real campaign names, counts and rates; confirm GTA VI key art licensing.
  */
 const AVAILABLE = 12;
 
 const campaigns = [
-  { id: "gta", title: "GTA VI", tag: "Game launch", rate: "$0.60", image: null },
+  {
+    id: "gta",
+    title: "GTA VI",
+    tag: "Game launch",
+    rate: "$0.60",
+    image: "/media/campaigns-gta6.webp",
+  },
   {
     id: "kaicenat",
     title: "Kai Cenat",
@@ -80,15 +86,13 @@ export function AudienceSection() {
                 className="campaign-tile absolute aspect-[5/7] w-[12.5rem] overflow-hidden rounded-[20px] bg-midnight shadow-[0_40px_80px_-30px_rgb(0_0_0/0.75)] ring-1 ring-white/15 sm:w-[15rem] lg:w-[19rem]"
                 style={{ "--i": i } as React.CSSProperties}
               >
-                {c.image ? (
-                  <Image src={c.image} alt="" fill sizes="250px" className="object-cover" />
-                ) : (
-                  <div className="gta-poster absolute inset-0">
-                    <span className="absolute inset-x-0 top-[38%] text-center text-[5.5rem] leading-none font-black tracking-[-0.06em] text-white/95 italic">
-                      VI
-                    </span>
-                  </div>
-                )}
+                <Image
+                  src={c.image}
+                  alt=""
+                  fill
+                  sizes="(min-width: 1024px) 304px, (min-width: 640px) 240px, 200px"
+                  className="object-cover"
+                />
                 <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgb(0_0_0/0.7),transparent_40%)]" />
                 <div className="absolute inset-x-4 top-4 flex items-start justify-between">
                   <div>

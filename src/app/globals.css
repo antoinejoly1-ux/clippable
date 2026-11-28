@@ -795,11 +795,6 @@
     --lift: -14px;
   }
 }
-.gta-poster {
-  background:
-    radial-gradient(70% 40% at 50% 62%, #ffcf6b 0%, rgb(255 120 90 / 0.85) 35%, transparent 70%),
-    linear-gradient(180deg, #2a0f5c 0%, #8a1f8f 38%, #ff5f7e 62%, #ff9a5a 78%, #1a0a2e 100%);
-}
 @media (max-width: 1023px) {
   .campaign-tile {
     left: calc(8% + var(--i) * 24%);
