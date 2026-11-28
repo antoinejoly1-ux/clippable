@@ -10,9 +10,9 @@ const variants = {
   /** Brand blue with depth: a top-lit gradient, an inner highlight and a soft blue glow. */
   primary:
     "bg-[linear-gradient(180deg,#3f80ff_0%,#1f55e0_55%,var(--color-royal)_100%)] text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.3),inset_0_-1px_0_rgb(1_8_43/0.2),0_1px_2px_rgb(1_8_43/0.3),0_12px_28px_-12px_rgb(0_97_255/0.75)] hover:brightness-110 hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.35),inset_0_-1px_0_rgb(1_8_43/0.2),0_1px_2px_rgb(1_8_43/0.3),0_18px_40px_-14px_rgb(0_97_255/0.9)]",
-  /** White with the same depth: a soft top-lit gradient, crisp edge highlights and a lifted shadow. */
+  /** White, built like the primary: top-lit gradient, bright top edge, bottom bevel, lifted shadow. */
   inverse:
-    "bg-[linear-gradient(180deg,#ffffff_0%,#f6f8ff_55%,#e9efff_100%)] text-midnight shadow-[inset_0_1px_0_rgb(255_255_255/1),inset_0_-1px_0_rgb(1_8_43/0.1),0_0_0_1px_rgb(255_255_255/0.6),0_1px_2px_rgb(1_8_43/0.25),0_14px_30px_-12px_rgb(1_8_43/0.55)] hover:brightness-[1.02] hover:shadow-[inset_0_1px_0_rgb(255_255_255/1),inset_0_-1px_0_rgb(1_8_43/0.1),0_0_0_1px_rgb(255_255_255/0.8),0_1px_2px_rgb(1_8_43/0.25),0_20px_40px_-14px_rgb(1_8_43/0.65)]",
+    "bg-[linear-gradient(180deg,#ffffff_0%,#f1f5ff_50%,#d6e1fb_100%)] text-midnight shadow-[inset_0_1px_0_rgb(255_255_255/1),inset_0_-2px_0_rgb(32_79_206/0.16),0_0_0_1px_rgb(1_8_43/0.08),0_2px_4px_rgb(1_8_43/0.22),0_16px_34px_-12px_rgb(1_8_43/0.6)] hover:brightness-[1.04] hover:shadow-[inset_0_1px_0_rgb(255_255_255/1),inset_0_-2px_0_rgb(32_79_206/0.16),0_0_0_1px_rgb(1_8_43/0.08),0_2px_4px_rgb(1_8_43/0.22),0_22px_44px_-14px_rgb(1_8_43/0.7)]",
   dark: "bg-midnight text-white hover:bg-royal",
 } as const;
 
