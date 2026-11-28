@@ -17,14 +17,14 @@ const mail = (to: string, subject: string) => (
 
 /*
  * Drafted from current best practice for creator-reward marketplaces and AI clip tools.
- * TODO(client): have counsel review before public launch, especially sections 8, 18 and 19.
+ * TODO(client): have counsel review before public launch, especially payouts, disputes and governing law.
  */
 const sections: LegalSection[] = [
   {
     id: "agreement",
     title: "The agreement",
     summary:
-      "By using Clippable you agree to these Terms and our Privacy Policy. Campaign rules shown in the product also apply to the campaigns you join or run.",
+      "By using Clippable you agree to these Terms. Each campaign's rules, shown in the product, add the details for that campaign.",
     body: (
       <>
         <p>
@@ -34,11 +34,15 @@ const sections: LegalSection[] = [
           the &ldquo;Service&rdquo;).
         </p>
         <p>
-          The agreement is made up of these Terms, our <Link href="/privacy">Privacy Policy</Link>,
-          and the rules of any campaign you join or run as shown in the Service (&ldquo;Campaign
-          Rules&rdquo;). If they conflict, Campaign Rules win for that campaign only, then these
-          Terms, then the Privacy Policy. If you use the Service for a company, you confirm you can
-          bind that company, and &ldquo;you&rdquo; means both of you.
+          These Terms and the rules of any campaign you join or run, as shown in the Service
+          (&ldquo;Campaign Rules&rdquo;), form the agreement between you and us. Campaign Rules
+          control only for that campaign&rsquo;s eligibility, content requirements, rates, budget,
+          tracking window and the licence scope for approved clips; they cannot change our
+          disclaimers, limitation of liability, indemnity, dispute resolution or governing law
+          terms, or create obligations for Clippable. Otherwise these Terms control. Our{" "}
+          <Link href="/privacy">Privacy Policy</Link> explains how we handle personal data. If you
+          use the Service for a company, you confirm you can bind that company, and
+          &ldquo;you&rdquo; means both of you.
         </p>
       </>
     ),
@@ -87,7 +91,7 @@ const sections: LegalSection[] = [
     id: "beta",
     title: "Private beta",
     summary:
-      "Clippable is in beta. Features, rates and availability can change, and things may break. Feedback you send us is ours to use.",
+      "Clippable is in beta. Features, rates and availability can change, and things may break. Feedback you send us can be used freely.",
     body: (
       <>
         <p>
@@ -106,14 +110,15 @@ const sections: LegalSection[] = [
     id: "service",
     title: "What Clippable does",
     summary:
-      "Clippable turns livestreams into vertical clips, applies your branding and runs campaigns that pay clippers per 1,000 verified views.",
+      "Clippable turns livestreams you're allowed to clip into vertical clips, applies branding and runs campaigns that pay clippers per 1,000 verified views.",
     body: (
       <>
         <p>
-          Clippable watches Kick and Twitch livestreams you choose, finds moments, and cuts them
-          into vertical clips with captions and branding. You can save repeatable workflows, connect
-          AI agents to run them, and download or post clips to platforms such as TikTok, YouTube
-          Shorts, Instagram Reels and X.
+          Clippable processes Kick and Twitch livestreams that you own, that belong to a campaign
+          you have joined, or that you are otherwise authorised to clip. It finds moments and cuts
+          them into vertical clips with captions and branding. You can save repeatable workflows,
+          connect AI agents to run them, and download or post clips to platforms such as TikTok,
+          YouTube Shorts, Instagram Reels and X.
         </p>
         <p>
           Streamers and brands (&ldquo;Campaign Owners&rdquo;) can fund campaigns. Clippers who post
@@ -128,11 +133,16 @@ const sections: LegalSection[] = [
     id: "clippers",
     title: "Rules for clippers",
     summary:
-      "Post only to accounts you control, follow each campaign's written rules, disclose paid content clearly, and never fake views.",
+      "Clip only what you're allowed to, follow each campaign's written rules, disclose paid content clearly, and never fake views.",
     body: (
       <>
-        <p>If you post clips for a campaign, you agree to:</p>
+        <p>If you clip or post through Clippable, you agree to:</p>
         <ul>
+          <li>
+            Only clip streams that you own, that belong to a campaign you have joined, or that the
+            rights holder has allowed you to clip. Outside a campaign, you alone are responsible for
+            having the rights to what you clip and post.
+          </li>
           <li>
             Post only to social accounts you own or control, and follow each platform&rsquo;s own
             terms and branded-content rules.
@@ -147,8 +157,9 @@ const sections: LegalSection[] = [
             conspicuous in each post, as required by the FTC Endorsement Guides and similar rules
             elsewhere: use the platform&rsquo;s paid-partnership label where one exists, and
             otherwise a clear disclosure such as #ad at the start of the caption, not hidden after
-            &ldquo;more&rdquo; or among other hashtags. Posts without a required disclosure are not
-            eligible for payment.
+            &ldquo;more&rdquo; or among other hashtags. For video, also include the disclosure in
+            the clip itself (on screen and, where practical, spoken) where the campaign or platform
+            requires it. Posts without a required disclosure are not eligible for payment.
           </li>
           <li>
             <strong>Earn only real views.</strong> You must not use bots, purchased or incentivised
@@ -175,7 +186,7 @@ const sections: LegalSection[] = [
     id: "campaigns",
     title: "Rules for streamers and brands",
     summary:
-      "Campaigns are funded upfront. You set the rate per 1,000 views and the rules, and you're responsible for your content and your ad claims.",
+      "Campaigns are funded upfront. You set the rate per 1,000 views and the rules, and you're responsible for your content, your ad claims and honest disclosures.",
     body: (
       <>
         <p>If you run a campaign, you agree that:</p>
@@ -184,23 +195,37 @@ const sections: LegalSection[] = [
             <strong>Funding.</strong> Campaigns are funded before they go live. The budget is drawn
             down as clippers earn, at the rate per 1,000 verified views you set, up to any per-clip
             or per-campaign limits you choose. Platform and payment-processing fees are shown before
-            you fund.
+            you fund. Campaign funds are collected and held by our payment processor, not by
+            Clippable as a bank. You appoint Clippable as your limited agent to collect funds and
+            pay clippers on your behalf, and payment to Clippable or its processor satisfies your
+            obligation to pay the clippers who earn from your campaign. If a payment you made is
+            reversed or charged back, you remain responsible for amounts clippers earned before the
+            reversal, plus related fees.
           </li>
           <li>
             <strong>Review.</strong> If your campaign requires approval, you will review submissions
             within the window shown in the Service; submissions not reviewed in time may be approved
-            automatically. Approved and paid submissions are final.
+            automatically. Once approved, a submission cannot later be rejected by you. Clippable
+            may still withhold, reverse or recover earnings as described in{" "}
+            <a href="#payouts">Views, payouts and taxes</a>.
           </li>
           <li>
             <strong>Unused budget.</strong> When a campaign ends, unused budget is returned to your
             Clippable balance, or refunded to your original payment method on request, less any
-            non-refundable processing fees shown when you funded.
+            non-refundable processing fees shown when you funded. Balances inactive for 24 months
+            may be refunded to you or handled as unclaimed property law requires.
           </li>
           <li>
             <strong>Your content and claims.</strong> You are responsible for the stream content you
-            make available and for any claims about products or offers in your campaign. Campaigns
+            make available and for any claims about products or offers in your campaign, and you
+            will provide substantiation for any objective claims you ask clippers to make. Campaigns
             for regulated categories (for example gambling, alcohol, financial products or political
             content) need our prior approval and must follow applicable law.
+          </li>
+          <li>
+            <strong>Disclosures.</strong> You will not ask clippers to hide or weaken disclosures,
+            and you agree that Clippable may monitor posts and remove non-compliant ones from your
+            campaign.
           </li>
           <li>
             <strong>No circumvention.</strong> While a campaign runs and for 12 months after, you
@@ -215,15 +240,16 @@ const sections: LegalSection[] = [
     id: "payouts",
     title: "Views, payouts and taxes",
     summary:
-      "Only verified views count. Payouts may be held for review and can be reversed for fraud. You're responsible for your own taxes.",
+      "Only verified views count. Earnings may be held for review and can be reversed for fraud. Payouts run through Stripe. You're responsible for your own taxes.",
     body: (
       <>
         <h3>Verified views</h3>
         <p>
           A view counts only if we can verify it from the platform&rsquo;s own data (for example via
           its API) within the campaign&rsquo;s tracking window. We use automated signals to detect
-          artificial views; a person reviews any decision to withhold payment for suspected fraud,
-          and you can appeal it once by contacting us within 30 days.
+          artificial views, and they may place earnings on a temporary hold. A person reviews any
+          decision to withhold or reverse earnings for suspected fraud. You can ask for an
+          explanation and appeal by contacting us within 30 days of the decision.
         </p>
         <h3>Holds and reversals</h3>
         <p>
@@ -234,10 +260,31 @@ const sections: LegalSection[] = [
         </p>
         <h3>Payouts</h3>
         <p>
-          Payouts are made through our payment processor ({L.payoutProcessor}). To receive them you
-          may need to accept the processor&rsquo;s terms and complete identity checks. Minimum
-          payout amounts, currencies and timing are shown in the Service. Balances are not bank
-          deposits and do not earn interest.
+          Payment processing services for clippers and Campaign Owners on Clippable are provided by{" "}
+          {L.payoutProcessor} and are subject to the{" "}
+          <a
+            href="https://stripe.com/connect-account/legal"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Stripe Connected Account Agreement
+          </a>
+          , which includes the{" "}
+          <a href="https://stripe.com/legal" rel="noopener noreferrer" target="_blank">
+            Stripe Terms of Service
+          </a>{" "}
+          (together, the &ldquo;Stripe Services Agreement&rdquo;). By agreeing to these Terms or
+          continuing to receive payouts through Clippable, you agree to be bound by the Stripe
+          Services Agreement, as Stripe may modify it from time to time. As a condition of Clippable
+          enabling payment processing services through Stripe, you agree to provide Clippable
+          accurate and complete information about you and your business, and you authorise Clippable
+          to share it, and transaction information related to your use of those services, with
+          Stripe.
+        </p>
+        <p>
+          You may need to complete identity checks to receive payouts. Minimum payout amounts,
+          currencies and timing are shown in the Service. Balances are not bank deposits and do not
+          earn interest.
         </p>
         <h3>Taxes</h3>
         <p>
@@ -267,10 +314,11 @@ const sections: LegalSection[] = [
         <p>
           You keep ownership of clips you create and content you upload. You grant Clippable a
           non-exclusive, worldwide, royalty-free licence to host, process, display and transmit that
-          content to provide, secure and improve the Service. For clips approved or paid in a
-          campaign, you also grant the Campaign Owner a perpetual, worldwide, royalty-free,
-          non-exclusive licence to use, repost and adapt them, including in paid promotion, unless
-          the Campaign Rules say otherwise.
+          content to provide and secure the Service. For clips approved or paid in a campaign, you
+          also grant the Campaign Owner, to the extent of your rights (including any voice or
+          likeness you add), a perpetual, worldwide, royalty-free, non-exclusive licence to use,
+          repost and adapt them, including in paid promotion, unless the Campaign Rules say
+          otherwise.
         </p>
         <h3>Name and likeness</h3>
         <p>
@@ -378,26 +426,55 @@ const sections: LegalSection[] = [
         <p>
           We respond to notices of alleged copyright infringement under the U.S. Digital Millennium
           Copyright Act. Send notices to our designated agent at{" "}
-          {mail(L.copyrightEmail, "Copyright notice")} with: your contact details; the work you
-          believe is infringed; where the material is on the Service; a statement that you believe
-          in good faith the use is not authorised; a statement, under penalty of perjury, that your
-          notice is accurate and you are authorised to act; and your physical or electronic
-          signature.
+          {mail(L.copyrightEmail, "Copyright notice")}
+          {L.address ? ` (${L.entity}, Attn: Copyright Agent, ${L.address})` : ""} with: your
+          contact details; the work you believe is infringed; where the material is on the Service;
+          a statement that you believe in good faith the use is not authorised; a statement, under
+          penalty of perjury, that your notice is accurate and you are authorised to act; and your
+          physical or electronic signature.
         </p>
         <p>
-          If your content was removed and you believe that was a mistake, you can send a
-          counter-notice to the same address. We terminate the accounts of repeat infringers in
-          appropriate circumstances. Users in the EU and UK can also report illegal content and
-          appeal our moderation decisions using the same address.
+          If your content was removed and you believe that was a mistake or misidentification, you
+          may send a counter-notice to the same address. It must include your physical or electronic
+          signature; identification of the material and where it appeared before removal; a
+          statement under penalty of perjury that you have a good-faith belief the material was
+          removed by mistake or misidentification; your name, address and phone number; and a
+          statement that you consent to the jurisdiction of the federal court for your district (or,
+          if you are outside the U.S., any district where Clippable may be found) and will accept
+          service from the person who sent the original notice. We may restore the material 10 to 14
+          business days after we receive a valid counter-notice, unless the complainant tells us
+          they have filed a court action. Knowingly false notices or counter-notices can create
+          liability under 17 U.S.C. &sect; 512(f). We terminate the accounts of repeat infringers in
+          appropriate circumstances.
         </p>
       </>
+    ),
+  },
+  {
+    id: "moderation",
+    title: "Reporting illegal content",
+    summary:
+      "Anyone can report content they think is illegal. We review reports, tell you why if we act on your content, and you can appeal.",
+    body: (
+      <p>
+        Anyone can report content they believe is illegal, or breaks these Terms, by emailing{" "}
+        {mail(L.copyrightEmail, "Content report")}. Include where the content is, why you believe it
+        is illegal, and your name and email (optional for reports of child sexual abuse). We review
+        reports diligently and may use automated tools to detect fraud and policy breaches, with
+        human review of decisions that restrict accounts or payouts. If we remove your content,
+        restrict your account or withhold earnings, we will tell you the reasons and how to appeal,
+        unless the law prevents us. Users in the EU may appeal within 6 months through the same
+        address and may also use a certified out-of-court dispute settlement body. Our single point
+        of contact for authorities and users under the EU Digital Services Act is{" "}
+        {mail(site.email, "DSA contact")}; we accept communications in English.
+      </p>
     ),
   },
   {
     id: "termination",
     title: "Suspension and termination",
     summary:
-      "You can leave any time. We can suspend or close accounts that break these Terms. Earned, verified balances are paid out unless there was fraud.",
+      "You can leave any time. We can suspend or close accounts that break these Terms. Verified earnings are paid out unless they are withheld or reversed under our payout rules.",
     body: (
       <>
         <p>
@@ -408,10 +485,10 @@ const sections: LegalSection[] = [
         </p>
         <p>
           If your account is closed, verified earnings that are not subject to a fraud investigation
-          or reversal will be paid out, and unused campaign budget will be handled as described in
-          section 7. Sections that by their nature should survive (including licences already
-          granted, payment obligations, disclaimers, liability limits and dispute terms) continue
-          after termination.
+          or reversal will be paid out, and unused campaign budget will be handled as described in{" "}
+          <a href="#campaigns">Rules for streamers and brands</a>. Sections that by their nature
+          should survive (including licences already granted, payment obligations, disclaimers,
+          liability limits and dispute terms) continue after termination.
         </p>
       </>
     ),
@@ -434,7 +511,7 @@ const sections: LegalSection[] = [
     id: "liability",
     title: "Limitation of liability",
     summary:
-      "If something goes wrong, our liability is capped. This doesn't limit rights the law says can't be limited.",
+      "If something goes wrong, our liability is capped, except for money we owe you. This doesn't limit rights the law says can't be limited.",
     body: (
       <>
         <p>
@@ -445,8 +522,13 @@ const sections: LegalSection[] = [
           months before the claim, and (b) US$100.
         </p>
         <p>
-          Nothing in these Terms limits liability that cannot be limited by law, such as for fraud,
-          or for death or personal injury caused by negligence.
+          This cap does not apply to our obligation to pay verified earnings due to you or to return
+          unused campaign budget under these Terms. Nothing in these Terms limits liability that
+          cannot be limited by law, such as for fraud, or for death or personal injury caused by
+          negligence. Some jurisdictions do not allow the exclusion of certain warranties or the
+          limitation of certain damages, so parts of this section and the Disclaimers may not apply
+          to you. If you are a consumer in the EU or UK, we are liable for foreseeable loss caused
+          by our breach of these Terms or our failure to use reasonable care and skill.
         </p>
       </>
     ),
@@ -461,7 +543,10 @@ const sections: LegalSection[] = [
         To the extent permitted by law, you will defend and indemnify Clippable and its team against
         claims, losses and costs (including reasonable legal fees) arising from your content, your
         posts and disclosures, your campaigns and their claims, or your breach of these Terms or of
-        law.
+        law. We will promptly notify you of any claim, let you control its defence with counsel
+        reasonably acceptable to us, and not settle a claim that imposes an obligation on you
+        without your consent. For consumers, this applies only to claims caused by your content,
+        conduct or breach.
       </p>
     ),
   },
@@ -475,20 +560,40 @@ const sections: LegalSection[] = [
         <h3>Talk to us first</h3>
         <p>
           Before filing a claim, contact us at {mail(site.email, "Dispute")} with a description of
-          the dispute. We will try to resolve it informally within 60 days.
+          the dispute. We will try to resolve it informally within 60 days. Limitation periods and
+          filing deadlines are paused for these 60 days.
         </p>
         <h3>Arbitration (United States)</h3>
         <p>
-          If you live in the United States, you and Clippable agree to resolve any dispute through
-          final, binding, individual arbitration administered by the American Arbitration
-          Association under its Consumer Arbitration Rules, rather than in court. Either of us may
-          instead bring an individual claim in small claims court. You and Clippable waive any right
-          to a jury trial or to take part in a class or representative action.
+          If you live in, or your business is based in, the United States, you and Clippable agree
+          to resolve any dispute through final, binding, individual arbitration administered by the
+          American Arbitration Association under its Consumer Arbitration Rules (or its Commercial
+          Arbitration Rules for business users), rather than in court. Either of us may instead
+          bring an individual claim in small claims court. You and Clippable waive any right to a
+          jury trial or to take part in a class or representative action.
+        </p>
+        <p>
+          This agreement is governed by the Federal Arbitration Act. The arbitrator decides all
+          questions about the scope, enforceability and validity of this arbitration agreement,
+          except that a court decides questions about the class and representative action waiver and
+          the batch procedure below. We will pay the AAA filing, administration and arbitrator fees
+          for any consumer claim, other than your share of the initial filing fee, which will not
+          exceed the court filing fee where you live. Hearings may take place by video or in your
+          home county. If 25 or more similar claims are filed by or with the help of the same law
+          firm or group, the AAA will administer them in batches of up to 50 claims, one arbitrator
+          per batch, and the claims&rsquo; limitation periods are paused while they wait. Either of
+          us may bring claims about intellectual property infringement or misuse of the Service in
+          court for injunctive relief. If the waiver of class or representative actions is found
+          unenforceable for any claim, including a claim for public injunctive relief, that claim
+          will be decided in court after the arbitration ends, and the rest of this section still
+          applies.
         </p>
         <p>
           <strong>You can opt out</strong> of this arbitration agreement by emailing{" "}
           {mail(site.email, "Arbitration opt-out")} within 30 days of first accepting these Terms,
-          with your name and the email on your account.
+          with your name and the email on your account. If we make a material change to this
+          section, you may reject it by emailing us within 30 days of the change taking effect, and
+          the previous version will continue to apply to you.
         </p>
         <h3>EU, UK and other consumers</h3>
         <p>
@@ -520,9 +625,12 @@ const sections: LegalSection[] = [
     body: (
       <p>
         We may update these Terms. For material changes we will give you at least 14 days&rsquo;
-        notice by email or in the Service before they take effect. If you keep using the Service
-        after that, you accept the new Terms. Changes do not apply to disputes already in progress,
-        and campaigns already running keep the Campaign Rules they started with.
+        notice by email or in the Service, unless a change is required by law or addresses security
+        or abuse, in which case it may apply sooner. If you don&rsquo;t agree, you can close your
+        account before the change takes effect; if you keep using the Service, you accept the new
+        Terms. Changes do not apply to disputes already in progress (see also the opt-out right in{" "}
+        <a href="#disputes">Resolving disputes</a>), and running campaigns keep the Campaign Rules
+        they started with.
       </p>
     ),
   },
@@ -535,8 +643,12 @@ const sections: LegalSection[] = [
         You may not transfer your rights under these Terms without our consent; we may transfer ours
         as part of a merger, acquisition or sale of assets. If any part of these Terms is
         unenforceable, the rest stays in effect. Our not enforcing a term is not a waiver. We are
-        not liable for delays caused by events beyond our reasonable control. You agree to receive
-        notices electronically. These Terms are the whole agreement between us about the Service.
+        not liable for delays caused by events beyond our reasonable control. There are no
+        third-party beneficiaries of these Terms. You must comply with U.S. export control laws. You
+        agree to receive notices electronically; legal notices to us must be sent to{" "}
+        {mail(site.email, "Legal notice")}
+        {L.address ? ` and ${L.address}` : ""}. These Terms are the whole agreement between us about
+        the Service.
       </p>
     ),
   },
@@ -565,8 +677,9 @@ export default function TermsPage() {
             help you read it; the summaries are not part of the legal terms.
           </p>
           <p>
-            Please read section 18 carefully. If you live in the United States, it requires disputes
-            to be resolved by individual arbitration, unless you opt out.
+            Please read <a href="#disputes">Resolving disputes</a> carefully. If you live in the
+            United States, it requires disputes to be resolved by individual arbitration, unless you
+            opt out.
           </p>
         </>
       }

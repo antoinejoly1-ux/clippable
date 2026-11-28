@@ -74,6 +74,16 @@ const sections: LegalSection[] = [
             These can include the faces, voices and names of streamers and anyone appearing on
             stream.
           </li>
+          <li>
+            We do not create or use faceprints, voiceprints or other biometric identifiers to
+            identify anyone. Where our tools detect faces or speech (for example to frame a vertical
+            clip or write captions), they do so only to edit that clip, without working out who the
+            person is, and we do not keep face or voice data separately from the clip.
+          </li>
+          <li>
+            People who appear in a stream but don&rsquo;t use Clippable can contact{" "}
+            {mail("Privacy request")} to exercise their rights.
+          </li>
         </ul>
         <h3>Payouts</h3>
         <ul>
@@ -90,7 +100,9 @@ const sections: LegalSection[] = [
             and AI agent activity.
           </li>
           <li>Signals we use to detect fake views and fraud.</li>
-          <li>Cookies and similar technologies (see section 9).</li>
+          <li>
+            Cookies and similar technologies (see <a href="#cookies">Cookies</a>).
+          </li>
         </ul>
       </>
     ),
@@ -117,6 +129,16 @@ const sections: LegalSection[] = [
             <tr>
               <td>Create and run your account; clip streams; post clips you ask us to post</td>
               <td>Contract</td>
+            </tr>
+            <tr>
+              <td>
+                Process streams, including people appearing on stream who are not users, to create
+                and post clips
+              </td>
+              <td>
+                Legitimate interests (ours, streamers&rsquo; and clippers&rsquo; in creating and
+                sharing stream highlights)
+              </td>
             </tr>
             <tr>
               <td>Run campaigns, count verified views, calculate and send payouts</td>
@@ -155,13 +177,13 @@ const sections: LegalSection[] = [
     id: "automated",
     title: "Automated decisions",
     summary:
-      "We use automated checks to spot fake views, but a person reviews any decision to withhold pay.",
+      "Automated checks can briefly hold earnings that look suspicious, but a person reviews any decision to withhold or reverse them.",
     body: (
       <p>
-        We use automated signals to flag views or accounts that look artificial. A flag alone does
-        not decide your payout: a person reviews it before earnings are withheld or reversed. You
-        can ask for that review to be explained and contest the outcome by contacting{" "}
-        {mail("Payout review")}.
+        We use automated signals to detect artificial views, and they may place earnings on a
+        temporary hold. A person reviews any decision to withhold or reverse earnings for suspected
+        fraud. You can ask for an explanation and appeal by contacting {mail("Payout review")}{" "}
+        within 30 days of the decision.
       </p>
     ),
   },
@@ -225,9 +247,21 @@ const sections: LegalSection[] = [
           >
             Google API Services User Data Policy
           </a>
-          , including the Limited Use requirements. We use Google data only to sign you in and
-          provide features you request. We do not use it for advertising, do not sell it, and do not
-          use it to train generalised AI or machine-learning models.
+          , including the Limited Use requirements. We use Google data only to sign you in and, if
+          you connect a YouTube channel, to upload the clips you choose and read their view
+          statistics. When we do this we use YouTube API Services: by connecting YouTube you agree
+          to the{" "}
+          <a href="https://www.youtube.com/t/terms" rel="noopener noreferrer" target="_blank">
+            YouTube Terms of Service
+          </a>
+          , and the{" "}
+          <a href="https://policies.google.com/privacy" rel="noopener noreferrer" target="_blank">
+            Google Privacy Policy
+          </a>{" "}
+          applies to Google&rsquo;s handling of your data. When you revoke access, we delete the
+          YouTube data we hold for you within the period the YouTube API Services Developer Policies
+          require. We do not use it for advertising, do not sell it, and do not use it to train
+          generalised AI or machine-learning models.
         </p>
         <p>
           You can remove Clippable&rsquo;s access at any time from your{" "}
@@ -247,16 +281,19 @@ const sections: LegalSection[] = [
     id: "social",
     title: "TikTok and Instagram data",
     summary:
-      "Used only to sign you in and run the features you turn on. Disconnect any time and we delete it.",
+      "Used only to sign you in and run the features you turn on. You can disconnect at any time and ask us to delete the data.",
     body: (
       <p>
         If you sign in with or connect TikTok or Instagram, we use the profile and account data
         those platforms share only to sign you in and provide the features you enable, such as
         posting clips or tracking their views. We do not sell it or use it for advertising. You can
         disconnect an account in your Clippable settings or from the platform&rsquo;s own app
-        settings. To have data we received from TikTok or Instagram deleted, disconnect the account
-        and email {mail("Delete my platform data")}; we will delete it within 30 days, except where
-        we must keep records by law.
+        settings. When you disconnect an account, we stop collecting data from it and delete its
+        access tokens. To have the other data we received from TikTok or Instagram deleted, email{" "}
+        {mail("Delete my platform data")}. We will delete it promptly, and within any period the
+        platform&rsquo;s policies or applicable law require. We will not delete data we must keep
+        for legal, tax, fraud-prevention or payout-dispute reasons, and we keep that data only for
+        those purposes.
       </p>
     ),
   },
@@ -291,23 +328,51 @@ const sections: LegalSection[] = [
   {
     id: "retention",
     title: "How long we keep it",
-    summary: "Only as long as we need it, then we delete it.",
+    summary: "Only as long as we need it for the reasons in this policy.",
     body: (
-      <ul>
-        <li>Account data: while your account is open, and up to 90 days after you close it.</li>
-        <li>Stream recordings used for clipping: deleted shortly after clips are made.</li>
-        <li>Clips and captions: until you delete them or close your account.</li>
-        <li>Access tokens for connected accounts: until you disconnect the account.</li>
-        <li>Payment and tax records: as long as tax law requires, typically 7 years.</li>
-        <li>Security and usage logs: up to 12 months.</li>
-      </ul>
+      <>
+        <p>
+          We keep personal data only as long as we need it for the purposes in this policy, then
+          delete or anonymise it. How long depends on:
+        </p>
+        <ul>
+          <li>
+            <strong>Account data:</strong> while your account is open, then for a limited period to
+            handle reactivation, disputes and fraud prevention.
+          </li>
+          <li>
+            <strong>Source stream recordings:</strong> only as long as needed to make and review
+            clips, then deleted.
+          </li>
+          <li>
+            <strong>Clips, captions and transcripts:</strong> until you delete them or close your
+            account. Clips you have already posted, or that a Campaign Owner has licensed under the
+            Terms, may stay on those platforms or with that Campaign Owner.
+          </li>
+          <li>
+            <strong>Access tokens:</strong> until you disconnect the account or they expire.
+          </li>
+          <li>
+            <strong>Payment, tax and campaign records:</strong> for the period tax, accounting and
+            anti-fraud laws require (in the U.S., typically up to 7 years).
+          </li>
+          <li>
+            <strong>Security, fraud and usage logs:</strong> as long as reasonably needed to keep
+            the Service secure and detect fraud, including to stop banned users from signing up
+            again.
+          </li>
+        </ul>
+        <p>
+          Deleted data may stay in encrypted backups for a limited time until they are overwritten.
+        </p>
+      </>
     ),
   },
   {
     id: "rights",
     title: "Your rights",
     summary:
-      "You can access, correct, delete or download your data, and object to some uses. Email us and we'll respond within a month.",
+      "You can access, correct, delete or download your data, and object to some uses. Email us and we'll respond within the time the law requires.",
     body: (
       <>
         <p>Depending on where you live, you have the right to:</p>
@@ -329,11 +394,63 @@ const sections: LegalSection[] = [
         <h3>California and other US states</h3>
         <p>
           Residents of California and other states with privacy laws can ask to know, access,
-          correct and delete personal information, and to limit the use of sensitive personal
-          information (such as tax and bank details), which we use only to pay you and meet legal
-          obligations. We do not sell or &ldquo;share&rdquo; personal information for cross-context
-          behavioural advertising. We will not treat you differently for using your rights. You may
-          use an authorised agent, and you can appeal a decision by replying to our response.
+          correct and delete personal information. We use sensitive personal information (such as
+          tax IDs and bank details) only to pay you, verify identity, prevent fraud and meet legal
+          obligations, which are uses California law permits without a right to limit. We do not
+          sell or &ldquo;share&rdquo; personal information for cross-context behavioural
+          advertising. We will not treat you differently for using your rights. You may use an
+          authorised agent, and you can appeal a decision by replying to our response.
+        </p>
+        <p>In the past 12 months we have collected these categories of personal information:</p>
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Category</th>
+              <th scope="col">Source</th>
+              <th scope="col">Disclosed to</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Identifiers (name, email, handle, IP address)</td>
+              <td>You; sign-in providers; your device</td>
+              <td>Service providers; Campaign Owners (handle only)</td>
+            </tr>
+            <tr>
+              <td>Customer records and financial information</td>
+              <td>You, via our payment processor</td>
+              <td>Payment processor</td>
+            </tr>
+            <tr>
+              <td>Commercial information (campaigns, earnings)</td>
+              <td>Your use of the Service</td>
+              <td>Service providers; payment processor; Campaign Owners</td>
+            </tr>
+            <tr>
+              <td>Internet activity (usage, logs)</td>
+              <td>Your device</td>
+              <td>Service providers</td>
+            </tr>
+            <tr>
+              <td>Audio and visual information (streams, clips)</td>
+              <td>Streams you clip; your uploads</td>
+              <td>Service providers; Campaign Owners; platforms you post to</td>
+            </tr>
+            <tr>
+              <td>Inferences (fraud and view-quality signals)</td>
+              <td>Our systems</td>
+              <td>Service providers</td>
+            </tr>
+            <tr>
+              <td>Sensitive information (tax ID, bank account)</td>
+              <td>You, via our payment processor</td>
+              <td>Payment processor; tax authorities where required</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          We use each category for the purposes in <a href="#use">How we use it, and why</a> and
+          keep it as described in <a href="#retention">How long we keep it</a>.
         </p>
         <h3>How to ask</h3>
         <p>
@@ -350,9 +467,10 @@ const sections: LegalSection[] = [
     summary: `Clippable is for people ${L.minAge} and over.`,
     body: (
       <p>
-        The Service is not directed to children, and you must be at least {L.minAge} to use it. We
-        do not knowingly collect personal data from anyone under {L.minAge}. If you believe a child
-        has given us personal data, contact {mail("Child account")} and we will delete it.
+        The Service is not directed to children, and you must be at least {L.minAge} (or the age of
+        majority where you live, if higher) to use it. We do not knowingly collect personal data
+        from anyone under {L.minAge}. If you believe a child has given us personal data, contact{" "}
+        {mail("Child account")} and we will delete it.
       </p>
     ),
   },
@@ -360,7 +478,7 @@ const sections: LegalSection[] = [
     id: "security",
     title: "Security",
     summary:
-      "We protect your data with industry-standard measures and tell you if something goes wrong.",
+      "We protect your data with industry-standard measures and will notify you of a breach where the law requires.",
     body: (
       <p>
         We use measures such as encryption in transit and at rest, access controls and least
@@ -377,7 +495,8 @@ const sections: LegalSection[] = [
     body: (
       <p>
         We may update this policy. The date at the top shows when it last changed. For material
-        changes we will notify you by email or in the Service before they take effect.
+        changes we will notify you by email or in the Service at least 14 days before they take
+        effect, unless the change is required by law sooner.
       </p>
     ),
   },
