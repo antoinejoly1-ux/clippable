@@ -14,7 +14,7 @@ export function GET() {
     `- [How it works](${site.url}/#steps): set up once, Clippable clips every stream, then you post.`,
     `- [Streamer campaigns](${site.url}/#streamers): streamers you can clip and what they pay.`,
     `- [FAQ](${site.url}/#faq)`,
-    `- [Early access](${site.url}/#early-access)`,
+    `- [Sign up for the beta](${site.url}/signup): create an account for early access.`,
     "",
     "## Streamers",
     ...streamers.map(

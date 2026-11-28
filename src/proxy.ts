@@ -22,6 +22,6 @@ export const config = {
   // Everything except the gate itself and static assets. /media stays open because the
   // image optimizer fetches it server-side without the visitor's cookie.
   matcher: [
-    "/((?!gate|api/gate|_next/static|_next/image|media/|brand/|icon.svg|favicon.ico|apple-icon.png).*)",
+    "/((?!gate|api/gate|_next/static|_next/image|media/|brand/|icon.svg|favicon.ico|apple-icon.png|opengraph-image|twitter-image).*)",
   ],
 };

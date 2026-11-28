@@ -1,1 +1,1 @@
-Clippable: make clips instantly. Kick and Twitch streams, clipped while they're live.
+Clippable: make clips instantly. Kick and Twitch streams, clipped into vertical videos while they're live.

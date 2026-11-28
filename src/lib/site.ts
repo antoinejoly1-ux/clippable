@@ -18,9 +18,9 @@ if (process.env.SITE_INDEXABLE === "true" && !process.env.NEXT_PUBLIC_SITE_URL) 
 
 export const site = {
   name: "Clippable",
-  tagline: "Clips from every stream, the second they happen",
+  tagline: "Make clips instantly from Kick and Twitch streams",
   description:
-    "Clippable is an automated clipping tool that turns livestreams into ready-to-post clips for TikTok, YouTube Shorts, Instagram Reels and X, in real time.",
+    "Clippable turns Kick and Twitch streams into vertical clips while they're live. Post them to TikTok, Shorts, Reels and X and earn on every 1,000 views.",
   url,
   email: "business@clippable.net",
   // TODO(client): point these at the app once accounts exist.
