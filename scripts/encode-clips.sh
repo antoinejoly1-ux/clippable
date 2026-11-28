@@ -32,10 +32,14 @@ done < <(find "$IN" -maxdepth 1 -type f \( -iname '*.mp4' -o -iname '*.mov' -o -
 if [ "$i" -lt 8 ]; then echo "warning: only $i clips found; the story expects 8" >&2; fi
 
 if [ -n "${2:-}" ]; then
+  # Hero: muted, 24fps, 10-bit AV1 + H.264 fallback, desktop 960x540 and phone 640x360.
   echo "hero ← $(basename "$2")"
-  H="scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,fps=30"
-  ffmpeg -nostdin -v error -y -t 8 -i "$2" -an -vf "$H" -c:v libsvtav1 -crf 40 -preset 5 -pix_fmt yuv420p -movflags +faststart "$OUT/hero.av1.mp4"
-  ffmpeg -nostdin -v error -y -t 8 -i "$2" -an -vf "$H" -c:v libx264 -crf 27 -preset slow -pix_fmt yuv420p -movflags +faststart "$OUT/hero.h264.mp4"
-  ffmpeg -nostdin -v error -y -i "$2" -frames:v 1 -vf "$H" -c:v libwebp -quality 74 "$OUT/hero-poster.webp"
+  for spec in "960:540:" "640:360:.m"; do
+    IFS=: read -r w h sfx <<<"$spec"
+    V="scale=$w:$h:flags=lanczos,fps=24"
+    ffmpeg -nostdin -v error -y -i "$2" -an -vf "$V" -c:v libsvtav1 -crf 46 -preset 4 -g 96 -svtav1-params tune=0 -pix_fmt yuv420p10le -movflags +faststart "$OUT/hero$sfx.av1.mp4"
+    ffmpeg -nostdin -v error -y -i "$2" -an -vf "$V" -c:v libx264 -crf 29 -preset veryslow -tune film -g 96 -pix_fmt yuv420p -movflags +faststart "$OUT/hero$sfx.h264.mp4"
+  done
+  ffmpeg -nostdin -v error -y -ss 0.5 -i "$2" -frames:v 1 -vf "scale=960:540" -c:v libwebp -quality 70 "$OUT/hero-poster.webp"
 fi
 echo "done → $OUT"

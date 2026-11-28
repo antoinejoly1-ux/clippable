@@ -147,6 +147,7 @@ export function ClipStory() {
   const textRef = useRef<HTMLParagraphElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
   const followRef = useRef<() => void>(() => {});
+  const heldAnims = useRef<Animation[]>([]);
   const [audience, setAudience] = useState<Audience>("clipper");
   const [swapped, setSwapped] = useState(false);
 
@@ -175,21 +176,39 @@ export function ClipStory() {
         setSwapped(true);
         setAudience(next);
       });
-      // The headline replays its opening reveal (the dot runs across and becomes the period).
-      const wrap = root.querySelector<HTMLElement>(".hero-title-wrap");
-      if (wrap) {
-        wrap.classList.add("hero-replay");
-        // Same keyframes as the first reveal, so restart them explicitly (a class change
-        // alone doesn't replay an animation whose name hasn't changed).
-        wrap
+      // Hold the new headline hidden until the page wipe has finished.
+      const held = root.querySelector<HTMLElement>(".hero-title-wrap");
+      if (held) {
+        held.classList.add("hero-hold");
+        // Drop the finished reveal's fill so the hold can actually hide the words.
+        held
           .querySelectorAll(".hero-reveal, .hero-cover, .hero-cover-dot, .hero-dot, .hero-letter")
           .forEach((el) =>
-            el.getAnimations().forEach((a) => {
-              a.cancel();
-              a.play();
+            el.getAnimations().forEach((an) => {
+              an.cancel();
+              heldAnims.current.push(an);
             }),
           );
       }
+    };
+    // The headline replays its opening reveal (the dot runs across and becomes the period).
+    const replay = () => {
+      const wrap = root.querySelector<HTMLElement>(".hero-title-wrap");
+      if (!wrap) return;
+      wrap.classList.add("hero-replay");
+      wrap.classList.remove("hero-hold");
+      // Same keyframes as the first reveal, so restart them explicitly (a class change
+      // alone doesn't replay an animation whose name hasn't changed).
+      // Cancelled animations drop out of getAnimations(), so replay the ones we held.
+      const anims = new Set(heldAnims.current);
+      heldAnims.current = [];
+      wrap
+        .querySelectorAll(".hero-reveal, .hero-cover, .hero-cover-dot, .hero-dot, .hero-letter")
+        .forEach((el) => el.getAnimations().forEach((a) => anims.add(a)));
+      anims.forEach((a) => {
+        a.cancel();
+        a.play();
+      });
     };
     const doc = document as Document & {
       startViewTransition?: (cb: () => void) => {
@@ -200,6 +219,7 @@ export function ClipStory() {
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!doc.startViewTransition || still) {
       apply();
+      replay();
     } else {
       // The new side sweeps in from the switch's direction: right for Streamer, left for Clipper.
       root.dataset.wipe = toRight ? "right" : "left";
@@ -215,6 +235,8 @@ export function ClipStory() {
           },
         );
       });
+      // Start the reveal as the wipe lands, so it is always seen in full.
+      window.setTimeout(replay, 430);
       vt.finished.finally(() => {
         delete root.dataset.wipe;
       });
@@ -668,7 +690,16 @@ export function ClipStory() {
                 aria-hidden="true"
                 className="absolute inset-0 size-full object-cover object-[64%_50%] opacity-0 transition-opacity duration-700 data-[ready=true]:opacity-100 md:object-center"
               >
-                <source src="/media/hero.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"' />
+                {/* Phones get a 640×360 cut; desktop 960×540. AV1 first, H.264 fallback.
+                    Both stream progressively (faststart), so playback starts long before the
+                    file finishes downloading. */}
+                <source
+                  media="(max-width: 767px)"
+                  src="/media/hero.m.av1.mp4"
+                  type='video/mp4; codecs="av01.0.04M.10"'
+                />
+                <source media="(max-width: 767px)" src="/media/hero.m.h264.mp4" type="video/mp4" />
+                <source src="/media/hero.av1.mp4" type='video/mp4; codecs="av01.0.05M.10"' />
                 <source src="/media/hero.h264.mp4" type="video/mp4" />
               </video>
             </div>
@@ -754,7 +785,7 @@ export function ClipStory() {
             <AudienceSwitch value={audience} onChange={switchAudience} />
             <h1
               id="hero-title"
-              className="mt-7 text-[clamp(2.5rem,min(8.4vw,15svh),9.5rem)] leading-[0.9] font-semibold tracking-[-0.055em] text-fg [@media(max-height:520px)]:mt-3"
+              className="mt-7 text-[clamp(2.5rem,min(8.4vw,15svh),9.5rem)] leading-[0.9] font-semibold tracking-[-0.055em] text-fg max-md:text-[min(15vw,4.5rem)] [@media(max-height:520px)]:mt-3"
             >
               {/* Real text for crawlers and screen readers; the animated letters are aria-hidden. */}
               {SIDES.map((k) => (

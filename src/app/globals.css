@@ -1091,3 +1091,17 @@ html[data-audience="streamer"] .node-chip {
 html[data-audience="streamer"] .night-lift {
   z-index: -5;
 }
+
+/* Between the click and the end of the page wipe, the new headline waits off screen. */
+.hero-hold .hero-reveal {
+  clip-path: inset(-30% 100% -30% -10%);
+}
+.hero-hold .hero-dot,
+.hero-hold .hero-cover {
+  opacity: 0;
+}
+@media (max-width: 767px) {
+  .hero-hold .hero-letter {
+    opacity: 0;
+  }
+}

@@ -195,7 +195,7 @@ export function AgentsSection() {
               </Button>
             </div>
             {/* TODO(client): confirm the integration count. */}
-            <p className="mt-6 flex items-center gap-3 text-sm text-fg-muted">
+            <p className="mt-6 flex flex-col items-center gap-2.5 text-sm text-fg-muted">
               <span aria-hidden="true" className="ui-light flex -space-x-1.5">
                 {MORE.map((id) => (
                   <span

@@ -5,7 +5,7 @@ export function StreamerSection() {
     <section
       id="streamers"
       aria-labelledby="streamers-title"
-      className="relative scroll-mt-16 border-t border-border bg-bg py-24 sm:py-32"
+      className="relative scroll-mt-16 overflow-x-clip border-t border-border bg-bg py-24 sm:py-32"
     >
       <div className="mx-auto max-w-4xl px-5 text-center sm:px-10">
         <h2

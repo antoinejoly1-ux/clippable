@@ -125,11 +125,44 @@ export function StreamerShowcase() {
   return (
     <div
       ref={rootRef}
-      className="mx-auto grid max-w-[1680px] items-center gap-8 px-5 sm:px-8 lg:grid-cols-[1fr_minmax(0,38rem)_1fr]"
+      className="relative mx-auto grid max-w-[1680px] items-center gap-8 px-5 sm:px-8 lg:grid-cols-[1fr_minmax(0,38rem)_1fr]"
     >
       {photoSide}
+      {/* Phones: the two photos peek in at the screen edges, tilted and cropped. */}
+      {[
+        {
+          key: "a",
+          cls: "-top-6 -left-[26%] -rotate-12",
+          pick: (st: (typeof streamers)[number]) => st.photo,
+        },
+        {
+          key: "b",
+          cls: "-right-[26%] -bottom-6 rotate-12",
+          pick: (st: (typeof streamers)[number]) => st.photo2 ?? st.photo,
+        },
+      ].map((side) => (
+        <div
+          key={side.key}
+          aria-hidden="true"
+          className={`pointer-events-none absolute aspect-[3/4] w-[44%] overflow-hidden rounded-[var(--radius-card)] bg-bg-subtle shadow-[0_20px_40px_-20px_rgb(1_8_43/0.5)] lg:hidden ${side.cls}`}
+        >
+          {streamers.map((st, s) =>
+            !near(s) ? null : (
+              <div key={st.id} className={`absolute inset-0 ${swap(s)}`}>
+                <Image
+                  src={side.pick(st)}
+                  alt=""
+                  fill
+                  sizes="45vw"
+                  className="object-cover object-[50%_25%]"
+                />
+              </div>
+            ),
+          )}
+        </div>
+      ))}
       <ul
-        className="flex flex-col items-center py-4 text-center"
+        className="relative z-[1] flex flex-col items-center py-4 text-center"
         onPointerLeave={() => setHovering(false)}
       >
         {streamers.map((s, i) => {
