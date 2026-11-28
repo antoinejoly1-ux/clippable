@@ -10,7 +10,7 @@ import { LogoMark } from "@/components/logo";
 const SLIDES = [
   {
     id: "kai",
-    title: "Clip it while it's live.",
+    title: ["Clip it while it's", "happening live."],
     body: "Clippable cuts vertical clips the second a moment happens on stream.",
     poster: "/media/cta-kai-poster.webp",
     av1: "/media/cta-kai.av1.mp4",
@@ -18,7 +18,7 @@ const SLIDES = [
   },
   {
     id: "pbm",
-    title: "Repeatable workflows.",
+    title: ["Build repeatable", "workflows."],
     body: "Set it up once. Every stream after that clips itself.",
     poster: "/media/signup/pbm.webp",
     av1: "/media/signup/pbm.av1.mp4",
@@ -26,7 +26,7 @@ const SLIDES = [
   },
   {
     id: "lacy",
-    title: "Your branding, on every clip.",
+    title: ["Customize your", "own branding."],
     body: "Your captions, colours and fonts, applied to each clip automatically.",
     poster: "/media/signup/lacy.webp",
     av1: "/media/signup/lacy.av1.mp4",
@@ -94,7 +94,7 @@ export function Showcase() {
   return (
     <section
       aria-label="What Clippable does"
-      className="relative isolate h-[46svh] min-h-[340px] overflow-hidden bg-midnight text-white lg:h-auto lg:rounded-[24px]"
+      className="relative isolate h-[200px] overflow-hidden bg-midnight text-white lg:h-auto lg:rounded-[24px]"
     >
       {SLIDES.map((s, i) => (
         <video
@@ -123,7 +123,7 @@ export function Showcase() {
         className="absolute inset-0 -z-10 bg-[linear-gradient(to_bottom,rgb(1_8_43/0.55),transparent_28%,transparent_42%,rgb(1_8_43/0.7)_70%,rgb(1_8_43/0.92))]"
       />
 
-      <div className="flex h-full flex-col p-6 sm:p-8 lg:p-10">
+      <div className="flex h-full flex-col p-5 sm:p-8 lg:p-10">
         {/* Progress tabs: one bar per slide, the active one fills. */}
         <div role="tablist" aria-label="Features" className="flex gap-2">
           {SLIDES.map((s, i) => (
@@ -132,7 +132,7 @@ export function Showcase() {
               type="button"
               role="tab"
               aria-selected={i === active}
-              aria-label={s.title}
+              aria-label={s.title.join(" ")}
               onClick={() => go(i)}
               className="group relative h-6 flex-1"
             >
@@ -149,8 +149,8 @@ export function Showcase() {
           ))}
         </div>
 
-        <div className="mt-3 flex items-center justify-between">
-          <span className="inline-flex items-center gap-2 text-xl font-semibold tracking-[-0.02em] max-lg:invisible">
+        <div className="mt-3 flex items-center justify-between max-lg:absolute max-lg:top-11 max-lg:right-5">
+          <span className="inline-flex items-center gap-2 text-xl font-semibold tracking-[-0.02em] max-lg:hidden">
             <LogoMark className="h-[0.78em] w-auto text-sky" />
             Clippable
           </span>
@@ -180,9 +180,11 @@ export function Showcase() {
         <div className="mt-auto" aria-live="polite">
           <h2
             key={SLIDES[active].id}
-            className="max-w-[14ch] animate-[signup-rise_700ms_var(--ease-out-expo)_both] text-[clamp(2rem,4vw,3.75rem)] leading-[1] font-medium tracking-[-0.045em] text-balance"
+            className="animate-[signup-rise_700ms_var(--ease-out-expo)_both] text-[1.6rem] leading-[1.02] font-medium tracking-[-0.04em] lg:text-[clamp(2rem,3.6vw,3.5rem)] lg:tracking-[-0.045em]"
           >
-            {SLIDES[active].title}
+            {SLIDES[active].title[0]}
+            <br />
+            {SLIDES[active].title[1]}
           </h2>
           <p
             key={`${SLIDES[active].id}-b`}

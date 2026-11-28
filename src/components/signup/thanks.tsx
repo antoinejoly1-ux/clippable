@@ -3,7 +3,11 @@
 import { useSyncExternalStore } from "react";
 import { Button } from "@/components/button";
 
-const NAMES: Record<string, string> = { google: "Google", apple: "Apple", tiktok: "TikTok" };
+const NAMES: Record<string, string> = {
+  google: "Google",
+  instagram: "Instagram",
+  tiktok: "TikTok",
+};
 const read = () => {
   try {
     return sessionStorage.getItem("clippable-signup") ?? "";
