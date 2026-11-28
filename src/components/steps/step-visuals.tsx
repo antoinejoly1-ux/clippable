@@ -111,9 +111,14 @@ function DemoCursor({
   );
 }
 
-const Kbd = ({ children }: { children: React.ReactNode }) => (
-  <span className="flex h-5 min-w-5 items-center justify-center rounded-[5px] border border-border bg-bg px-1 font-mono text-[10px] text-fg-muted">
-    {children}
+/** A checkbox: empty rounded square, filling blue with a tick when picked. */
+const Check = ({ on }: { on: boolean }) => (
+  <span
+    className={`flex size-5 shrink-0 items-center justify-center rounded-[5px] border transition-colors duration-200 ${
+      on ? "border-electric bg-electric text-white" : "border-border bg-bg text-transparent"
+    }`}
+  >
+    {on && <Tick className="size-3 animate-[clip-pop_320ms_var(--ease-spring)_both]" />}
   </span>
 );
 
@@ -184,7 +189,6 @@ export function SetupVisual() {
     avatar: React.ReactNode,
     title: React.ReactNode,
     sub: React.ReactNode,
-    key: string,
   ) => {
     const open = hover === i;
     const on = picked.includes(i);
@@ -216,13 +220,7 @@ export function SetupVisual() {
             </span>
           </span>
         </span>
-        {on ? (
-          <span className="flex size-5 animate-[clip-pop_320ms_var(--ease-spring)_both] items-center justify-center rounded-full bg-electric text-white">
-            <Tick className="size-3" />
-          </span>
-        ) : (
-          <Kbd>{key}</Kbd>
-        )}
+        <Check on={on} />
       </li>
     );
   };
@@ -255,7 +253,6 @@ export function SetupVisual() {
                 </span>
               </>,
               `${platforms[s.platform!].title} · ${s.rate}`,
-              s.name[0].toUpperCase(),
             ),
           )}
         </ul>
@@ -275,7 +272,6 @@ export function SetupVisual() {
               </span>
               Geist Bold captions
             </>,
-            "M",
           )}
         </ul>
         <div className="flex items-center gap-4 border-t border-border px-3.5 py-2 text-[10.5px] text-fg-muted">
@@ -336,10 +332,10 @@ export function ClipVisual() {
       {/* The stream being watched */}
       <div className="relative aspect-video w-[62%] overflow-hidden rounded-[10px] bg-midnight shadow-[0_18px_36px_-22px_rgb(1_8_43/0.55)]">
         <LazyVideo
-          poster="/media/pipeline/stream.webp"
+          poster="/media/steps/lacy-stream.webp"
           sources={[
-            { src: "/media/pipeline/stream.av1.mp4", type: 'video/mp4; codecs="av01.0.04M.08"' },
-            { src: "/media/pipeline/stream.h264.mp4", type: "video/mp4" },
+            { src: "/media/steps/lacy-stream.av1.mp4", type: 'video/mp4; codecs="av01.0.04M.10"' },
+            { src: "/media/steps/lacy-stream.h264.mp4", type: "video/mp4" },
           ]}
           className="absolute inset-0 size-full object-cover"
         />
@@ -371,7 +367,7 @@ export function ClipVisual() {
               {k < made && (
                 <span className="absolute inset-0 animate-[clip-pop_300ms_var(--ease-out-expo)_both]">
                   <Image
-                    src={`/media/pipeline/clip-${((k * 3) % 32) + 1}.webp`}
+                    src={`/media/steps/lacy-clip-${(k % 15) + 1}.webp`}
                     alt=""
                     fill
                     sizes="32px"
@@ -398,7 +394,17 @@ export function ClipVisual() {
 /* 03 · Post: zoom out, select every clip, download, green check        */
 /* ─────────────────────────────────────────────────────────────────── */
 
-const POST_CLIPS = [5, 12, 19, 23, 28, 9];
+const POST_CLIPS = [2, 5, 8, 11, 13, 15]; // Lacy clips cut from the stream in step 02
+
+/** Burned-in captions, as Clippable adds them: bold, centred, one word picked out in blue. */
+const CAPTIONS: [string, string, string][] = [
+  ["HE ACTUALLY", "DID", "IT"],
+  ["CHAT WENT", "CRAZY", ""],
+  ["WAIT FOR", "IT", ""],
+  ["NO WAY HE", "SAID", "THAT"],
+  ["THIS IS", "INSANE", ""],
+  ["BEST", "MOMENT", "EVER"],
+];
 type PostPhase = "zoom" | "select" | "ask" | "yes" | "posted"; // "posted" = downloaded
 
 export function PostVisual() {
@@ -484,7 +490,7 @@ export function PostVisual() {
   return (
     <div
       ref={rootRef}
-      className="relative w-[min(18.5rem,100%)] overflow-hidden"
+      className="relative w-[min(18.5rem,100%)] overflow-hidden rounded-[12px]"
       aria-hidden="true"
     >
       {/* The "camera": starts zoomed in on the first clip, then pulls back. */}
@@ -499,19 +505,26 @@ export function PostVisual() {
             return (
               <li
                 key={c}
-                className={`relative aspect-[9/16] overflow-hidden rounded-[6px] transition-shadow duration-200 ${
+                className={`relative aspect-[9/16] overflow-hidden rounded-[8px] transition-shadow duration-200 ${
                   on
                     ? "shadow-[0_0_0_2px_var(--bg),0_0_0_4px_var(--color-electric)]"
                     : "shadow-[0_12px_24px_-14px_rgb(1_8_43/0.5)]"
                 }`}
               >
                 <Image
-                  src={`/media/pipeline/clip-${c}.webp`}
+                  src={`/media/steps/lacy-clip-${c}.webp`}
                   alt=""
                   fill
                   sizes="80px"
                   className="object-cover"
                 />
+                <p className="absolute inset-x-1 top-[58%] text-center text-[7.5px] leading-[1.25] font-extrabold tracking-[-0.01em] text-white uppercase [text-shadow:0_0_2px_rgb(0_0_0/0.9),0_1px_2px_rgb(0_0_0/0.8)]">
+                  {CAPTIONS[i][0]}{" "}
+                  <span className="rounded-[2px] bg-electric [box-decoration-break:clone] px-[2px] [text-shadow:none]">
+                    {CAPTIONS[i][1]}
+                  </span>
+                  {CAPTIONS[i][2] && ` ${CAPTIONS[i][2]}`}
+                </p>
                 <span
                   className={`absolute top-1 left-1 flex size-4 items-center justify-center rounded-[4px] border transition-colors duration-150 ${
                     on
@@ -528,7 +541,7 @@ export function PostVisual() {
 
         {/* Selection box being dragged */}
         <span
-          className="pointer-events-none absolute top-1.5 left-1.5 rounded-[6px] border border-electric bg-electric/10 transition-opacity duration-200"
+          className="pointer-events-none absolute top-1.5 left-1.5 rounded-[10px] border border-electric bg-electric/10 transition-opacity duration-200"
           style={{
             width: `calc((100% - 0.75rem) * ${marquee})`,
             height: `calc((100% - 0.75rem) * ${marquee})`,
