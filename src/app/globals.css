@@ -1122,3 +1122,11 @@ html[data-audience="streamer"] .night-lift {
     opacity: 0;
   }
 }
+
+/* Sign-up: slide copy and the email form rise in. */
+@keyframes signup-rise {
+  from {
+    opacity: 0;
+    translate: 0 0.5rem;
+  }
+}

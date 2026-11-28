@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { site } from "@/lib/site";
 
 // Add every public route here (or generate from content) as pages are built.
-const routes = ["/"];
+const routes = ["/", "/signup"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return routes.map((path) => ({

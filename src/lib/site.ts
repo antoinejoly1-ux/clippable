@@ -24,8 +24,8 @@ export const site = {
   url,
   email: "business@clippable.net",
   // TODO(client): point these at the app once accounts exist.
-  signupUrl: "#early-access",
-  loginUrl: "#early-access",
+  signupUrl: "/signup",
+  loginUrl: "/signup",
   locale: "en_US",
   // Only index when explicitly enabled on the production deployment.
   indexable: process.env.SITE_INDEXABLE === "true",
