@@ -865,9 +865,14 @@ html[data-audience="streamer"] {
   --accent: var(--color-electric);
   --link: #8fc0ff;
   /* Same ramp without the white crown, for surfaces that carry white text. */
+  /* Card surfaces end on a faint white-on-black (~9%) instead of pure black, so cards
+     always read as raised panels against the page. */
   --night-ramp-deep:
-    #4a93ff 0%, var(--color-electric) 22%, var(--color-royal) 45%, var(--color-midnight) 72%,
-    #000000 100%;
+    #4a93ff 0%, var(--color-electric) 22%, var(--color-royal) 42%, #0b1240 62%, #15171f 84%,
+    #191b22 100%;
+  --night-ramp-card:
+    #ffffff 0%, #eaf3ff 12%, #a3ccff 26%, #4a93ff 38%, #0b5cff 50%, #1630c8 62%, #0b1240 74%,
+    #15171f 88%, #191b22 100%;
   --night-ramp:
     #ffffff 0%, #eaf3ff 12%, #a3ccff 26%, #4a93ff 38%, #0b5cff 50%, #1630c8 62%, #070a4a 76%,
     #01020f 88%, #000000 100%;
@@ -883,7 +888,7 @@ html[data-audience="streamer"] .steps-sky {
   background: radial-gradient(100% 78% at 50% 116%, var(--night-ramp-deep));
 }
 html[data-audience="streamer"] .campaign-card {
-  background: radial-gradient(110% 130% at 100% 100%, var(--night-ramp));
+  background: radial-gradient(110% 130% at 100% 100%, var(--night-ramp-card));
 }
 html[data-audience="streamer"] .footer-sky {
   background: radial-gradient(110% 80% at 50% 118%, var(--night-ramp-deep));
@@ -1080,4 +1085,9 @@ html[data-audience="streamer"] .node-chip {
     opacity: 1;
     filter: brightness(0.45) saturate(0.8);
   }
+}
+
+/* The white top-lift sits above the gradient, under the content. */
+html[data-audience="streamer"] .night-lift {
+  z-index: -5;
 }
